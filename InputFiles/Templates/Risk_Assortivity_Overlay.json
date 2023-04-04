@@ -1,0 +1,88 @@
+{
+    "Metadata": {
+        "Author": "dklein + dbridenbecker", 
+        "NodeCount": 1, 
+        "Tool": "Text editor", 
+        "IdReference": "0", 
+        "DateCreated": "2015-3-21"
+    },
+    "Defaults": {
+        "Society" : {
+            "COMMERCIAL" :
+            {
+                "Pair_Formation_Parameters":
+                {
+                    "Assortivity" :
+                    {
+                        "Group" : "INDIVIDUAL_PROPERTY",
+                        "Property_Name" : "Risk",
+                        "Axes" : [ "LOW", "MEDIUM", "HIGH" ],
+                        "Weighting_Matrix_RowMale_ColumnFemale" :
+                        [
+                            [ 1,1,1 ],
+                            [ 1,1,1 ],
+                            [ 1,1,1 ]
+                        ]
+                    }
+                }
+            },
+            "TRANSITORY" :
+            {
+                "Pair_Formation_Parameters":
+                {
+                    "Assortivity" :
+                    {
+                        "Group" : "INDIVIDUAL_PROPERTY",
+                        "Property_Name" : "Risk",
+                        "Axes" : [ "LOW", "MEDIUM", "HIGH" ],
+                        "Weighting_Matrix_RowMale_ColumnFemale__KP_RiskAssortivity" : "<-- MARKER",
+                        "Weighting_Matrix_RowMale_ColumnFemale" :
+                        [
+                            [ 0.92914116512021105443, 0.070858834879788945571, 0 ], 
+                            [ 0.070858834879788945571, 0.92914116512021105443, 0.92914116512021105443 ], 
+                            [ 0, 0.92914116512021105443, 0.070858834879788945571 ]
+                        ]
+                    }
+                }
+            },
+            "INFORMAL" :
+            {
+                "Pair_Formation_Parameters":
+                {
+                    "Assortivity" :
+                    {
+                        "Group" : "INDIVIDUAL_PROPERTY",
+                        "Property_Name" : "Risk",
+                        "Axes" : [ "LOW", "MEDIUM", "HIGH" ],
+                        "Weighting_Matrix_RowMale_ColumnFemale__KP_RiskAssortivity" : "<-- MARKER",
+                        "Weighting_Matrix_RowMale_ColumnFemale" :
+                        [
+                            [ 0.92914116512021105443, 0.070858834879788945571, 0 ], 
+                            [ 0.070858834879788945571, 0.92914116512021105443, 0.92914116512021105443 ], 
+                            [ 0, 0.92914116512021105443, 0.070858834879788945571 ]
+                        ]
+                    }
+                }
+            },
+            "MARITAL" :
+            {
+                "Pair_Formation_Parameters":
+                {
+                    "Assortivity" :
+                    {
+                        "Group" : "INDIVIDUAL_PROPERTY",
+                        "Property_Name" : "Risk",
+                        "Axes" : [ "LOW", "MEDIUM", "HIGH" ],
+                        "Weighting_Matrix_RowMale_ColumnFemale__KP_RiskAssortivity" : "<-- MARKER",
+                        "Weighting_Matrix_RowMale_ColumnFemale" :
+                        [
+                            [ 0.92914116512021105443, 0.070858834879788945571, 0 ], 
+                            [ 0.070858834879788945571, 0.92914116512021105443, 0.92914116512021105443 ], 
+                            [ 0, 0.92914116512021105443, 0.070858834879788945571 ]
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}

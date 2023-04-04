@@ -1,0 +1,110 @@
+{
+    "Metadata":
+    {
+        "DateCreated": "Tues July 11, 2017",
+        "Tool": "Hand",
+        "Author": "Daniel J. Klein",
+        "RegionName": "Sub-Saharan Africa: Zimbabwe National",
+        "DataSource": "Modeling assumptions to be adjusted in fitting process",
+        "IdReference": "0",
+        "NodeCount": 1
+    },
+    "Nodes":
+    [
+        {
+            "NodeID": 1,
+            "NOTE": "Zimbabwe",
+
+            "IndividualProperties":
+            [
+                {
+                    "Comment": "VMMC Status",
+                    "Property": "VMMC",
+                    "Values": [ "None", "Traditional", "Medical" ],
+                    "Initial_Distribution": [ 1, 0, 0],
+                    "Transitions": []
+                },
+                {
+                    "Comment": "90% Healthcare Accessible",
+                    "Property": "Accessibility",
+                    "Values": [ "Yes", "No" ],
+                    "Initial_Distribution": [ 1, 0],
+                    "Transitions": []
+                },
+                {
+                    "Property": "CascadeState",
+                    "Values": [
+                        "None",
+                        "ARTStaging",
+                        "ARTStagingDiagnosticTest",
+                        "LinkingToART",
+                        "LinkingToPreART",
+                        "OnART",
+                        "OnPreART",
+                        "HCTTestingLoop",
+                        "HCTUptakeAtDebut",
+                        "HCTUptakePostDebut",
+                        "TestingOnANC",
+                        "TestingOnChild6w",
+                        "TestingOnSymptomatic",
+                        "LostForever",
+                        "CommercialSex",
+                        "VMMC",
+                        "ReceivingVMMC"
+                    ],
+                    "Initial_Distribution": [
+                        1,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "Transitions": []
+                },
+                {
+                    "Property": "HasSTI",
+                    "Values": [ "NO", "TEMPORARY", "LIFELONG" ],
+                    "Initial_Distribution": [ 1, 0, 0],
+                    "Transitions": []
+                },
+                {
+                    "Property": "OnDrug",
+                    "Values": [ "NO", "YES" ],
+                    "Initial_Distribution": [ 1, 0],
+                    "Transitions": []
+                },
+                {
+                    "Property": "PrEPWilling",
+                    "Values": [ "NO", "YES" ],
+                    "Initial_Distribution": [ 1, 0],
+                    "Transitions": []
+                },
+                {
+                    "Property": "WillingToStartARTFromPrEPCampaign",
+                    "Values": [ "NO", "YES" ],
+                    "Initial_Distribution": [ 0, 1],
+                    "Transitions": []
+                },
+                {
+                    "Property": "Risk",
+                    "Values": [ "LOW", "MEDIUM", "HIGH" ],
+                    "Initial_Distribution__KP_Risk_All": "<-- MARKER",
+                    "Initial_Distribution": [ 0.60797748266033635467, 0.39202251733966364533, 0 ],
+                    "Transitions": []
+                }
+            ]
+        }
+    ]
+}

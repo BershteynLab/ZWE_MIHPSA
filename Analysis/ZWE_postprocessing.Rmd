@@ -1,0 +1,207 @@
+---
+title: "ZWE_calib_check"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r Load libraries}
+library(tidyverse)
+library(tidyr)
+library(data.table)
+library(magrittr)
+library(ggplot2)
+library(devtools)
+devtools::install_github("BershteynLab/EMODAnalyzeR")
+```
+
+# Postprocessing Zimbabwe Model
+
+```{r read in simulation data}
+
+#input_path = "/gpfs/scratch/citrod01/experiments/Baseline-campaign_StatusQuo-baseline___2022_05_02_20_46_56_850266"
+#input_path = "/gpfs/scratch/citrod01/experiments/Baseline-campaign_StatusQuo-baseline___2022_05_03_08_50_32_345923"
+input_path = "/gpfs/scratch/citrod01/experiments/Baseline-campaign_StatusQuo-baseline___2022_05_03_17_58_19_378550"
+
+sim.results <- EMODAnalyzeR::read.simulation.results.bigpurple(
+  experiment_path = input_path,
+  scenario_name = 'baseline',
+  summarize_columns = c("Newly.Infected", "Newly.Tested.Positive", "Newly.Tested.Negative",
+                        "Population","Infected", "On_ART","Died", "Died_from_HIV",
+                        "Tested.Past.Year.or.On_ART", "Tested.Ever","Diagnosed"),
+  stratify_columns = c("Year", "Gender", "Age"),
+  min_age_inclusive = 0,
+  max_age_inclusive = 99
+) %>% 
+  ungroup()
+
+```
+
+
+
+Need to scale up everything, for rescaling extensible variables
+```{r Population rescaling factor}
+CENSUS_YEAR = 2015
+ZWE_CENSUS_POP = 3855002+4098001 # These come from the population census data in 
+
+sim.results.pop.scaling <- sim.results %>% 
+      filter(Year == CENSUS_YEAR) %>%
+      group_by(sim.id) %>%
+      summarize(total.pop = sum(Population), .groups = 'keep') %>% 
+      mutate(pop.scaling.factor = ZWE_CENSUS_POP/total.pop)
+
+sim.results <- sim.results %>% 
+  inner_join(
+    sim.results.pop.scaling,
+    by = c("sim.id")
+  )
+```
+
+Extract Prevalence
+```{r Prevalence }
+# Males 15-24 
+p1 <- sim.results %>% 
+  dplyr::select(Year, Gender, Age, Population, Infected, sim.id) %>%
+  filter(Gender == 0, Age >= 15, Age <25, ceiling(Year) != Year) %>% 
+  group_by(Year, Gender, sim.id) %>% 
+  summarize(Infected = sum(Infected), Population = sum(Population), .groups = 'keep') %>% 
+  mutate(Prevalence = Infected/Population) %>% 
+  group_by(Year) %>% 
+  summarize(mean.prev.males.younger = mean(Prevalence), .groups = 'keep')
+  
+# Males 25-49
+p2 <- sim.results %>% 
+  dplyr::select(Year, Gender, Age, Population, Infected, sim.id) %>%
+  filter(Gender == 0, Age >= 25, Age <50, ceiling(Year) != Year) %>% 
+  group_by(Year, Gender, sim.id) %>% 
+  summarize(Infected = sum(Infected), Population = sum(Population), .groups = 'keep') %>% 
+  mutate(Prevalence = Infected/Population) %>% 
+  group_by(Year) %>% 
+  summarize(mean.prev.males.older = mean(Prevalence), .groups = 'keep')
+
+# Females 15-24
+p3 <- sim.results %>% 
+  dplyr::select(Year, Gender, Age, Population, Infected, sim.id) %>%
+  filter(Gender == 1, Age >= 15, Age <25, ceiling(Year) != Year) %>% 
+  group_by(Year, Gender, sim.id) %>% 
+  summarize(Infected = sum(Infected), Population = sum(Population), .groups = 'keep') %>% 
+  mutate(Prevalence = Infected/Population) %>% 
+  group_by(Year) %>% 
+  summarize(mean.prev.females.younger = mean(Prevalence), .groups = 'keep')
+  
+# Females 25-49
+p4 <- sim.results %>% 
+  dplyr::select(Year, Gender, Age, Population, Infected, sim.id) %>%
+  filter(Gender == 1, Age >= 25, Age <50, ceiling(Year) != Year) %>% 
+  group_by(Year, Gender, sim.id) %>% 
+  summarize(Infected = sum(Infected), Population = sum(Population), .groups = 'keep') %>% 
+  mutate(Prevalence = Infected/Population) %>% 
+  group_by(Year) %>% 
+  summarize(mean.prev.females.older = mean(Prevalence), .groups = 'keep')
+
+# Children <15
+p5 <-sim.results %>% 
+  dplyr::select(Year, Gender, Age, Population, Infected, sim.id) %>%
+  filter(Age < 15, ceiling(Year) != Year) %>%
+  group_by(Year, sim.id) %>% 
+  summarize(Infected = sum(Infected), Population = sum(Population), .groups = 'keep') %>% 
+  mutate(Prevalence = Infected/Population) %>%
+  group_by(Year) %>% 
+  summarize(mean.prev.children = mean(Prevalence), .groups = 'keep')
+
+
+# Overall
+p6 <-sim.results %>% 
+  dplyr::select(Year, Gender, Age, Population, Infected, sim.id) %>%
+  filter(ceiling(Year) != Year) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(Infected = sum(Infected), Population = sum(Population), .groups = 'keep') %>% 
+  mutate(Prevalence = Infected/Population) %>%
+  group_by(Year) %>% 
+  summarize(mean.prev.overall = mean(Prevalence), .groups = 'keep')
+
+
+prev.summary <- merge(p1, p2, by = 'Year') %>% 
+  merge(p3, by = 'Year') %>% 
+  merge(p4, by = 'Year') %>%
+  merge(p5, by = 'Year') %>%
+  merge(p6, by = 'Year') %>%
+  mutate(Year = floor(Year)) 
+
+prev.summary %>% 
+  pivot_longer(-Year) %>% 
+  pivot_wider(names_from = Year, values_from = value)
+```
+
+Prevalence target data
+```{r Read prevalence target data}
+zwe.phia = data.frame(
+  Year = c(2015.5, 2015.5),
+  Gender = c("Male", "Female"),
+  mean.prev= c(10.7, 15.9),
+  lower = c(9.8, 15.1),
+  upper = c(11.5,16.6)
+)
+zwe.dhs = data.frame(
+  Year = c(2006, 2010, 2015, 2006, 2010, 2015),
+  Gender = c("Male", "Male", "Male", "Female", "Female", "Female"),
+  mean.prev = c(14.5, 12.3, 10.5, 21.1, 17.7, 16.7),
+  lower = c(13.2, 11.3, 9.5, 19.6, 16.6, 15.5),
+  upper = c(15.9, 13.3, 11.5, 22.6, 18.8, 17.8)
+)
+
+prev.target <- rbind(zwe.phia, zwe.dhs) %>% arrange(Year, Gender)
+
+
+# ggplot() + 
+#   geom_point(data = prev.target,
+#              size=2, color = "black", aes(x=Year, y=mean.prev)) +
+#   geom_errorbar(data = prev.target,
+#                 aes(x=Year, ymin=lower, ymax=upper), color="black", width=2, size=1) + 
+#     xlab("Year") +
+#   ylab("Prevalence, ages 15-49") +
+#   facet_grid(cols = vars(Gender)) + 
+#   theme_bw(base_size=16)
+```
+
+
+Prevalence plot
+```{r All ages prevalence}
+prev.data <- sim.results %>% 
+  dplyr::select(Year, Gender, Age, Population, Infected, sim.id) %>%
+  filter(Age >= 15, Age < 49) %>% 
+  group_by(Year, Gender, sim.id) %>% 
+  summarize(Infected = sum(Infected), Population = sum(Population), .groups = 'keep') %>% 
+  mutate(Prevalence = Infected/Population) %>% 
+  mutate(Gender = case_when(Gender == 0 ~ "Male", Gender == 1 ~ "Female")) 
+
+prev.plot <- ggplot() +
+  # plot ensemble of runs
+  geom_point(data = prev.data, mapping = aes(x = Year, y = Prevalence), size = .25, alpha = .1, color = 'gray') + 
+  # plot mean
+  geom_point(data = prev.data %>% 
+               group_by(Year, Gender) %>% 
+               summarize(prevalence = mean(Prevalence), .groups = 'keep') , 
+             mapping = aes(x = Year, y = prevalence), size = 1, color = 'blue') + 
+  # compare to calibration targets
+  geom_point(data = prev.target,
+             size=2, color = "black", aes(x=Year, y=mean.prev/100)) +
+  geom_errorbar(data = prev.target,
+                aes(x=Year, ymin=lower/100, ymax=upper/100), color="black", width=2, size=1) + 
+  xlab("Year") +
+  ylab("Prevalence, ages 15-49") +
+  facet_grid(cols = vars(Gender)) + 
+  theme_bw(base_size=16) +
+  guides(fill = guide_legend(keywidth = 2, keyheight = 1)) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1), breaks = seq(0,.2,0.05), limits=c(0,.20)) +
+  scale_x_continuous(breaks = seq(1980,2040,10)) +
+  theme(legend.position="top") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  theme(strip.background = element_rect(colour="black", fill="white")) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+  
+prev.plot
+```
+
