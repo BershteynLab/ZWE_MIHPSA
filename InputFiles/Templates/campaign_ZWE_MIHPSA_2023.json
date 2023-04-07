@@ -1,6 +1,6 @@
 {
     "Campaign_Name": "Campaign for Zimbabwe: MIHPSA",
-    "COMMENT":"Initial calibration in Summer of 2022 for ZWE MIHPSA",
+    "COMMENT":"2023-04-07 - Initial scenario for ZWE MIHPSA, adding PrEP (truvada) for AGYW",
     "Default_Campaign_Path": "campaign.json",
     "Use_Defaults": 1,
     "Events": [
@@ -2379,7 +2379,7 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 15,
+                                "Min": 10,
                                 "Max": 25
                             }
                         ],
@@ -2403,7 +2403,7 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 15,
+                                "Min": 10,
                                 "Max": 25
                             }
                         ],
@@ -2427,7 +2427,7 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 15,
+                                "Min": 10,
                                 "Max": 25
                             }
                         ],
@@ -2451,7 +2451,7 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 15,
+                                "Min": 10,
                                 "Max": 25
                             }
                         ],
@@ -2475,7 +2475,7 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 15,
+                                "Min": 10,
                                 "Max": 25
                             }
                         ],
@@ -2499,7 +2499,7 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 15,
+                                "Min": 10,
                                 "Max": 25
                             }
                         ],
@@ -2523,7 +2523,7 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 15,
+                                "Min": 10,
                                 "Max": 25
                             }
                         ],
@@ -2547,7 +2547,7 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 15,
+                                "Min": 10,
                                 "Max": 25
                             }
                         ],
@@ -2571,7 +2571,7 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 15,
+                                "Min": 10,
                                 "Max": 25
                             }
                         ],
@@ -2595,7 +2595,7 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 15,
+                                "Min": 10,
                                 "Max": 25
                             }
                         ],
@@ -2619,7 +2619,7 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 15,
+                                "Min": 10,
                                 "Max": 25
                             }
                         ],
@@ -2643,7 +2643,7 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 15,
+                                "Min": 10,
                                 "Max": 25
                             }
                         ],
@@ -2667,7 +2667,7 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 15,
+                                "Min": 10,
                                 "Max": 25
                             }
                         ],
@@ -2691,17 +2691,17 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 15,
+                                "Min": 10,
                                 "Max": 25
                             }
                         ],
                         "Start_Year": 2021.5,
-                        "End_Year": 2040.5,
+                        "End_Year": 2073.5,
                         "Num_Targeted_Females": [
                         0
                         ],
                         "Num_Targeted_Males": [
-                            4288000
+                            11148800
                         ],
                         "Property_Restrictions_Within_Node": [],
                         "Target_Disease_State": [
@@ -2903,7 +2903,103 @@
                             }
                         ],
                         "Start_Year": 2022,
-                        "End_Year": 2042,
+                        "End_Year": 2023,
+                        "Num_Targeted_Females": [
+                            44035
+                        ],
+                        "Num_Targeted_Males": [
+                            0
+                        ],
+                        "Property_Restrictions_Within_Node": [{ "Risk": "HIGH" }],
+                        "Target_Disease_State": [
+                            [
+                                "HIV_Negative",
+                                "Not_Have_Intervention"
+                            ]
+                        ],
+                        "Target_Disease_State_Has_Intervention_Name": "PrEP"
+                    },
+                    {
+                        "Age_Ranges_Years": [
+                            {
+                                "Min": 15,
+                                "Max": 25
+                            }
+                        ],
+                        "Start_Year": 2023,
+                        "End_Year": 2024,
+                        "Num_Targeted_Females": [
+                            37144
+                        ],
+                        "Num_Targeted_Males": [
+                            0
+                        ],
+                        "Property_Restrictions_Within_Node": [{ "Risk": "HIGH" }],
+                        "Target_Disease_State": [
+                            [
+                                "HIV_Negative",
+                                "Not_Have_Intervention"
+                            ]
+                        ],
+                        "Target_Disease_State_Has_Intervention_Name": "PrEP"
+                    },
+                    {
+                        "Age_Ranges_Years": [
+                            {
+                                "Min": 15,
+                                "Max": 25
+                            }
+                        ],
+                        "Start_Year": 2024,
+                        "End_Year": 2025,
+                        "Num_Targeted_Females": [
+                            44303
+                        ],
+                        "Num_Targeted_Males": [
+                            0
+                        ],
+                        "Property_Restrictions_Within_Node": [{ "Risk": "HIGH" }],
+                        "Target_Disease_State": [
+                            [
+                                "HIV_Negative",
+                                "Not_Have_Intervention"
+                            ]
+                        ],
+                        "Target_Disease_State_Has_Intervention_Name": "PrEP"
+                    },
+                    {
+                        "Age_Ranges_Years": [
+                            {
+                                "Min": 15,
+                                "Max": 25
+                            }
+                        ],
+                        "Start_Year": 2025,
+                        "End_Year": 2026,
+                        "Num_Targeted_Females": [
+                            45084
+                        ],
+                        "Num_Targeted_Males": [
+                            0
+                        ],
+                        "Property_Restrictions_Within_Node": [{ "Risk": "HIGH" }],
+                        "Target_Disease_State": [
+                            [
+                                "HIV_Negative",
+                                "Not_Have_Intervention"
+                            ]
+                        ],
+                        "Target_Disease_State_Has_Intervention_Name": "PrEP"
+                    },
+                    {
+                        "Age_Ranges_Years": [
+                            {
+                                "Min": 15,
+                                "Max": 25
+                            }
+                        ],
+                        "Start_Year": 2026,
+                        "End_Year": 2073.5,
                         "Num_Targeted_Females": [
                             2137500
                         ],
