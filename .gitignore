@@ -9,5 +9,7 @@ COMPS_log.log
 post_channel_config.json
 DownloadAnalyzerTPI_cache/
 DownloadAnalyzerTPI_cache/*
+resampled_parameter_sets.csv
 
 Zimbabwe--0.01--rep3--test3/
+ZWE_calib_big_test/
