@@ -372,8 +372,8 @@
 
             "Report_HIV_ByAgeAndGender": 1,
             "Report_HIV_ByAgeAndGender_Add_Concordant_Relationships": 0,
-            "Report_HIV_ByAgeAndGender_Start_Year": 1980,
-            "Report_HIV_ByAgeAndGender_Stop_Year": 2073.5,
+            "Report_HIV_ByAgeAndGender_Start_Year": 1990,
+            "Report_HIV_ByAgeAndGender_Stop_Year": 2073,
             "Report_HIV_ByAgeAndGender_Collect_Gender_Data": 1,
             "Report_HIV_ByAgeAndGender_Collect_Age_Bins_Data": [
                 0,
@@ -479,22 +479,23 @@
              ], 
             "Report_HIV_ByAgeAndGender_Collect_HIV_Data": 1,
             "Report_HIV_ByAgeAndGender_Collect_On_Art_Data": 1,
-            "Report_HIV_ByAgeAndGender_Collect_Circumcision_Data": 1,
+            "Report_HIV_ByAgeAndGender_Collect_HIV_Stage_Data":1,
+            "Report_HIV_ByAgeAndGender_Collect_Circumcision_Data": 0,
             "Report_HIV_ByAgeAndGender_Add_Relationships": 0,
 
             "Report_HIV_ByAgeAndGender_Collect_IP_Data": [ "Risk" ],
 
             "Report_HIV_ByAgeAndGender_Collect_Intervention_Data": [ ],
             "Report_HIV_ByAgeAndGender_Add_Transmitters": 0,
-            "Report_HIV_ByAgeAndGender_Stratify_Infected_By_CD4": 0,
+            "Report_HIV_ByAgeAndGender_Stratify_Infected_By_CD4": 1,
 
             "Report_HIV_ByAgeAndGender_Has_Intervention_With_Name": "",
-            "Report_HIV_ByAgeAndGender_Event_Counter_List": ["WillReceiveTraditionalMaleCircumcision", "Program_VMMC", "ReceivePrEP_HIGH"],
+            "Report_HIV_ByAgeAndGender_Event_Counter_List": ["ReceivePrEP_HIGH"],
             "Report_HIV_Event_Channels_List": [ ],
 
             "Report_HIV_Infection": 0,
             "Report_HIV_Mortality": 0,
-            "Report_HIV_Period": 365,
+            "Report_HIV_Period": 730,
             "Report_Relationship_End": 0,
             "Report_Relationship_Start": 0,
             "Report_Transmission": 0,
