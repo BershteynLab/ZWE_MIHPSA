@@ -78,7 +78,7 @@ plotters = [
 
 province_names = list(site_info['node_map'].values())
 
-static_params = {'Base_Population_Scale_Factor': BASE_POPULATION_SCALE_FACTOR}
+static_params = {'x_Base_Population': BASE_POPULATION_SCALE_FACTOR}
 
 # Setting up our model configuration from templates
 # There must be at least ONE entry in the scenario_template_sets dictionary: Baseline

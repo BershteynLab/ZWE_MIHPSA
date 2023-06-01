@@ -165,7 +165,6 @@
                "Intervention_Config": {
                   "Actual_IndividualIntervention_Config": {
                      "Disqualifying_Properties": [],
-                     "Event_Or_Config": "Event",
                      "Interpolation_Order": 1,
                      "New_Property_Value": "",
                      "Positive_Diagnosis_Event": "Commercial_DelayFromDebutToUptake",
@@ -200,7 +199,7 @@
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
                         "Broadcast_Event": "Commercial_Uptake",
-                        "Delay_Distribution": "UNIFORM_DURATION",
+                        "Delay_Period_Distribution": "UNIFORM_DISTRIBUTION",
                         "Delay_Period_Max": 1825,
                         "Delay_Period_Min": 0,
                         "Disqualifying_Properties": [],
@@ -253,9 +252,9 @@
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
                         "Broadcast_Event": "Commercial_Dropout",
-                        "Delay_Distribution": "WEIBULL_DURATION",
-                        "Delay_Period_Scale": 2215,
-                        "Delay_Period_Shape": 3.312,
+                        "Delay_Period_Distribution": "WEIBULL_DISTRIBUTION",
+                        "Delay_Period_Kappa": 3.312,
+                        "Delay_Period_Lambda": 2215,
                         "Disqualifying_Properties": [],
                         "Event_Or_Config": "Event",
                         "New_Property_Value": "",
@@ -309,7 +308,6 @@
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
                         "Disqualifying_Properties": [],
-                        "Event_Or_Config ": "Event",
                         "Interpolation_Order": 1,
                         "New_Property_Value": "",
                         "Positive_Diagnosis_Event": "Commercial_DelayFromDebutToUptake",
@@ -344,7 +342,7 @@
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
                         "Broadcast_Event": "Commercial_Uptake",
-                        "Delay_Distribution": "UNIFORM_DURATION",
+                        "Delay_Period_Distribution": "UNIFORM_DISTRIBUTION",
                         "Delay_Period_Max": 3650,
                         "Delay_Period_Min": 0,
                         "Disqualifying_Properties": [],
@@ -373,7 +371,7 @@
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
                         "Broadcast_Event": "Commercial_Dropout",
-                        "Delay_Distribution": "UNIFORM_DURATION",
+                        "Delay_Period_Distribution": "UNIFORM_DISTRIBUTION",
                         "Delay_Period_Max": 10950,
                         "Delay_Period_Min": 730,
                         "Disqualifying_Properties": [],
@@ -539,7 +537,6 @@
                         "Ramp_MidYear": 2005,
                         "Ramp_Rate": 1,
                         "Female_Multiplier": 1.0,
-                        "Event_Or_Config": "Event",
                         "Positive_Diagnosis_Event": "HCTTestingLoop0",
                         "Negative_Diagnosis_Event": "HCTUptakePostDebut1",
                         "Disqualifying_Properties": [
@@ -618,8 +615,8 @@
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
                         "Broadcast_Event": "HCTUptakePostDebut2",
-                        "Delay_Distribution": "EXPONENTIAL_DURATION",
-                        "Delay_Period": 365,
+                        "Delay_Period_Distribution": "EXPONENTIAL_DISTRIBUTION",
+                        "Delay_Period_Exponential": 365,
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
                             "CascadeState:OnART",
@@ -669,7 +666,6 @@
                             "CascadeState:ARTStaging",
                             "CascadeState:HCTTestingLoop"
                         ],
-                        "Event_Or_Config": "Event",
                         "Female_Multiplier": 1,
                         "Positive_Diagnosis_Event": "HCTTestingLoop0",
                         "Negative_Diagnosis_Event": "HCTUptakePostDebut7",
@@ -723,7 +719,6 @@
                         },
                         "Interpolation_Order": 0,
                         "Female_Multiplier": 1,
-                        "Event_Or_Config": "Event",
                         "Positive_Diagnosis_Event": "HCTTestingLoop0",
                         "Negative_Diagnosis_Event": "HCTUptakePostDebut1",
                         "Disqualifying_Properties": [
@@ -752,9 +747,8 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Choices": {
-                            "HCTUptakePostDebut0": 1
-                        },
+                        "Choice_Names": ["HCTUptakePostDebut0"],
+                        "Choice_Probabilities": [1],
                         "Disqualifying_Properties": [],
                         "NOTE": "No Abort_States so we can churn from deep in the cascade",
                         "New_Property_Value": "CascadeState:HCTUptakePostDebut",
@@ -799,7 +793,6 @@
                         },
                         "Interpolation_Order": 0,
                         "Female_Multiplier": 1,
-                        "Event_Or_Config": "Event",
                         "Positive_Diagnosis_Event": "OnART1",
                         "Negative_Diagnosis_Event": "HCTUptakePostDebut3",
                         "Disqualifying_Properties": [
@@ -839,7 +832,6 @@
                         },
                         "Interpolation_Order": 0,
                         "Female_Multiplier": 1,
-                        "Event_Or_Config": "Event",
                         "Positive_Diagnosis_Event": "OnART1",
                         "Negative_Diagnosis_Event": "LostForever0",
                         "Disqualifying_Properties": [
@@ -872,8 +864,8 @@
                         "class": "HIVMuxer",
                         "Muxer_Name": "HCTTestingLoop",
                         "Max_Entries": 1,
-                        "Delay_Distribution": "EXPONENTIAL_DURATION",
-                        "Delay_Period": 730,
+                        "Delay_Period_Distribution": "EXPONENTIAL_DISTRIBUTION",
+                        "Delay_Period_Exponential": 730,
                         "Broadcast_Event": "HCTTestingLoop1",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
@@ -908,8 +900,8 @@
                         "class": "HIVMuxer",
                         "Muxer_Name": "HCTTestingLoop",
                         "Max_Entries": 1,
-                        "Delay_Distribution": "EXPONENTIAL_DURATION",
-                        "Delay_Period": 365,
+                        "Delay_Period_Distribution": "EXPONENTIAL_DISTRIBUTION",
+                        "Delay_Period_Exponential": 365,
                         "Broadcast_Event": "HCTTestingLoop1",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
@@ -984,7 +976,6 @@
                         },
                         "Interpolation_Order": 0,
                         "Female_Multiplier": 1,
-                        "Event_Or_Config": "Event",
                         "Positive_Diagnosis_Event": "OnART1",
                         "Negative_Diagnosis_Event": "ARTStaging1",
                         "Disqualifying_Properties": [
@@ -1018,10 +1009,8 @@
                     "Actual_IndividualIntervention_Config": {
                         "class": "HIVRandomChoice",
                         "Choices__KP_TestingDropout": "<-- MARKER",
-                        "Choices": {
-                            "HCTUptakePostDebut1": 0.05,
-                            "HCTTestingLoop9": 0.95
-                        },
+                        "Choice_Names": ["HCTTestingLoop9","HCTUptakePostDebut1"],
+                        "Choice_Probabilities": [0.95,0.05],
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
                             "CascadeState:OnART",
@@ -1048,7 +1037,7 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": ["HIVSymptomatic"],
+                    "Trigger_Condition_List": ["NewlySymptomatic"],
                     "Actual_IndividualIntervention_Config__KP_Sympt_Link": "<-- MARKER",
                     "Actual_IndividualIntervention_Config": {
                         "class": "HIVSigmoidByYearAndSexDiagnostic",
@@ -1058,7 +1047,6 @@
                         "Ramp_MidYear": 2000,
                         "Ramp_Rate": 0.5,
                         "Female_Multiplier": 1,
-                        "Event_Or_Config": "Event",
                         "Positive_Diagnosis_Event": "ARTStaging0",
                         "Negative_Diagnosis_Event": "ARTStaging8",
                         "Disqualifying_Properties": [
@@ -1102,7 +1090,6 @@
                         },
                         "Interpolation_Order": 0,
                         "Female_Multiplier": 1,
-                        "Event_Or_Config": "Event",
                         "Positive_Diagnosis_Event": "ARTStaging2",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
@@ -1143,7 +1130,6 @@
                         "Ramp_Max": 0.915,
                         "Ramp_MidYear": 2006,
                         "Ramp_Rate": 0.7136,
-                        "Event_Or_Config": "Event",
                         "Positive_Diagnosis_Event": "Needs_PMTCT_Diagnostic_Test",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
@@ -1203,7 +1189,6 @@
                     "Trigger_Condition_List": ["HIV_Positive_at_ANC"],
                     "Actual_IndividualIntervention_Config": {
                         "class": "HIVPiecewiseByYearAndSexDiagnostic",
-                        "Event_Or_Config": "Event",
                         "Interpolation_Order": 1,
                         "New_Property_Value": "CascadeState:TestingOnANC",
                         "Positive_Diagnosis_Event": "ARTStaging1",
@@ -1280,7 +1265,6 @@
                         "Ramp_Max": 1,
                         "Ramp_MidYear": 2008.4,
                         "Ramp_Rate": -1,
-                        "Event_Or_Config": "Event",
                         "Positive_Diagnosis_Event": "Needs_sdNVP_PMTCT",
                         "Negative_Diagnosis_Event": "Needs_Combination_PMTCT",
                         "Disqualifying_Properties": [
@@ -1348,7 +1332,6 @@
                             ]
                         },
                         "Interpolation_Order": 0,
-                        "Event_Or_Config": "Event",
                         "Negative_Diagnosis_Event": "Needs_Option_A",
                         "Positive_Diagnosis_Event": "Needs_Option_B",
                         "Disqualifying_Properties": [
@@ -1440,7 +1423,6 @@
                         },
                         "Interpolation_Order": 1,
                         "Female_Multiplier": 1,
-                        "Event_Or_Config": "Event",
                         "Positive_Diagnosis_Event": "ARTStaging0",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
@@ -1481,7 +1463,6 @@
                         "Ramp_MidYear": 2006.8336631523,
                         "Ramp_Rate": 1,
                         "Female_Multiplier": 1,
-                        "Event_Or_Config": "Event",
                         "Positive_Diagnosis_Event": "OnPreART0",
                         "Negative_Diagnosis_Event": "HCTUptakePostDebut9",
                         "Disqualifying_Properties": [
@@ -1514,8 +1495,8 @@
                         "class": "HIVMuxer",
                         "Muxer_Name": "PreART",
                         "Max_Entries": 1,
-                        "Delay_Distribution": "FIXED_DURATION",
-                        "Delay_Period": 182,
+                        "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                        "Delay_Period_Constant": 182,
                         "Broadcast_Event": "OnPreART1",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
@@ -1543,10 +1524,8 @@
                     "Actual_IndividualIntervention_Config": {
                         "class": "HIVRandomChoice",
                         "Choices__KP_PreART_Loss": "<-- MARKER",
-                        "Choices": {
-                            "HCTUptakePostDebut9": 0.25,
-                            "OnPreART2": 0.75
-                        },
+                        "Choice_Names": ["HCTUptakePostDebut9","OnPreART2"],
+                        "Choice_Probabilities": [0.25,0.75],
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
                             "CascadeState:OnART",
@@ -1636,7 +1615,6 @@
                                 1
                             ]
                         },
-                        "Event_Or_Config": "Event",
                         "Positive_Diagnosis_Event": "OnART0",
                         "Negative_Diagnosis_Event": "OnPreART3",
                         "Disqualifying_Properties": [
@@ -1726,7 +1704,6 @@
                                2000
                             ]
                          },
-                        "Event_Or_Config": "Event",
                         "Positive_Diagnosis_Event": "OnART0",
                         "Negative_Diagnosis_Event": "OnPreART0",
                         "Disqualifying_Properties": [
@@ -1764,7 +1741,6 @@
                         "Ramp_MidYear": 2004,
                         "Ramp_Rate": 1,
                         "Female_Multiplier": 1,
-                        "Event_Or_Config": "Event",
                         "Positive_Diagnosis_Event": "OnART0",
                         "Negative_Diagnosis_Event": "HCTUptakePostDebut3",
                         "Disqualifying_Properties": [
@@ -1822,10 +1798,8 @@
                     "Actual_IndividualIntervention_Config": {
                         "class": "HIVRandomChoice",
                         "Choices__KP_PreStagingLoss": "<-- MARKER",
-                        "Choices": {
-                            "HCTUptakePostDebut3": 0.10,
-                            "ARTStaging2": 0.9
-                        },
+                        "Choice_Names": ["ARTStaging2","HCTUptakePostDebut3"],
+                        "Choice_Probabilities": [0.9,0.1],
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
                             "CascadeState:OnART",
@@ -1855,8 +1829,8 @@
                         "class": "HIVMuxer",
                         "Muxer_Name": "ARTStaging",
                         "Max_Entries": 1,
-                        "Delay_Distribution": "FIXED_DURATION",
-                        "Delay_Period": 1,
+                        "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                        "Delay_Period_Constant": 1,
                         "Broadcast_Event": "ARTStaging3",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
@@ -1978,7 +1952,6 @@
                                 1
                             ]
                         },
-                        "Event_Or_Config": "Event",
                         "Positive_Diagnosis_Event": "LinkingToART0",
                         "Negative_Diagnosis_Event": "ARTStaging5",
                         "Disqualifying_Properties": [
@@ -2008,10 +1981,8 @@
                     "Trigger_Condition_List": ["ARTStaging5"],
                     "Actual_IndividualIntervention_Config": {
                         "class": "HIVRandomChoice",
-                        "Choices": {
-                            "HCTUptakePostDebut9": 0,
-                            "ARTStaging6": 1
-                        },
+                        "Choice_Names": ["ARTStaging6","HCTUptakePostDebut9"],
+                        "Choice_Probabilities": [1,0],
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
                             "CascadeState:OnART",
@@ -2074,7 +2045,6 @@
                                2000
                             ]
                          },
-                        "Event_Or_Config": "Event",
                         "Positive_Diagnosis_Event": "LinkingToART0",
                         "Negative_Diagnosis_Event": "LinkingToPreART0",
                         "Disqualifying_Properties": [
@@ -2102,10 +2072,8 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Choices": {
-                            "OnART1": 0.1,
-                            "ARTInitiationDelayed": 0.9
-                        },
+                        "Choice_Names": ["ARTInitiationDelayed","OnART1"],
+                        "Choice_Probabilities": [0.9,0.1],
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever"
                         ],
@@ -2135,9 +2103,9 @@
                         "class": "HIVMuxer",
                         "Muxer_Name": "OnART",
                         "Max_Entries": 1,
-                        "Delay_Distribution": "WEIBULL_DURATION",
-                        "Delay_Period_Scale": 63.381,
-                        "Delay_Period_Shape": 0.711,
+                        "Delay_Period_Distribution": "WEIBULL_DISTRIBUTION",
+                        "Delay_Period_Kappa": 0.711,
+                        "Delay_Period_Lambda": 63.381,
                         "Delay_Period_Max": 120,
                         "Delay_Period_Min": 1,
                         "Broadcast_Event": "OnART1",
@@ -2188,9 +2156,9 @@
                         "class": "HIVMuxer",
                         "Muxer_Name": "ARTDropoutDelay",
                         "Broadcast_Event": "OnART3",
-                        "Delay_Distribution": "EXPONENTIAL_DURATION",
+                        "Delay_Period_Distribution": "EXPONENTIAL_DISTRIBUTION",
                         ".Delay_Period": 2051,
-                        "Delay_Period": 7300,
+                        "Delay_Period_Exponential": 7300,
                         "Max_Entries": 1,
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever"
@@ -2234,10 +2202,8 @@
                     "Trigger_Condition_List": ["OnART3"],
                     "Actual_IndividualIntervention_Config": {
                         "class": "HIVRandomChoice",
-                        "Choices": {
-                            "LostForever9": 0.25,
-                            "HCTUptakePostDebut8": 0.75
-                        },
+                        "Choice_Names": ["HCTUptakePostDebut8","LostForever9"],
+                        "Choice_Probabilities": [0.75,0.25],
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever"
                         ],
@@ -2289,11 +2255,9 @@
             "Event_Coordinator_Config": {
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
-                   "Choices": {
-                      "WillNotReceiveTraditionalMaleCircumcision": 0.897,
-                      "WillReceiveTraditionalMaleCircumcision": 0.103
-                   },
-                   "class": "HIVRandomChoice"
+                    "Choice_Names": ["WillNotReceiveTraditionalMaleCircumcision","WillReceiveTraditionalMaleCircumcision"],
+                    "Choice_Probabilities": [0.897,0.103],
+                    "class": "HIVRandomChoice"
                 },
                 "class": "StandardInterventionDistributionEventCoordinator"
             }
@@ -2311,11 +2275,9 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                    "Actual_IndividualIntervention_Config": {
-                      "Choices": {
-                         "WillNotReceiveTraditionalMaleCircumcision": 0.897,
-                         "WillReceiveTraditionalMaleCircumcision": 0.103
-                      },
-                      "class": "HIVRandomChoice"
+                    "Choice_Names": ["WillNotReceiveTraditionalMaleCircumcision","WillReceiveTraditionalMaleCircumcision"],
+                    "Choice_Probabilities": [0.897,0.103],
+                    "class": "HIVRandomChoice"
                    },
                    "Trigger_Condition_List": [
                       "Births"
