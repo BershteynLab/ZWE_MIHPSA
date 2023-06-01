@@ -17,47 +17,545 @@ library(devtools)
 devtools::install_github("BershteynLab/EMODAnalyzeR")
 ```
 
+```{r Functions}
+
+# Confidence interval functions
+lower_ci <- function(mean, se, n, conf_level = 0.95){
+  lower_ci <- mean - qt(1 - ((1 - conf_level) / 2), n - 1) * se
+}
+upper_ci <- function(mean, se, n, conf_level = 0.95){
+  upper_ci <- mean + qt(1 - ((1 - conf_level) / 2), n - 1) * se
+}
+```
+
+
 # Postprocessing Zimbabwe Model
 
-```{r read in simulation data}
+The purpose of this notebook is to perform postprocessing and analysis of the initial Phase 2 scenarios for the Zimbabwe MIHPSA collaboration.
 
-#input_path = "/gpfs/scratch/citrod01/experiments/Baseline-campaign_StatusQuo-baseline___2022_05_02_20_46_56_850266"
-#input_path = "/gpfs/scratch/citrod01/experiments/Baseline-campaign_StatusQuo-baseline___2022_05_03_08_50_32_345923"
-input_path = "/gpfs/scratch/citrod01/experiments/Baseline-campaign_StatusQuo-baseline___2022_05_03_17_58_19_378550"
+There are two sets of outputs to analyze:
 
-sim.results <- EMODAnalyzeR::read.simulation.results.bigpurple(
-  experiment_path = input_path,
-  scenario_name = 'baseline',
-  summarize_columns = c("Newly.Infected", "Newly.Tested.Positive", "Newly.Tested.Negative",
-                        "Population","Infected", "On_ART","Died", "Died_from_HIV",
-                        "Tested.Past.Year.or.On_ART", "Tested.Ever","Diagnosed"),
-  stratify_columns = c("Year", "Gender", "Age"),
+* "Essential Scenario" - baseline, with no PrEP
+* Essential Scenario + PrEP - adding 45k PrEP initiations per year after 2020 or so.
+
+
+# Read in Simulation Data
+
+## Read in Essential Scenario Simulation
+
+No PrEP
+
+```{r Read in Essential Scenario Simulation Runs}
+
+#input_path = "/gpfs/scratch/citrod01/experiments/Zimbabwe/Baseline-campaign_ZWE_MIHPSA_2023_noprep-noprep___2023_05_11_19_02_53_581636"
+
+folder.list = Sys.glob(paste0(input_path, "/Simulation_*"))
+summarize_columns = c("Population","Infected", "On_ART",
+                        "Died", "Died_from_HIV",
+                        "Newly.Infected","Diagnosed", 
+                        "Infected.CD4.Under.200..Not.On.ART.", "Infected.CD4.200.To.349..Not.On.ART.",
+                        "Infected.CD4.350.To.499..Not.On.ART.", "Infected.CD4.500.Plus..Not.On.ART.",
+                        "ReceivePrEP_HIGH")
+stratify_columns = c("Year", "Gender", "Age", "IP_Key.Risk", "HIV_Stage")
+
+min_age_inclusive = 0 
+max_age_inclusive = 99
+
+data.list = list()
+for (i in 1:length(folder.list)){
+  f <- paste(folder.list[i], "output/ReportHIVByAgeAndGender.csv", sep="/")
+  raw.data <- fread(f, check.names = TRUE)
+  data.list[[i]] <- EMODAnalyzeR::SummarizeEachSimByAgeAndGender(raw.data, summarize_columns, stratify_columns, min_age_inclusive, max_age_inclusive )
+  data.list[[i]]$sim.id <- i
+  print(paste0("Done Reading File ", i))
+}
+
+data.list = bind_rows(data.list)
+
+```
+
+## Read in PrEP Scenario Simulation Runs
+```{r Read in PrEP Scenario Simulation Runs}
+
+res_path = "/gpfs/data/bershteynlab/EMOD/citrod01/ZWE_calib_20220627/ZWE_phase2/Baseline-campaign_ZWE_MIHPSA_2023-prep/ReportHIVByAgeAndGender"
+
+sim.prep <- EMODAnalyzeR::read.simulation.results(
+  results_path  = res_path,
+  scenario_name = 'prep',
+  summarize_columns = c("Population","Infected", "On_ART",
+                        "Died", "Died_from_HIV",
+                        "Newly.Infected","Diagnosed", 
+                        "Infected.CD4.Under.200..Not.On.ART.", "Infected.CD4.200.To.349..Not.On.ART.",
+                        "Infected.CD4.350.To.499..Not.On.ART.", "Infected.CD4.500.Plus..Not.On.ART.",
+                        "ReceivePrEP_HIGH"),
+  stratify_columns = c("Year", "Gender", "Age", "IP_Key.Risk", "HIV_Stage"),
   min_age_inclusive = 0,
   max_age_inclusive = 99
-) %>% 
-  ungroup()
+)
+
 
 ```
 
 
+```{r Read in Prep Scenario simulation runs}
 
-Need to scale up everything, for rescaling extensible variables
-```{r Population rescaling factor}
-CENSUS_YEAR = 2015
-ZWE_CENSUS_POP = 3855002+4098001 # These come from the population census data in 
+input_path = "/gpfs/scratch/citrod01/experiments/Zimbabwe/Baseline-campaign_ZWE_MIHPSA_2023-prep___2023_05_11_19_03_52_375609"
 
-sim.results.pop.scaling <- sim.results %>% 
+folder.list = Sys.glob(paste0(input_path, "/Simulation_*"))
+summarize_columns = c("Population","Infected", "On_ART",
+                        "Died", "Died_from_HIV",
+                        "Newly.Infected","Diagnosed", 
+                        "Infected.CD4.Under.200..Not.On.ART.", "Infected.CD4.200.To.349..Not.On.ART.",
+                        "Infected.CD4.350.To.499..Not.On.ART.", "Infected.CD4.500.Plus..Not.On.ART.",
+                        "ReceivePrEP_HIGH")
+stratify_columns = c("Year", "Gender", "Age", "IP_Key.Risk", "HIV_Stage")
+
+min_age_inclusive = 0 
+max_age_inclusive = 99
+
+data.list = list()
+for (i in 1:length(folder.list)){
+  f <- paste(folder.list[i], "output/ReportHIVByAgeAndGender.csv", sep="/")
+  raw.data <- fread(f, check.names = TRUE)
+  data.list[[i]] <- EMODAnalyzeR::SummarizeEachSimByAgeAndGender(raw.data, summarize_columns, stratify_columns, min_age_inclusive, max_age_inclusive )
+  data.list[[i]]$sim.id <- i
+  print(paste0("Done Reading File ", i))
+}
+
+sim.results.prep <-  bind_rows(data.list)
+sim.results.prep$scenario_name = "prep"
+
+sim.results.prep %>% head
+```
+ 
+
+```{r Scale by Population Scaling Factor}
+CENSUS_YEAR = 2010
+ZWE_CENSUS_POP = 12696893 # WPP data
+
+sim.results.pop.scaling <- sim.prep %>% 
       filter(Year == CENSUS_YEAR) %>%
       group_by(sim.id) %>%
       summarize(total.pop = sum(Population), .groups = 'keep') %>% 
       mutate(pop.scaling.factor = ZWE_CENSUS_POP/total.pop)
 
-sim.results <- sim.results %>% 
+sim.results.prep <- sim.prep %>% 
   inner_join(
     sim.results.pop.scaling,
     by = c("sim.id")
   )
+
 ```
+
+# Compare results to calibration targets
+
+## Prevalence plots
+
+```{r Prevalence calibration targets}
+zwe.phia = data.frame(
+  Year = c(2016, 2016),
+  Gender = c("Male", "Female"),
+  mean.prev= c(12, 16),
+  lower = c(11.1, 15.3),
+  upper = c(12.8,16.8)
+)
+zwe.dhs = data.frame(
+  Year = c(2006, 2010, 2015, 2006, 2010, 2015),
+  Gender = c("Male", "Male", "Male", "Female", "Female", "Female"),
+  mean.prev = c(14.5, 12.3, 10.5, 21.1, 17.7, 16.7),
+  lower = c(13.2, 11.3, 9.5, 19.6, 16.6, 15.5),
+  upper = c(15.9, 13.3, 11.5, 22.6, 18.8, 17.8)
+)
+ 
+prev.target <- rbind(zwe.phia, zwe.dhs) %>% arrange(Year, Gender)
+```
+
+```{r Prevalence}
+p <- EMODAnalyzeR::emodplot.prevalence(
+  sim.results.prep %>% filter(Age >= 15, Age < 50),
+  date.start = 1990,
+  date.end = 2020
+)
+
+p +
+  geom_errorbar(data = prev.target,
+             mapping = aes(x = Year, ymin = lower/100, ymax = upper/100)) + 
+  facet_wrap(~ Gender, ncol=2)
+```
+
+```{r Prevalence by Age}
+
+# Read in the calibration targets data
+prev.target <- read_csv("/gpfs/data/bershteynlab/EMOD/citrod01/ZWE_calib_20220627/Analysis/zwe_age_prevalence_data.csv")
+
+# Convenient relabels of age bins
+prev.target$Age = factor(prev.target$AgeBin, 
+                         levels = c("[0:5)", "[5:10)", "[10:15)", "[15:20)", "[20:25)", "[25:30)", "[30:35)", "[35:40)", "[40:45)", "[45:50)", "[50:55)", "[55:60)", "[60:65)"),
+                         labels = c(1:13)
+                         )
+
+prev.target$Year.label = factor(prev.target$Year, 
+                          levels = c(2006.0, 2011.0, 2015.0, 2016),
+                          labels = c( "2006 (DHS)","2011 (DHS)", "2015 (DHS)", "2016 (PHIA)"))
+
+#head(prev.target)
+
+```
+
+```{r}
+age_bins = c(0,5,10,15,20,25,30,35,40,45,50,55,60,65)
+age_labels = c()
+for (i in 1:(length(age_bins) - 1)){
+  age_labels <- append(age_labels, paste0("[",age_bins[i],":",age_bins[i + 1],")"))
+}
+
+subset_years = c(2006.0, 2011.0, 2015.0, 2016)
+
+data <- sim.results.prep %>% 
+  select(Year, Age, Gender, sim.id, Infected, Population) %>% 
+  filter(Year %in% subset_years) %>% 
+  mutate(AgeBin = cut(Age, breaks = age_bins, right = FALSE)) %>% 
+  group_by(Year, AgeBin, Gender, sim.id) %>% 
+  summarize(Infected = sum(Infected), Population = sum(Population)) %>% ungroup() %>% 
+  mutate(Prevalence = Infected/Population)
+
+data.mean <-  data %>% 
+  group_by(Year, AgeBin, Gender) %>% 
+  summarize(Prevalence = mean(Prevalence))  %>% 
+  ungroup() %>% 
+  mutate(Gender = case_when(Gender==0 ~ "Male", Gender==1 ~ "Female"))
+data.mean$AgeBin_index = factor(data.mean$AgeBin,labels = 1:length(age_labels))
+
+ggplot() + 
+  geom_point(data.mean, mapping = aes(x = AgeBin_index, y = Prevalence), color = 'blue') + 
+  geom_point(data = prev.target, 
+             mapping = aes(x = Age, y = Prevalence)) + 
+  geom_errorbar(data = prev.target,
+                mapping = aes(x = Age, ymin = lower, ymax = upper)) +
+  facet_grid(cols = vars(Gender), rows = vars(Year)) 
+
+```
+
+## ART Plots
+
+```{r}
+xl.path = "/gpfs/data/bershteynlab/EMOD/citrod01/ZWE_calib_20220627/Data/calibration_ingest_form_ZWE_2022-07-15.xlsm"
+obs.onart.sheet <- EMODAnalyzeR::read.ingest.sheet(xl.path, sheet = 'Obs-OnART')
+```
+
+
+```{r}
+data <- sim.results.prep %>% 
+    group_by(Year, Gender, sim.id, scenario_name) %>% 
+    summarize(On_ART = sum(On_ART*pop.scaling.factor), 
+              Population = sum(Population*pop.scaling.factor), .groups = 'keep') %>% 
+  ungroup()
+
+p <- EMODAnalyzeR::emodplot.by_gender(data, 1990, 2040, 'On_ART', title="ART") 
+
+p + 
+  geom_point(data = obs.onart.sheet %>% filter(Province == "All", AgeBin == '[15:100)') %>% 
+    group_by(Year, Gender) %>% 
+    summarize(OnART = sum(OnART), .groups = 'keep'),
+    mapping= aes(x = Year, y = OnART))
+```
+
+
+# Extract Results for MIHPSA
+
+## HIV Incidence
+
+### PrEP
+
+```{r Incidence}
+# Males 15-49
+p1 <- sim.results.prep %>% 
+  filter(Gender == 0, Age >=15, Age < 50) %>% 
+  EMODAnalyzeR::calculate.incidence() %>% 
+  dplyr::select(Year, Gender, sim.id, incidence) %>% 
+  group_by(Year) %>% 
+  summarize(HIVIncid_M1549_M = mean(incidence), 
+            HIVIncid_M1549_se = mean_se(incidence)$y, .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    HIVIncid_M1549_95LL = lower_ci(HIVIncid_M1549_M, HIVIncid_M1549_se, 99, conf_level = .95),
+    HIVIncid_M1549_95UL = upper_ci(HIVIncid_M1549_M, HIVIncid_M1549_se, 99, conf_level = .95)
+    )
+
+# Females 15-49
+p2 <- sim.results.prep %>% 
+  filter(Gender == 1, Age >=15, Age < 50) %>% 
+  EMODAnalyzeR::calculate.incidence() %>% 
+  dplyr::select(Year, Gender, sim.id, incidence) %>% 
+  group_by(Year) %>% 
+  summarize(HIVIncid_F1549_M = mean(incidence), 
+            HIVIncid_F1549_se = mean_se(incidence)$y, .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    HIVIncid_F1549_95LL = lower_ci(HIVIncid_F1549_M, HIVIncid_F1549_se, 99, conf_level = .95),
+    HIVIncid_F1549_95UL = upper_ci(HIVIncid_F1549_M, HIVIncid_F1549_se, 99, conf_level = .95)
+    )
+
+# Adults 15-49
+p3 <- sim.results.prep %>% 
+  filter(Age >=15, Age < 50) %>% 
+  EMODAnalyzeR::calculate.incidence() %>% 
+  dplyr::select(Year, sim.id, incidence) %>% 
+  group_by(Year) %>% 
+  summarize(HIVIncid_A1549_M = mean(incidence), 
+            HIVIncid_A1549_se = mean_se(incidence)$y, .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    HIVIncid_A1549_95LL = lower_ci(HIVIncid_A1549_M, HIVIncid_A1549_se, 99, conf_level = .95),
+    HIVIncid_A1549_95UL = upper_ci(HIVIncid_A1549_M, HIVIncid_A1549_se, 99, conf_level = .95)
+    )
+
+# Females 15-24
+p4 <- sim.results.prep %>% 
+  filter(Gender == 1, Age >=15, Age < 25) %>% 
+  EMODAnalyzeR::calculate.incidence() %>% 
+  dplyr::select(Year, Gender, sim.id, incidence) %>% 
+  group_by(Year) %>% 
+  summarize(HIVIncid_F1524_M = mean(incidence), 
+            HIVIncid_F1524_se = mean_se(incidence)$y, .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    HIVIncid_F1524_95LL = lower_ci(HIVIncid_F1524_M, HIVIncid_F1524_se, 99, conf_level = .95),
+    HIVIncid_F1524_95UL = upper_ci(HIVIncid_F1524_M, HIVIncid_F1524_se, 99, conf_level = .95)
+    )
+
+# FSW ages >15
+p5 <- sim.results.prep %>% 
+  filter(Gender == 1, Age >= 15, IP_Key.Risk == "HIGH") %>% 
+  EMODAnalyzeR::calculate.incidence() %>% 
+  dplyr::select(Year, Gender, sim.id, incidence) %>% 
+  group_by(Year) %>% 
+  summarize(HIVIncid_FSW1599_M = mean(incidence), 
+            HIVIncid_FSW1599_se = mean_se(incidence)$y, .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    HIVIncid_FSW1599_95LL = lower_ci(HIVIncid_FSW1599_M, HIVIncid_FSW1599_se, 99, conf_level = .95),
+    HIVIncid_FSW1599_95UL = upper_ci(HIVIncid_FSW1599_M, HIVIncid_FSW1599_se, 99, conf_level = .95)
+    )
+
+inc.prep.summary <- merge(p1, p2, by = 'Year') %>% 
+  merge(p3, by = 'Year') %>% 
+  merge(p4, by = 'Year') %>%
+  merge(p5, by = 'Year') %>%
+  mutate(Year = floor(Year)) 
+
+# inc.prep.summary %>% 
+#   pivot_longer(-Year) %>% 
+#   pivot_wider(names_from = Year, values_from = value)
+
+
+ggplot(data = inc.prep.summary) + 
+  geom_line(mapping = aes(x = Year, y = HIVIncid_M1549_M), color = 'blue') + 
+  geom_line(mapping = aes(x = Year, y = HIVIncid_F1549_M), color = 'green') + 
+  geom_line(mapping = aes(x = Year, y = HIVIncid_F1524_M), color = 'black') + 
+  geom_line(mapping = aes(x = Year, y = HIVIncid_FSW1599_M), color = 'red')
+
+```
+
+
+### Essential
+
+## Oral PrEP for AGYW
+
+### PrEP
+
+```{r}
+# Number of AGYW who used oral TDF in the last year
+p1 <- sim.results.prep %>% 
+  filter(Gender == 1, Age >=15, Age < 25) %>% 
+  dplyr::select(Year, sim.id, ReceivePrEP_HIGH) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(NTDFPrEP_F1524_M = sum(ReceivePrEP_HIGH), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NTDFPrEP_F1524_M = mean(NTDFPrEP_F1524_M), .groups = 'keep') %>% 
+  ungroup()
+
+# Number of FSWs who used oral TDF in the last year
+p2 <- sim.results.prep %>% 
+  filter(Gender == 1, Age >=15, IP_Key.Risk == 'HIGH') %>% 
+  dplyr::select(Year, sim.id, ReceivePrEP_HIGH) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(NTDFPrEP_FSW1599_M = sum(ReceivePrEP_HIGH), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NTDFPrEP_FSW1599_M = mean(NTDFPrEP_FSW1599_M), .groups = 'keep') %>% 
+  ungroup()
+
+# Number AGYW at elevated risk
+p3 <- sim.results.prep %>% 
+  filter(Gender == 1, Age >= 15, Age <25, IP_Key.Risk == 'HIGH') %>% 
+  dplyr::select(Year, sim.id, Population) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(NAlive_ElevRiskF1524_M = sum(NAlive_ElevRiskF1524_M), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NAlive_ElevRiskF1524_M = mean(NAlive_ElevRiskF1524_M), .groups = 'keep') %>% 
+  ungroup()
+
+# % AGYW at high risk on prep
+p4 <- sim.results.prep %>% 
+  filter(Gender == 1, Age >= 15, Age <25, IP_Key.Risk == 'HIGH') %>% 
+  dplyr::select(Year, sim.id, Population, ReceivePrEP_HIGH) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(onprep = sum(ReceivePrEP_HIGH), 
+            pop = sum(Population), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(P_TDFPrEP_ElevRiskF1524_M = mean(onprep/pop), .groups = 'keep') %>% 
+  ungroup()
+```
+
+### Essential
+
+## YLDs - current categories
+
+### PrEP
+```{r}
+# check: how do we sum up the total number of infected people, or infected people on art
+
+# sim.results.prep %>% 
+#   filter(Year == 2010) %>% 
+#   dplyr::select(Year, Population, Infected, On_ART, 
+#                 Infected.CD4.Under.200..Not.On.ART., Infected.CD4.200.To.349..Not.On.ART.,
+#                 Infected.CD4.350.To.499..Not.On.ART., Infected.CD4.500.Plus..Not.On.ART.
+#                 ) %>% 
+#   group_by(Year) %>% 
+#   summarize(Population = sum(Population),
+#             Infected = sum(Infected),
+#             On_ART = sum(On_ART),
+#             Infected.CD4.Under.200..Not.On.ART. = sum(Infected.CD4.Under.200..Not.On.ART.),
+#             Infected.CD4.200.To.349..Not.On.ART. = sum(Infected.CD4.200.To.349..Not.On.ART.),
+#             Infected.CD4.350.To.499..Not.On.ART. = sum(Infected.CD4.350.To.499..Not.On.ART.),
+#             Infected.CD4.500.Plus..Not.On.ART. = sum(Infected.CD4.500.Plus..Not.On.ART.),
+#             .groups = 'keep') %>% 
+#   pivot_longer( cols = c("Population", "Infected", "On_ART",
+#                          "Infected.CD4.Under.200..Not.On.ART.",
+#                          "Infected.CD4.200.To.349..Not.On.ART.",
+#                          "Infected.CD4.350.To.499..Not.On.ART.",
+#                          "Infected.CD4.500.Plus..Not.On.ART."))
+```
+
+
+```{r}
+# Number of 15+ PLHIV not on treatment, with CD4 >= 500
+# NHIV_A1599_NoART_CD4500pl_M
+p1 <- sim.results.pop.scaling %>% 
+  filter(Age >= 15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(Infected.CD4.500.Plus..Not.On.ART. = sum(Infected.CD4.500.Plus..Not.On.ART.), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NHIV_A1599_NoART_CD4500pl_M = mean(Infected.CD4.500.Plus..Not.On.ART.))
+
+# Number of 15+ PLHIV not on treatment, with 350 <= CD4 < 500
+#NHIV_A1599_NoART_CD4350499_M
+
+p2 <- sim.results.pop.scaling %>% 
+  filter(Age >= 15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(Infected.CD4.350.To.499..Not.On.ART. = sum(Infected.CD4.350.To.499..Not.On.ART.), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NHIV_A1599_NoART_CD4350499_M = mean(Infected.CD4.350.To.499..Not.On.ART.))
+
+
+# Number of 15+ PLHIV not on treatment, with 200 <= CD4 < 350
+# NHIV_A1599_NoART_CD4200349_M
+p3  <- sim.results.pop.scaling %>% 
+  filter(Age >= 15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(Infected.CD4.200.To.349..Not.On.ART. = sum(Infected.CD4.200.To.349..Not.On.ART.), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NHIV_A1599_NoART_CD4200349_M = mean(Infected.CD4.200.To.349..Not.On.ART.))
+
+# Number of 15+ PLHIV not on treatment, with 0 <= CD4 < 200
+# NHIV_A1599_NoART_CD450199_M
+p4  <- sim.results.pop.scaling %>% 
+  filter(Age >= 15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(Infected.CD4.Under.200..Not.On.ART. = sum(Infected.CD4.Under.200..Not.On.ART.), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NHIV_A1599_NoART_CD450199_M = mean(Infected.CD4.Under.200..Not.On.ART.))
+```
+
+```{r}
+# Number of 0-14yo PLHIV not on treatment, with CD4 >= 500
+# NHIV_A014_NoART_CD4500pl_M
+p5 <- sim.results.pop.scaling %>% 
+  filter(Age < 15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(Infected.CD4.500.Plus..Not.On.ART. = sum(Infected.CD4.500.Plus..Not.On.ART.), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NHIV_A014_NoART_CD4500pl_M = mean(Infected.CD4.500.Plus..Not.On.ART.))
+
+# Number of 0-14yo PLHIV not on treatment, with 350 <= CD4 < 500
+# NHIV_A014_NoART_CD4350499_M
+p6 <- sim.results.pop.scaling %>% 
+  filter(Age < 15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(Infected.CD4.200.To.349..Not.On.ART. = sum(Infected.CD4.200.To.349..Not.On.ART.), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NHIV_A014_NoART_CD4350499_M = mean(Infected.CD4.200.To.349..Not.On.ART.))
+
+# Number of 0-14yo PLHIV not on treatment, with 200 <= CD4 < 350
+# NHIV_A014_NoART_CD4200349_M
+p7 <- sim.results.pop.scaling %>% 
+  filter(Age < 15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(Infected.CD4.350.To.499..Not.On.ART. = sum(Infected.CD4.350.To.499..Not.On.ART.), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NHIV_A014_NoART_CD4200349_M = mean(Infected.CD4.350.To.499..Not.On.ART.))
+
+# Number of 0-14yo PLHIV not on treatment, with 0 <= CD4 < 200
+# NHIV_A014_NoART_CD450199_M
+p8 <- sim.results.pop.scaling %>% 
+  filter(Age < 15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(Infected.CD4.Under.200..Not.On.ART. = sum(Infected.CD4.Under.200..Not.On.ART.), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NHIV_A014_NoART_CD450199_M = mean(Infected.CD4.Under.200..Not.On.ART.))
+```
+
+
+### Essential
+
+## YLDs - new categories
+
+### PrEP
+
+```{r}
+# Asymptomatic, Undiagnosed
+
+# Asymptomatic, Diagnosed, not on ART
+
+# Asymptomatic, Diagnosed, on ART
+
+# Symptomatic, not AIDS
+
+# Symptomatic, AIDS
+```
+
+
+## YLLs
+
+For all individuals who died from HIV at age X, find the correct life expectancy for that individual
+Then sum up the difference between the age of death and the life expectancy
+
+```{r Load Life Expectancy Tables}
+
+xl.path <- "/gpfs/data/bershteynlab/EMOD/citrod01/ZWE_calib_20220627/Analysis/YLL_Tables.xlsx"
+
+le.table.disc <- readxl::read_excel(xl.path, sheet = "Discounted", range = "A1:C92", col_names = TRUE)
+
+le.table.undisc <- readxl::read_excel(xl.path, sheet = "Undiscounted", range = "A1:C93", col_names = TRUE)
+```
+
+### PrEP
+
+
+# Write out results to form
+
+# Postprocessing
 
 Extract Prevalence
 ```{r Prevalence }
@@ -134,6 +632,8 @@ prev.summary %>%
   pivot_longer(-Year) %>% 
   pivot_wider(names_from = Year, values_from = value)
 ```
+
+# Plots
 
 Prevalence target data
 ```{r Read prevalence target data}
