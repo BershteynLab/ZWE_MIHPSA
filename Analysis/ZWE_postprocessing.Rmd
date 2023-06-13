@@ -1,5 +1,5 @@
 ---
-title: "ZWE_calib_check"
+title: "ZWE_MIHPSA_Phase_2"
 output: html_document
 ---
 
@@ -245,6 +245,7 @@ p1 <- sim.results.prep %>%
   filter(Gender == 0, Age >=15, Age < 50) %>% 
   EMODAnalyzeR::calculate.incidence() %>% 
   dplyr::select(Year, Gender, sim.id, incidence) %>% 
+  mutate(incidence = 100 * incidence) %>% 
   group_by(Year) %>% 
   summarize(HIVIncid_M1549_M = mean(incidence), 
             HIVIncid_M1549_se = mean_se(incidence)$y, .groups = 'keep') %>% 
@@ -259,6 +260,7 @@ p2 <- sim.results.prep %>%
   filter(Gender == 1, Age >=15, Age < 50) %>% 
   EMODAnalyzeR::calculate.incidence() %>% 
   dplyr::select(Year, Gender, sim.id, incidence) %>% 
+  mutate(incidence = 100 * incidence) %>% 
   group_by(Year) %>% 
   summarize(HIVIncid_F1549_M = mean(incidence), 
             HIVIncid_F1549_se = mean_se(incidence)$y, .groups = 'keep') %>% 
@@ -272,6 +274,7 @@ p2 <- sim.results.prep %>%
 p3 <- sim.results.prep %>% 
   filter(Age >=15, Age < 50) %>% 
   EMODAnalyzeR::calculate.incidence() %>% 
+  mutate(incidence = 100 * incidence) %>% 
   dplyr::select(Year, sim.id, incidence) %>% 
   group_by(Year) %>% 
   summarize(HIVIncid_A1549_M = mean(incidence), 
@@ -286,6 +289,7 @@ p3 <- sim.results.prep %>%
 p4 <- sim.results.prep %>% 
   filter(Gender == 1, Age >=15, Age < 25) %>% 
   EMODAnalyzeR::calculate.incidence() %>% 
+  mutate(incidence = 100 * incidence) %>% 
   dplyr::select(Year, Gender, sim.id, incidence) %>% 
   group_by(Year) %>% 
   summarize(HIVIncid_F1524_M = mean(incidence), 
@@ -300,6 +304,7 @@ p4 <- sim.results.prep %>%
 p5 <- sim.results.prep %>% 
   filter(Gender == 1, Age >= 15, IP_Key.Risk == "HIGH") %>% 
   EMODAnalyzeR::calculate.incidence() %>% 
+  mutate(incidence = 100 * incidence) %>% 
   dplyr::select(Year, Gender, sim.id, incidence) %>% 
   group_by(Year) %>% 
   summarize(HIVIncid_FSW1599_M = mean(incidence), 
@@ -339,6 +344,7 @@ p1 <- sim.results.base %>%
   filter(Gender == 0, Age >=15, Age < 50) %>% 
   EMODAnalyzeR::calculate.incidence() %>% 
   dplyr::select(Year, Gender, sim.id, incidence) %>% 
+  mutate(incidence = 100 * incidence) %>% 
   group_by(Year) %>% 
   summarize(HIVIncid_M1549_M = mean(incidence), 
             HIVIncid_M1549_se = mean_se(incidence)$y, .groups = 'keep') %>% 
@@ -353,6 +359,7 @@ p2 <- sim.results.base %>%
   filter(Gender == 1, Age >=15, Age < 50) %>% 
   EMODAnalyzeR::calculate.incidence() %>% 
   dplyr::select(Year, Gender, sim.id, incidence) %>% 
+  mutate(incidence = 100 * incidence) %>% 
   group_by(Year) %>% 
   summarize(HIVIncid_F1549_M = mean(incidence), 
             HIVIncid_F1549_se = mean_se(incidence)$y, .groups = 'keep') %>% 
@@ -366,6 +373,7 @@ p2 <- sim.results.base %>%
 p3 <- sim.results.base %>% 
   filter(Age >=15, Age < 50) %>% 
   EMODAnalyzeR::calculate.incidence() %>% 
+  mutate(incidence = 100 * incidence) %>% 
   dplyr::select(Year, sim.id, incidence) %>% 
   group_by(Year) %>% 
   summarize(HIVIncid_A1549_M = mean(incidence), 
@@ -380,6 +388,7 @@ p3 <- sim.results.base %>%
 p4 <- sim.results.base %>% 
   filter(Gender == 1, Age >=15, Age < 25) %>% 
   EMODAnalyzeR::calculate.incidence() %>% 
+  mutate(incidence = 100 * incidence) %>% 
   dplyr::select(Year, Gender, sim.id, incidence) %>% 
   group_by(Year) %>% 
   summarize(HIVIncid_F1524_M = mean(incidence), 
@@ -394,6 +403,7 @@ p4 <- sim.results.base %>%
 p5 <- sim.results.base %>% 
   filter(Gender == 1, Age >= 15, IP_Key.Risk == "HIGH") %>% 
   EMODAnalyzeR::calculate.incidence() %>% 
+  mutate(incidence = 100 * incidence) %>% 
   dplyr::select(Year, Gender, sim.id, incidence) %>% 
   group_by(Year) %>% 
   summarize(HIVIncid_FSW1599_M = mean(incidence), 
@@ -970,3 +980,6 @@ ylds.current.base %>% filter(Year >= 2023) %>%
   write_csv(file = paste0(analysis.path, 'Template_STOCK_essential_scenario.csv'))
 ```
 
+# Phase 1
+
+I also should go back and recalculate the numbers for phase 1, seeing as the model was recalibrated since last year.
