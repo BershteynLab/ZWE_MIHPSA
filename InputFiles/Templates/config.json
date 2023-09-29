@@ -489,10 +489,10 @@
                 98,
                 99
              ], 
-            "Report_HIV_ByAgeAndGender_Collect_HIV_Data": 0,
+            "Report_HIV_ByAgeAndGender_Collect_HIV_Data": 1,
             "Report_HIV_ByAgeAndGender_Collect_On_Art_Data": 0,
-            "Report_HIV_ByAgeAndGender_Collect_HIV_Stage_Data": 1,
-            "Report_HIV_ByAgeAndGender_Collect_Circumcision_Data": 0,
+            "Report_HIV_ByAgeAndGender_Collect_HIV_Stage_Data": 0,
+            "Report_HIV_ByAgeAndGender_Collect_Circumcision_Data": 1,
             "Report_HIV_ByAgeAndGender_Add_Relationships": 0,
 
             "Report_HIV_ByAgeAndGender_Collect_IP_Data": [ "Risk" ],
@@ -502,7 +502,12 @@
             "Report_HIV_ByAgeAndGender_Stratify_Infected_By_CD4": 1,
 
             "Report_HIV_ByAgeAndGender_Has_Intervention_With_Name": "",
-            "Report_HIV_ByAgeAndGender_Event_Counter_List": ["ReceivePrEP_HIGH"],
+            "Report_HIV_ByAgeAndGender_Event_Counter_List": [
+                "HIVPositiveHIVTest", 
+                "HIVNegativeHIVTest",
+                "Needs_PMTCT_Diagnostic_Test",
+                "NewlySymptomatic"
+            ],
             "Report_HIV_Event_Channels_List": [ ],
 
             "Report_HIV_Infection": 0,
