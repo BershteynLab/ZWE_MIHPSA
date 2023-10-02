@@ -506,7 +506,8 @@
                 "HIVPositiveHIVTest", 
                 "HIVNegativeHIVTest",
                 "Needs_PMTCT_Diagnostic_Test",
-                "NewlySymptomatic"
+                "NewlySymptomatic",
+                "ReceivePrEP_HIGH"
             ],
             "Report_HIV_Event_Channels_List": [ ],
 

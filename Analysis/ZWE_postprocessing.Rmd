@@ -45,16 +45,20 @@ There are two sets of outputs to analyze:
 ## Read in Essential Scenario Simulation
 
 ```{r}
-res_path = "/gpfs/data/bershteynlab/EMOD/citrod01/ZWE_calib_20220627/ZWE_phase2/Baseline-campaign_ZWE_MIHPSA_2023_noprep-noprep/ReportHIVByAgeAndGender"
+#res_path = "/gpfs/data/bershteynlab/EMOD/citrod01/ZWE_calib_20220627/ZWE_phase2/Baseline-campaign_ZWE_MIHPSA_2023_noprep-noprep/ReportHIVByAgeAndGender"
+res.path.prep = "/gpfs/data/bershteynlab/EMOD/citrod01/ZWE_calib_20220627/ZWE_phase2_2/Baseline-campaign_ZWE_MIHPSA_2023_noprep-noprep/ReportHIVByAgeAndGender"
+
 sim.results.base <- EMODAnalyzeR::read.simulation.results(
-  results_path  = res_path,
+  results_path  = res.path.prep,
   scenario_name = 'prep',
   summarize_columns = c("Population","Infected", "On_ART",
                         "Died", "Died_from_HIV",
                         "Newly.Infected","Diagnosed", 
+                        "Newly.Tested.Positive", "Newly.Tested.Negative","HIVPositiveHIVTest","HIVNegativeHIVTest",
+                        "Needs_PMTCT_Diagnostic_Test","NewlySymptomatic",
                         "Infected.CD4.Under.200..Not.On.ART.", "Infected.CD4.200.To.349..Not.On.ART.",
-                        "Infected.CD4.350.To.499..Not.On.ART.", "Infected.CD4.500.Plus..Not.On.ART.",
-                        "ReceivePrEP_HIGH"),
+                        "Infected.CD4.350.To.499..Not.On.ART.", "Infected.CD4.500.Plus..Not.On.ART."),
+                        #"ReceivePrEP_HIGH"),
   stratify_columns = c("Year", "Gender", "Age", "IP_Key.Risk"),
   min_age_inclusive = 0,
   max_age_inclusive = 99
@@ -117,6 +121,13 @@ sim.results.prep <- sim.results.prep %>%
 
 
 ```
+
+```{r}
+nruns = sim.results.base$sim.ix %>% unique %>% length()
+
+nruns
+```
+
 
 # Compare results to calibration targets
 
@@ -247,13 +258,13 @@ p1 <- sim.results.prep %>%
   dplyr::select(Year, Gender, sim.id, incidence) %>% 
   mutate(incidence = 100 * incidence) %>% 
   group_by(Year) %>% 
-  summarize(HIVIncid_M1549_M = mean(incidence), 
-            HIVIncid_M1549_se = mean_se(incidence)$y, .groups = 'keep') %>% 
+  summarize(HIVIncid_M1549_sd = sd(incidence),
+            HIVIncid_M1549_M = mean(incidence), .groups = 'keep') %>% 
   ungroup() %>% 
   mutate(
-    HIVIncid_M1549_95LL = lower_ci(HIVIncid_M1549_M, HIVIncid_M1549_se, 99, conf_level = .95),
-    HIVIncid_M1549_95UL = upper_ci(HIVIncid_M1549_M, HIVIncid_M1549_se, 99, conf_level = .95)
-    )
+    HIVIncid_M1549_95LL = lower_ci(HIVIncid_M1549_M, HIVIncid_M1549_sd/sqrt(nruns), nruns, conf_level = .95),
+    HIVIncid_M1549_95UL = upper_ci(HIVIncid_M1549_M, HIVIncid_M1549_sd/sqrt(nruns), nruns, conf_level = .95)
+    ) %>% select(-HIVIncid_M1549_sd)
 
 # Females 15-49
 p2 <- sim.results.prep %>% 
@@ -262,13 +273,13 @@ p2 <- sim.results.prep %>%
   dplyr::select(Year, Gender, sim.id, incidence) %>% 
   mutate(incidence = 100 * incidence) %>% 
   group_by(Year) %>% 
-  summarize(HIVIncid_F1549_M = mean(incidence), 
-            HIVIncid_F1549_se = mean_se(incidence)$y, .groups = 'keep') %>% 
+  summarize(HIVIncid_F1549_sd = sd(incidence),
+            HIVIncid_F1549_M = mean(incidence), .groups = 'keep') %>% 
   ungroup() %>% 
   mutate(
-    HIVIncid_F1549_95LL = lower_ci(HIVIncid_F1549_M, HIVIncid_F1549_se, 99, conf_level = .95),
-    HIVIncid_F1549_95UL = upper_ci(HIVIncid_F1549_M, HIVIncid_F1549_se, 99, conf_level = .95)
-    )
+    HIVIncid_F1549_95LL = lower_ci(HIVIncid_F1549_M, HIVIncid_F1549_sd/sqrt(nruns), nruns, conf_level = .95),
+    HIVIncid_F1549_95UL = upper_ci(HIVIncid_F1549_M, HIVIncid_F1549_sd/sqrt(nruns), nruns, conf_level = .95)
+    ) %>% select(-HIVIncid_F1549_sd)
 
 # Adults 15-49
 p3 <- sim.results.prep %>% 
@@ -277,13 +288,13 @@ p3 <- sim.results.prep %>%
   mutate(incidence = 100 * incidence) %>% 
   dplyr::select(Year, sim.id, incidence) %>% 
   group_by(Year) %>% 
-  summarize(HIVIncid_A1549_M = mean(incidence), 
-            HIVIncid_A1549_se = mean_se(incidence)$y, .groups = 'keep') %>% 
+  summarize(HIVIncid_A1549_sd = sd(incidence),
+            HIVIncid_A1549_M = mean(incidence), .groups = 'keep') %>% 
   ungroup() %>% 
   mutate(
-    HIVIncid_A1549_95LL = lower_ci(HIVIncid_A1549_M, HIVIncid_A1549_se, 99, conf_level = .95),
-    HIVIncid_A1549_95UL = upper_ci(HIVIncid_A1549_M, HIVIncid_A1549_se, 99, conf_level = .95)
-    )
+    HIVIncid_A1549_95LL = lower_ci(HIVIncid_A1549_M, HIVIncid_A1549_sd/sqrt(nruns), nruns, conf_level = .95),
+    HIVIncid_A1549_95UL = upper_ci(HIVIncid_A1549_M, HIVIncid_A1549_sd/sqrt(nruns), nruns, conf_level = .95)
+    ) %>% select(-HIVIncid_A1549_sd)
 
 # Females 15-24
 p4 <- sim.results.prep %>% 
@@ -292,13 +303,13 @@ p4 <- sim.results.prep %>%
   mutate(incidence = 100 * incidence) %>% 
   dplyr::select(Year, Gender, sim.id, incidence) %>% 
   group_by(Year) %>% 
-  summarize(HIVIncid_F1524_M = mean(incidence), 
-            HIVIncid_F1524_se = mean_se(incidence)$y, .groups = 'keep') %>% 
+  summarize(HIVIncid_F1524_sd = sd(incidence), 
+            HIVIncid_F1524_M = mean(incidence),  .groups = 'keep') %>% 
   ungroup() %>% 
   mutate(
-    HIVIncid_F1524_95LL = lower_ci(HIVIncid_F1524_M, HIVIncid_F1524_se, 99, conf_level = .95),
-    HIVIncid_F1524_95UL = upper_ci(HIVIncid_F1524_M, HIVIncid_F1524_se, 99, conf_level = .95)
-    )
+    HIVIncid_F1524_95LL = lower_ci(HIVIncid_F1524_M, HIVIncid_F1524_sd/sqrt(nruns), nruns, conf_level = .95),
+    HIVIncid_F1524_95UL = upper_ci(HIVIncid_F1524_M, HIVIncid_F1524_sd/sqrt(nruns), nruns, conf_level = .95)
+    ) %>% select(-HIVIncid_F1524_sd)
 
 # FSW ages >15
 p5 <- sim.results.prep %>% 
@@ -307,13 +318,13 @@ p5 <- sim.results.prep %>%
   mutate(incidence = 100 * incidence) %>% 
   dplyr::select(Year, Gender, sim.id, incidence) %>% 
   group_by(Year) %>% 
-  summarize(HIVIncid_FSW1599_M = mean(incidence), 
-            HIVIncid_FSW1599_se = mean_se(incidence)$y, .groups = 'keep') %>% 
+  summarize(HIVIncid_FSW1599_sd = sd(incidence),
+            HIVIncid_FSW1599_M = mean(incidence),  .groups = 'keep') %>% 
   ungroup() %>% 
   mutate(
-    HIVIncid_FSW1599_95LL = lower_ci(HIVIncid_FSW1599_M, HIVIncid_FSW1599_se, 99, conf_level = .95),
-    HIVIncid_FSW1599_95UL = upper_ci(HIVIncid_FSW1599_M, HIVIncid_FSW1599_se, 99, conf_level = .95)
-    )
+    HIVIncid_FSW1599_95LL = lower_ci(HIVIncid_FSW1599_M, HIVIncid_FSW1599_sd/sqrt(nruns), nruns, conf_level = .95),
+    HIVIncid_FSW1599_95UL = upper_ci(HIVIncid_FSW1599_M, HIVIncid_FSW1599_sd/sqrt(nruns), nruns, conf_level = .95)
+    ) %>% select(-HIVIncid_FSW1599_sd)
 
 inc.prep.summary <- merge(p1, p2, by = 'Year') %>% 
   merge(p3, by = 'Year') %>% 
@@ -346,13 +357,13 @@ p1 <- sim.results.base %>%
   dplyr::select(Year, Gender, sim.id, incidence) %>% 
   mutate(incidence = 100 * incidence) %>% 
   group_by(Year) %>% 
-  summarize(HIVIncid_M1549_M = mean(incidence), 
-            HIVIncid_M1549_se = mean_se(incidence)$y, .groups = 'keep') %>% 
+  summarize(HIVIncid_M1549_sd = sd(incidence),
+            HIVIncid_M1549_M = mean(incidence), .groups = 'keep') %>% 
   ungroup() %>% 
   mutate(
-    HIVIncid_M1549_95LL = lower_ci(HIVIncid_M1549_M, HIVIncid_M1549_se, 99, conf_level = .95),
-    HIVIncid_M1549_95UL = upper_ci(HIVIncid_M1549_M, HIVIncid_M1549_se, 99, conf_level = .95)
-    )
+    HIVIncid_M1549_95LL = lower_ci(HIVIncid_M1549_M, HIVIncid_M1549_sd/sqrt(nruns), nruns, conf_level = .95),
+    HIVIncid_M1549_95UL = upper_ci(HIVIncid_M1549_M, HIVIncid_M1549_sd/sqrt(nruns), nruns, conf_level = .95)
+    ) %>% select(-HIVIncid_M1549_sd)
 
 # Females 15-49
 p2 <- sim.results.base %>% 
@@ -361,13 +372,13 @@ p2 <- sim.results.base %>%
   dplyr::select(Year, Gender, sim.id, incidence) %>% 
   mutate(incidence = 100 * incidence) %>% 
   group_by(Year) %>% 
-  summarize(HIVIncid_F1549_M = mean(incidence), 
-            HIVIncid_F1549_se = mean_se(incidence)$y, .groups = 'keep') %>% 
+  summarize(HIVIncid_F1549_sd = sd(incidence),
+            HIVIncid_F1549_M = mean(incidence), .groups = 'keep') %>% 
   ungroup() %>% 
   mutate(
-    HIVIncid_F1549_95LL = lower_ci(HIVIncid_F1549_M, HIVIncid_F1549_se, 99, conf_level = .95),
-    HIVIncid_F1549_95UL = upper_ci(HIVIncid_F1549_M, HIVIncid_F1549_se, 99, conf_level = .95)
-    )
+    HIVIncid_F1549_95LL = lower_ci(HIVIncid_F1549_M, HIVIncid_F1549_sd/sqrt(nruns), nruns, conf_level = .95),
+    HIVIncid_F1549_95UL = upper_ci(HIVIncid_F1549_M, HIVIncid_F1549_sd/sqrt(nruns), nruns, conf_level = .95)
+    ) %>% select(-HIVIncid_F1549_sd)
 
 # Adults 15-49
 p3 <- sim.results.base %>% 
@@ -376,13 +387,13 @@ p3 <- sim.results.base %>%
   mutate(incidence = 100 * incidence) %>% 
   dplyr::select(Year, sim.id, incidence) %>% 
   group_by(Year) %>% 
-  summarize(HIVIncid_A1549_M = mean(incidence), 
-            HIVIncid_A1549_se = mean_se(incidence)$y, .groups = 'keep') %>% 
+  summarize(HIVIncid_A1549_sd = sd(incidence),
+            HIVIncid_A1549_M = mean(incidence), .groups = 'keep') %>% 
   ungroup() %>% 
   mutate(
-    HIVIncid_A1549_95LL = lower_ci(HIVIncid_A1549_M, HIVIncid_A1549_se, 99, conf_level = .95),
-    HIVIncid_A1549_95UL = upper_ci(HIVIncid_A1549_M, HIVIncid_A1549_se, 99, conf_level = .95)
-    )
+    HIVIncid_A1549_95LL = lower_ci(HIVIncid_A1549_M, HIVIncid_A1549_sd/sqrt(nruns), nruns, conf_level = .95),
+    HIVIncid_A1549_95UL = upper_ci(HIVIncid_A1549_M, HIVIncid_A1549_sd/sqrt(nruns), nruns, conf_level = .95)
+    ) %>% select(-HIVIncid_A1549_sd)
 
 # Females 15-24
 p4 <- sim.results.base %>% 
@@ -391,13 +402,13 @@ p4 <- sim.results.base %>%
   mutate(incidence = 100 * incidence) %>% 
   dplyr::select(Year, Gender, sim.id, incidence) %>% 
   group_by(Year) %>% 
-  summarize(HIVIncid_F1524_M = mean(incidence), 
-            HIVIncid_F1524_se = mean_se(incidence)$y, .groups = 'keep') %>% 
+  summarize(HIVIncid_F1524_sd = sd(incidence), 
+            HIVIncid_F1524_M = mean(incidence),  .groups = 'keep') %>% 
   ungroup() %>% 
   mutate(
-    HIVIncid_F1524_95LL = lower_ci(HIVIncid_F1524_M, HIVIncid_F1524_se, 99, conf_level = .95),
-    HIVIncid_F1524_95UL = upper_ci(HIVIncid_F1524_M, HIVIncid_F1524_se, 99, conf_level = .95)
-    )
+    HIVIncid_F1524_95LL = lower_ci(HIVIncid_F1524_M, HIVIncid_F1524_sd/sqrt(nruns), nruns, conf_level = .95),
+    HIVIncid_F1524_95UL = upper_ci(HIVIncid_F1524_M, HIVIncid_F1524_sd/sqrt(nruns), nruns, conf_level = .95)
+    ) %>% select(-HIVIncid_F1524_sd)
 
 # FSW ages >15
 p5 <- sim.results.base %>% 
@@ -406,13 +417,13 @@ p5 <- sim.results.base %>%
   mutate(incidence = 100 * incidence) %>% 
   dplyr::select(Year, Gender, sim.id, incidence) %>% 
   group_by(Year) %>% 
-  summarize(HIVIncid_FSW1599_M = mean(incidence), 
-            HIVIncid_FSW1599_se = mean_se(incidence)$y, .groups = 'keep') %>% 
+  summarize(HIVIncid_FSW1599_sd = sd(incidence),
+            HIVIncid_FSW1599_M = mean(incidence),  .groups = 'keep') %>% 
   ungroup() %>% 
   mutate(
-    HIVIncid_FSW1599_95LL = lower_ci(HIVIncid_FSW1599_M, HIVIncid_FSW1599_se, 99, conf_level = .95),
-    HIVIncid_FSW1599_95UL = upper_ci(HIVIncid_FSW1599_M, HIVIncid_FSW1599_se, 99, conf_level = .95)
-    )
+    HIVIncid_FSW1599_95LL = lower_ci(HIVIncid_FSW1599_M, HIVIncid_FSW1599_sd/sqrt(nruns), nruns, conf_level = .95),
+    HIVIncid_FSW1599_95UL = upper_ci(HIVIncid_FSW1599_M, HIVIncid_FSW1599_sd/sqrt(nruns), nruns, conf_level = .95)
+    ) %>% select(-HIVIncid_FSW1599_sd)
 
 inc.base.summary <- merge(p1, p2, by = 'Year') %>% 
   merge(p3, by = 'Year') %>% 
@@ -423,7 +434,6 @@ inc.base.summary <- merge(p1, p2, by = 'Year') %>%
 # inc.base.summary %>% 
 #   pivot_longer(-Year) %>% 
 #   pivot_wider(names_from = Year, values_from = value)
-
 
 ggplot(data = inc.base.summary) + 
   geom_line(mapping = aes(x = Year, y = HIVIncid_M1549_M), color = 'blue') + 
@@ -971,9 +981,1251 @@ ylls.current.base <- merge(yll.adults, yll.children, by = 'Year') %>%
   merge(yll.children.disc, by = 'Year')
 ```
 
-# Write out results to form
+
+## ART 
 
 ### PrEP Scenario
+
+Number of Adults and children on ART
+
+```{r}
+# NOnART_M1599_M
+# number of males on art, age 15-99
+p1 <- sim.results.prep %>% 
+  filter(Gender == 0, Age >=15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(NOnART_M1599_M = sum(On_ART * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NOnART_M1599_M_sd = sd(NOnART_M1599_M), 
+            NOnART_M1599_M = mean(NOnART_M1599_M), .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    NOnART_M1599_95LL = lower_ci(NOnART_M1599_M, NOnART_M1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    NOnART_M1599_95UL = upper_ci(NOnART_M1599_M, NOnART_M1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% select(-NOnART_M1599_M_sd)
+
+# Number Female adults on ART
+# NOnART_F1599_M
+p2 <- sim.results.prep %>% 
+  filter(Gender == 0, Age >=15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(NOnART_F1599_M = sum(On_ART  * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NOnART_F1599_M_sd = sd(NOnART_F1599_M), 
+            NOnART_F1599_M = mean(NOnART_F1599_M), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    NOnART_F1599_95LL = lower_ci(NOnART_F1599_M, NOnART_F1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    NOnART_F1599_95UL = upper_ci(NOnART_F1599_M, NOnART_F1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% select(-NOnART_F1599_M_sd)
+
+# Number adolescents on ART 
+# NOnART_A1524_M
+p3 <- sim.results.prep %>% 
+  filter(Age >=15, Age <25) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(NOnART_A1524_M = sum(On_ART  * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NOnART_A1524_M_sd = sd(NOnART_A1524_M), 
+            NOnART_A1524_M = mean(NOnART_A1524_M), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    NOnART_A1524_95LL = lower_ci(NOnART_A1524_M, NOnART_A1524_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    NOnART_A1524_95UL = upper_ci(NOnART_A1524_M, NOnART_A1524_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% select(-NOnART_A1524_M_sd)
+
+# Number adults on ART
+# NOnART_A099_M
+p4 <- sim.results.prep %>% 
+  filter(Age >=15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(NOnART_A099_M = sum(On_ART  * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NOnART_A099_M_sd = sd(NOnART_A099_M), 
+            NOnART_A099_M = mean(NOnART_A099_M), .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    NOnART_A099_95LL = lower_ci(NOnART_A099_M, NOnART_A099_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    NOnART_A099_95UL = upper_ci(NOnART_A099_M, NOnART_A099_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% select(-NOnART_A099_M_sd)
+
+# Number children on ART
+# NOnART_A014_M
+p5 <- sim.results.prep %>% 
+  filter(Age < 15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(NOnART_A014_M = sum(On_ART  * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NOnART_A014_M_sd = sd(NOnART_A014_M), 
+            NOnART_A014_M = mean(NOnART_A014_M), .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    NOnART_A014_95LL = lower_ci(NOnART_A014_M, NOnART_A014_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    NOnART_A014_95UL = upper_ci(NOnART_A014_M, NOnART_A014_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% select(-NOnART_A014_M_sd)
+
+NOnART.current.prep <- merge(p1, p2, by = 'Year') %>% 
+  merge(p3, by = 'Year') %>% 
+  merge(p4, by = 'Year') %>%
+  merge(p5, by = 'Year') %>%
+  mutate(Year = floor(Year)) 
+
+```
+
+Percent on ART
+
+```{r}
+# Percent of HIV positive males on art, age 15-99
+# P_onART_HIVM1599_M
+p1 <- sim.results.prep %>% 
+  filter(Gender == 0, Age >=15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(OnART = sum(On_ART * pop.scaling.factor), 
+            PLHIV = sum(Infected * pop.scaling.factor) , .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(P_onART = case_when(PLHIV > 0 ~ 100*OnART/PLHIV,
+                             PLHIV == 0 ~ 0)) %>% 
+  group_by(Year) %>% 
+  summarize(P_onART_HIVM1599_M_sd = sd(P_onART), 
+            P_onART_HIVM1599_M = mean(P_onART), .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    P_onART_HIVM1599_95LL = lower_ci(P_onART_HIVM1599_M, P_onART_HIVM1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    P_onART_HIVM1599_95UL = upper_ci(P_onART_HIVM1599_M, P_onART_HIVM1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-P_onART_HIVM1599_M_sd)
+
+# Percent of HIV positive Female adults on ART, age 15-99
+# P_onART_HIVF1599_M
+p2 <- sim.results.prep %>% 
+  filter(Gender == 1, Age >=15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(OnART = sum(On_ART * pop.scaling.factor), 
+            PLHIV = sum(Infected * pop.scaling.factor) , .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(P_onART = case_when(PLHIV > 0 ~ 100* OnART/PLHIV,
+                             PLHIV == 0 ~ 0)) %>%
+  group_by(Year) %>% 
+  summarize(P_onART_HIVF1599_M_sd = sd(P_onART), 
+            P_onART_HIVF1599_M = mean(P_onART), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    P_onART_HIVF1599_95LL = lower_ci(P_onART_HIVF1599_M, P_onART_HIVF1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    P_onART_HIVF1599_95UL = upper_ci(P_onART_HIVF1599_M, P_onART_HIVF1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  )%>% 
+  select(-P_onART_HIVF1599_M_sd)
+
+# Percent HIV positive females 15-24 on ART
+# P_onART_HIVF1524_M
+p3 <- sim.results.prep %>% 
+  filter(Gender == 1, Age >=15, Age <25) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(OnART = sum(On_ART * pop.scaling.factor), 
+            PLHIV = sum(Infected * pop.scaling.factor) , .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(P_onART = case_when(PLHIV > 0 ~ 100* OnART/PLHIV,
+                             PLHIV == 0 ~ 0)) %>%
+  group_by(Year) %>% 
+  summarize(P_onART_HIVF1524_M = mean(P_onART), 
+            .groups = 'keep') %>% 
+  ungroup()
+
+# percent hiv positive individuals 15-24 on ART
+# P_onART_HIVA1524_M
+p4 <- sim.results.prep %>% 
+  filter(Age >=15, Age <25) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(OnART = sum(On_ART * pop.scaling.factor), 
+            PLHIV = sum(Infected * pop.scaling.factor) , .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(P_onART = case_when(PLHIV > 0 ~ 100* OnART/PLHIV,
+                             PLHIV == 0 ~ 0)) %>%
+  group_by(Year) %>% 
+  summarize(P_onART_HIVA1524_M = mean(P_onART), 
+            .groups = 'keep') %>% 
+  ungroup()
+
+# percent hiv positive adults on ART
+# P_onART_HIVA1599_M
+p5 <- sim.results.prep %>% 
+  filter(Age >=15, Age <25) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(OnART = sum(On_ART * pop.scaling.factor), 
+            PLHIV = sum(Infected * pop.scaling.factor) , .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(P_onART = case_when(PLHIV > 0 ~ 100* OnART/PLHIV,
+                             PLHIV == 0 ~ 0)) %>%
+  group_by(Year) %>% 
+  summarize(P_onART_HIVA1599_M_sd = sd(P_onART), 
+            P_onART_HIVA1599_M = mean(P_onART), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    P_onART_HIVA1599_95LL = lower_ci(P_onART_HIVA1599_M, P_onART_HIVA1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    P_onART_HIVA1599_95UL = upper_ci(P_onART_HIVA1599_M, P_onART_HIVA1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-P_onART_HIVA1599_M_sd)
+
+# Percent HIV positive children on ART
+# P_onART_HIVA014_M
+p6 <- sim.results.prep %>% 
+  filter(Age >=15, Age <25) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(OnART = sum(On_ART * pop.scaling.factor), 
+            PLHIV = sum(Infected * pop.scaling.factor) , .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(P_onART = case_when(PLHIV > 0 ~ 100* OnART/PLHIV,
+                             PLHIV == 0 ~ 0)) %>%
+  group_by(Year) %>% 
+  summarize(P_onART_HIVA014_M_sd = sd(P_onART), 
+            P_onART_HIVA014_M = mean(P_onART), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    P_onART_HIVA014_95LL = lower_ci(P_onART_HIVA014_M, P_onART_HIVA014_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    P_onART_HIVA014_95UL = upper_ci(P_onART_HIVA014_M, P_onART_HIVA014_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-P_onART_HIVA014_M_sd)
+
+# Percent of HIV positive FSW ages 15+ who are on ART
+# P_onART_HIVFSW1599_M
+p7 <- sim.results.prep %>% 
+  filter(Gender == 1, Age >=15, IP_Key.Risk == "HIGH") %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(OnART = sum(On_ART * pop.scaling.factor), 
+            PLHIV = sum(Infected * pop.scaling.factor) , .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(P_onART = case_when(PLHIV > 0 ~ 100* OnART/PLHIV,
+                             PLHIV == 0 ~ 0)) %>%
+  group_by(Year) %>% 
+  summarize(P_onART_HIVFSW1599_M = mean(P_onART), 
+            .groups = 'keep') %>% 
+  ungroup()
+
+P_onART.current.prep <- merge(p1, p2, by = 'Year') %>% 
+  merge(p3, by = 'Year') %>% 
+  merge(p4, by = 'Year') %>%
+  merge(p5, by = 'Year') %>%
+  merge(p6, by = 'Year') %>%
+  merge(p7, by = 'Year') %>%
+  mutate(Year = floor(Year)) 
+
+```
+
+### Essential Scenario
+
+```{r}
+# NOnART_M1599_M
+# number of males on art, age 15-99
+p1 <- sim.results.base %>% 
+  filter(Gender == 0, Age >=15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(NOnART_M1599_M = sum(On_ART * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NOnART_M1599_M_sd = sd(NOnART_M1599_M), 
+            NOnART_M1599_M = mean(NOnART_M1599_M), .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    NOnART_M1599_95LL = lower_ci(NOnART_M1599_M, NOnART_M1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    NOnART_M1599_95UL = upper_ci(NOnART_M1599_M, NOnART_M1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% select(-NOnART_M1599_M_sd)
+
+# Number Female adults on ART
+# NOnART_F1599_M
+p2 <- sim.results.base %>% 
+  filter(Gender == 0, Age >=15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(NOnART_F1599_M = sum(On_ART  * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NOnART_F1599_M_sd = sd(NOnART_F1599_M), 
+            NOnART_F1599_M = mean(NOnART_F1599_M), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    NOnART_F1599_95LL = lower_ci(NOnART_F1599_M, NOnART_F1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    NOnART_F1599_95UL = upper_ci(NOnART_F1599_M, NOnART_F1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% select(-NOnART_F1599_M_sd)
+
+# Number adolescents on ART 
+# NOnART_A1524_M
+p3 <- sim.results.base %>% 
+  filter(Age >=15, Age <25) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(NOnART_A1524_M = sum(On_ART  * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NOnART_A1524_M_sd = sd(NOnART_A1524_M), 
+            NOnART_A1524_M = mean(NOnART_A1524_M), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    NOnART_A1524_95LL = lower_ci(NOnART_A1524_M, NOnART_A1524_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    NOnART_A1524_95UL = upper_ci(NOnART_A1524_M, NOnART_A1524_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% select(-NOnART_A1524_M_sd)
+
+# Number adults on ART
+# NOnART_A099_M
+p4 <- sim.results.base %>% 
+  filter(Age >=15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(NOnART_A099_M = sum(On_ART  * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NOnART_A099_M_sd = sd(NOnART_A099_M), 
+            NOnART_A099_M = mean(NOnART_A099_M), .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    NOnART_A099_95LL = lower_ci(NOnART_A099_M, NOnART_A099_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    NOnART_A099_95UL = upper_ci(NOnART_A099_M, NOnART_A099_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% select(-NOnART_A099_M_sd)
+
+# Number children on ART
+# NOnART_A014_M
+p5 <- sim.results.base %>% 
+  filter(Age < 15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(NOnART_A014_M = sum(On_ART  * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NOnART_A014_M_sd = sd(NOnART_A014_M), 
+            NOnART_A014_M = mean(NOnART_A014_M), .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    NOnART_A014_95LL = lower_ci(NOnART_A014_M, NOnART_A014_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    NOnART_A014_95UL = upper_ci(NOnART_A014_M, NOnART_A014_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% select(-NOnART_A014_M_sd)
+
+NOnART.current.base <- merge(p1, p2, by = 'Year') %>% 
+  merge(p3, by = 'Year') %>% 
+  merge(p4, by = 'Year') %>%
+  merge(p5, by = 'Year') %>%
+  mutate(Year = floor(Year)) 
+
+```
+
+Percent of PLHIV on ART
+
+```{r}
+# Percent of HIV positive males on art, age 15-99
+# P_onART_HIVM1599_M
+p1 <- sim.results.base %>% 
+  filter(Gender == 0, Age >=15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(OnART = sum(On_ART * pop.scaling.factor), 
+            PLHIV = sum(Infected * pop.scaling.factor) , .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(P_onART = case_when(PLHIV > 0 ~ 100*OnART/PLHIV,
+                             PLHIV == 0 ~ 0)) %>% 
+  group_by(Year) %>% 
+  summarize(P_onART_HIVM1599_M_sd = sd(P_onART), 
+            P_onART_HIVM1599_M = mean(P_onART), .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    P_onART_HIVM1599_95LL = lower_ci(P_onART_HIVM1599_M, P_onART_HIVM1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    P_onART_HIVM1599_95UL = upper_ci(P_onART_HIVM1599_M, P_onART_HIVM1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-P_onART_HIVM1599_M_sd)
+
+# Percent of HIV positive Female adults on ART, age 15-99
+# P_onART_HIVF1599_M
+p2 <- sim.results.base %>% 
+  filter(Gender == 1, Age >=15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(OnART = sum(On_ART * pop.scaling.factor), 
+            PLHIV = sum(Infected * pop.scaling.factor) , .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(P_onART = case_when(PLHIV > 0 ~ 100* OnART/PLHIV,
+                             PLHIV == 0 ~ 0)) %>%
+  group_by(Year) %>% 
+  summarize(P_onART_HIVF1599_M_sd = sd(P_onART), 
+            P_onART_HIVF1599_M = mean(P_onART), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    P_onART_HIVF1599_95LL = lower_ci(P_onART_HIVF1599_M, P_onART_HIVF1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    P_onART_HIVF1599_95UL = upper_ci(P_onART_HIVF1599_M, P_onART_HIVF1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  )%>% 
+  select(-P_onART_HIVF1599_M_sd)
+
+# Percent HIV positive females 15-24 on ART
+# P_onART_HIVF1524_M
+p3 <- sim.results.base %>% 
+  filter(Gender == 1, Age >=15, Age <25) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(OnART = sum(On_ART * pop.scaling.factor), 
+            PLHIV = sum(Infected * pop.scaling.factor) , .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(P_onART = case_when(PLHIV > 0 ~ 100* OnART/PLHIV,
+                             PLHIV == 0 ~ 0)) %>%
+  group_by(Year) %>% 
+  summarize(P_onART_HIVF1524_M = mean(P_onART), 
+            .groups = 'keep') %>% 
+  ungroup()
+
+# percent hiv positive individuals 15-24 on ART
+# P_onART_HIVA1524_M
+p4 <- sim.results.base %>% 
+  filter(Age >=15, Age <25) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(OnART = sum(On_ART * pop.scaling.factor), 
+            PLHIV = sum(Infected * pop.scaling.factor) , .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(P_onART = case_when(PLHIV > 0 ~ 100* OnART/PLHIV,
+                             PLHIV == 0 ~ 0)) %>%
+  group_by(Year) %>% 
+  summarize(P_onART_HIVA1524_M = mean(P_onART), 
+            .groups = 'keep') %>% 
+  ungroup()
+
+# percent hiv positive adults on ART
+# P_onART_HIVA1599_M
+p5 <- sim.results.base %>% 
+  filter(Age >=15, Age <25) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(OnART = sum(On_ART * pop.scaling.factor), 
+            PLHIV = sum(Infected * pop.scaling.factor) , .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(P_onART = case_when(PLHIV > 0 ~ 100* OnART/PLHIV,
+                             PLHIV == 0 ~ 0)) %>%
+  group_by(Year) %>% 
+  summarize(P_onART_HIVA1599_M_sd = sd(P_onART), 
+            P_onART_HIVA1599_M = mean(P_onART), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    P_onART_HIVA1599_95LL = lower_ci(P_onART_HIVA1599_M, P_onART_HIVA1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    P_onART_HIVA1599_95UL = upper_ci(P_onART_HIVA1599_M, P_onART_HIVA1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-P_onART_HIVA1599_M_sd)
+
+# Percent HIV positive children on ART
+# P_onART_HIVA014_M
+p6 <- sim.results.base %>% 
+  filter(Age >=15, Age <25) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(OnART = sum(On_ART * pop.scaling.factor), 
+            PLHIV = sum(Infected * pop.scaling.factor) , .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(P_onART = case_when(PLHIV > 0 ~ 100* OnART/PLHIV,
+                             PLHIV == 0 ~ 0)) %>%
+  group_by(Year) %>% 
+  summarize(P_onART_HIVA014_M_sd = sd(P_onART), 
+            P_onART_HIVA014_M = mean(P_onART), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    P_onART_HIVA014_95LL = lower_ci(P_onART_HIVA014_M, P_onART_HIVA014_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    P_onART_HIVA014_95UL = upper_ci(P_onART_HIVA014_M, P_onART_HIVA014_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-P_onART_HIVA014_M_sd)
+
+# Percent of HIV positive FSW ages 15+ who are on ART
+# P_onART_HIVFSW1599_M
+p7 <- sim.results.base %>% 
+  filter(Gender == 1, Age >=15, IP_Key.Risk == "HIGH") %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(OnART = sum(On_ART * pop.scaling.factor), 
+            PLHIV = sum(Infected * pop.scaling.factor) , .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(P_onART = case_when(PLHIV > 0 ~ 100* OnART/PLHIV,
+                             PLHIV == 0 ~ 0)) %>%
+  group_by(Year) %>% 
+  summarize(P_onART_HIVFSW1599_M = mean(P_onART), 
+            .groups = 'keep') %>% 
+  ungroup()
+
+P_onART.current.base <- merge(p1, p2, by = 'Year') %>% 
+  merge(p3, by = 'Year') %>% 
+  merge(p4, by = 'Year') %>%
+  merge(p5, by = 'Year') %>%
+  merge(p6, by = 'Year') %>%
+  merge(p7, by = 'Year') %>%
+  mutate(Year = floor(Year)) 
+
+```
+
+## Population
+
+### PrEP Scenario
+```{r}
+# NAlive_A1599_M
+p1 <- sim.results.prep %>% 
+  filter(Age >=15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(pop = sum(Population * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NAlive_A1599_M_sd = sd(pop), 
+            NAlive_A1599_M = mean(pop), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    NAlive_A01599_95LL = lower_ci(NAlive_A1599_M, NAlive_A1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    NAlive_A01599_95UL = upper_ci(NAlive_A1599_M, NAlive_A1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-NAlive_A1599_M_sd)
+
+# NAlive_A1549_M
+p2 <- sim.results.prep %>% 
+  filter(Age >=15, Age < 50) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(pop = sum(Population * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NAlive_A1549_M_sd = sd(pop), 
+            NAlive_A1549_M = mean(pop), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    NAlive_A01549_95LL = lower_ci(NAlive_A1549_M, NAlive_A1549_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    NAlive_A01549_95UL = upper_ci(NAlive_A1549_M, NAlive_A1549_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-NAlive_A1549_M_sd)
+
+# NAlive_M1599_M
+p3 <- sim.results.prep %>% 
+  filter(Gender == 0, Age >=15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(pop = sum(Population * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NAlive_M1599_M_sd = sd(pop), 
+            NAlive_M1599_M = mean(pop), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    NAlive_M1599_95LL = lower_ci(NAlive_M1599_M, NAlive_M1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    NAlive_M1599_95UL = upper_ci(NAlive_M1599_M, NAlive_M1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-NAlive_M1599_M_sd)
+
+# NAlive_F1599_M
+p4 <- sim.results.prep %>% 
+  filter(Gender == 0, Age >=15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(pop = sum(Population * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NAlive_F1599_M_sd = sd(pop), 
+            NAlive_F1599_M = mean(pop), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    NAlive_F1599_95LL = lower_ci(NAlive_F1599_M, NAlive_F1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    NAlive_F1599_95UL = upper_ci(NAlive_F1599_M, NAlive_F1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-NAlive_F1599_M_sd)
+
+# NAlive_A014_M
+p5 <- sim.results.prep %>% 
+  filter(Gender == 0, Age >=15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(pop = sum(Population * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NAlive_A014_M_sd = sd(pop), 
+            NAlive_A014_M = mean(pop), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    NAlive_A014_95LL = lower_ci(NAlive_A014_M, NAlive_A014_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    NAlive_A014_95UL = upper_ci(NAlive_A014_M, NAlive_A014_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-NAlive_A014_M_sd)
+
+# NAlive_A099_M
+p6 <- sim.results.prep %>% 
+  filter(Gender == 0, Age >=15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(pop = sum(Population * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NAlive_A099_M_sd = sd(pop), 
+            NAlive_A099_M = mean(pop), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    NAlive_A099_95LL = lower_ci(NAlive_A099_M, NAlive_A099_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    NAlive_A099_95UL = upper_ci(NAlive_A099_M, NAlive_A099_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-NAlive_A099_M_sd)
+
+# NAlive_FSW1599_M
+p7 <- sim.results.prep %>% 
+  filter(Gender == 0, Age >=15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(pop = sum(Population * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NAlive_FSW1599_M_sd = sd(pop), 
+            NAlive_FSW1599_M = mean(pop), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    NAlive_A099_95LL = lower_ci(NAlive_FSW1599_M, NAlive_FSW1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    NAlive_A099_95UL = upper_ci(NAlive_FSW1599_M, NAlive_FSW1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-NAlive_FSW1599_M_sd)
+
+NAlive.prep <- merge(p1, p2, by = 'Year') %>% 
+  merge(p3, by = 'Year') %>% 
+  merge(p4, by = 'Year') %>%
+  merge(p5, by = 'Year') %>%
+  merge(p6, by = 'Year') %>%
+  merge(p7, by = 'Year') %>% 
+  mutate(Year = floor(Year)) 
+```
+
+### Essential Scenario
+
+```{r}
+# NAlive_A1599_M
+p1 <- sim.results.base %>% 
+  filter(Age >=15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(pop = sum(Population * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NAlive_A1599_M_sd = sd(pop), 
+            NAlive_A1599_M = mean(pop), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    NAlive_A01599_95LL = lower_ci(NAlive_A1599_M, NAlive_A1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    NAlive_A01599_95UL = upper_ci(NAlive_A1599_M, NAlive_A1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-NAlive_A1599_M_sd)
+
+# NAlive_A1549_M
+p2 <- sim.results.base %>% 
+  filter(Age >=15, Age < 50) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(pop = sum(Population * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NAlive_A1549_M_sd = sd(pop), 
+            NAlive_A1549_M = mean(pop), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    NAlive_A01549_95LL = lower_ci(NAlive_A1549_M, NAlive_A1549_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    NAlive_A01549_95UL = upper_ci(NAlive_A1549_M, NAlive_A1549_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-NAlive_A1549_M_sd)
+
+# NAlive_M1599_M
+p3 <- sim.results.base %>% 
+  filter(Gender == 0, Age >=15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(pop = sum(Population * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NAlive_M1599_M_sd = sd(pop), 
+            NAlive_M1599_M = mean(pop), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    NAlive_M1599_95LL = lower_ci(NAlive_M1599_M, NAlive_M1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    NAlive_M1599_95UL = upper_ci(NAlive_M1599_M, NAlive_M1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-NAlive_M1599_M_sd)
+
+# NAlive_F1599_M
+p4 <- sim.results.base %>% 
+  filter(Gender == 0, Age >=15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(pop = sum(Population * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NAlive_F1599_M_sd = sd(pop), 
+            NAlive_F1599_M = mean(pop), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    NAlive_F1599_95LL = lower_ci(NAlive_F1599_M, NAlive_F1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    NAlive_F1599_95UL = upper_ci(NAlive_F1599_M, NAlive_F1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-NAlive_F1599_M_sd)
+
+# NAlive_A014_M
+p5 <- sim.results.base %>% 
+  filter(Gender == 0, Age >=15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(pop = sum(Population * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NAlive_A014_M_sd = sd(pop), 
+            NAlive_A014_M = mean(pop), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    NAlive_A014_95LL = lower_ci(NAlive_A014_M, NAlive_A014_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    NAlive_A014_95UL = upper_ci(NAlive_A014_M, NAlive_A014_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-NAlive_A014_M_sd)
+
+# NAlive_A099_M
+p6 <- sim.results.base %>% 
+  filter(Gender == 0, Age >=15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(pop = sum(Population * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NAlive_A099_M_sd = sd(pop), 
+            NAlive_A099_M = mean(pop), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    NAlive_A099_95LL = lower_ci(NAlive_A099_M, NAlive_A099_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    NAlive_A099_95UL = upper_ci(NAlive_A099_M, NAlive_A099_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-NAlive_A099_M_sd)
+
+# NAlive_FSW1599_M
+p7 <- sim.results.base %>% 
+  filter(Gender == 0, Age >=15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(pop = sum(Population * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NAlive_FSW1599_M_sd = sd(pop), 
+            NAlive_FSW1599_M = mean(pop), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    NAlive_A099_95LL = lower_ci(NAlive_FSW1599_M, NAlive_FSW1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    NAlive_A099_95UL = upper_ci(NAlive_FSW1599_M, NAlive_FSW1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-NAlive_FSW1599_M_sd)
+
+NAlive.base <- merge(p1, p2, by = 'Year') %>% 
+  merge(p3, by = 'Year') %>% 
+  merge(p4, by = 'Year') %>%
+  merge(p5, by = 'Year') %>%
+  merge(p6, by = 'Year') %>%
+  merge(p7, by = 'Year') %>%
+  mutate(Year = floor(Year)) 
+```
+
+## PLHIV
+
+### PrEP Scenario
+```{r}
+# NHIV_M1599_M
+p1 <- sim.results.prep %>% 
+  filter(Age >=15, Gender == 0) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(pop = sum(Population * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NHIV_M1599_M_sd = sd(pop), 
+            NHIV_M1599_M = mean(pop), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    NHIV_M1599_95LL = lower_ci(NHIV_M1599_M, NHIV_M1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    NHIV_M1599_95UL = upper_ci(NHIV_M1599_M, NHIV_M1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-NHIV_M1599_M_sd)
+
+# NHIV_F1599_M
+p2 <- sim.results.prep %>% 
+  filter(Age >=15, Gender == 1) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(pop = sum(Population * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NHIV_F1599_M_sd = sd(pop), 
+            NHIV_F1599_M = mean(pop), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    NHIV_F1599_95LL = lower_ci(NHIV_F1599_M, NHIV_F1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    NHIV_F1599_95UL = upper_ci(NHIV_F1599_M, NHIV_F1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-NHIV_F1599_M_sd)
+
+# NHIV_A014_M
+p3 <- sim.results.prep %>% 
+  filter(Age < 15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(pop = sum(Population * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NHIV_A014_M_sd = sd(pop), 
+            NHIV_A014_M = mean(pop), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    NHIV_A014_95LL = lower_ci(NHIV_A014_M, NHIV_A014_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    NHIV_A014_95UL = upper_ci(NHIV_A014_M, NHIV_A014_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-NHIV_A014_M_sd)
+
+# NHIV_FSW1599_M
+p4 <- sim.results.prep %>% 
+  filter(Gender == 1, Age >=15, IP_Key.Risk == "HIGH") %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(pop = sum(Population * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NHIV_FSW1599_M_sd = sd(pop), 
+            NHIV_FSW1599_M = mean(pop), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    NHIV_FSW1599_LL = lower_ci(NHIV_FSW1599_M, NHIV_FSW1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    NHIV_FSW1599_UL = upper_ci(NHIV_FSW1599_M, NHIV_FSW1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-NHIV_FSW1599_M_sd)
+
+NHIV.prep <- merge(p1, p2, by = 'Year') %>% 
+  merge(p3, by = 'Year') %>% 
+  merge(p4, by = 'Year') %>%
+  mutate(Year = floor(Year)) 
+```
+
+### Essential Scenario
+```{r}
+# NHIV_M1599_M
+p1 <- sim.results.base %>% 
+  filter(Age >=15, Gender == 0) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(pop = sum(Population * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NHIV_M1599_M_sd = sd(pop), 
+            NHIV_M1599_M = mean(pop), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    NHIV_M1599_95LL = lower_ci(NHIV_M1599_M, NHIV_M1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    NHIV_M1599_95UL = upper_ci(NHIV_M1599_M, NHIV_M1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-NHIV_M1599_M_sd)
+
+# NHIV_F1599_M
+p2 <- sim.results.base %>% 
+  filter(Age >=15, Gender == 1) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(pop = sum(Population * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NHIV_F1599_M_sd = sd(pop), 
+            NHIV_F1599_M = mean(pop), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    NHIV_F1599_95LL = lower_ci(NHIV_F1599_M, NHIV_F1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    NHIV_F1599_95UL = upper_ci(NHIV_F1599_M, NHIV_F1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-NHIV_F1599_M_sd)
+
+# NHIV_A014_M
+p3 <- sim.results.base %>% 
+  filter(Age < 15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(pop = sum(Population * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NHIV_A014_M_sd = sd(pop), 
+            NHIV_A014_M = mean(pop), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    NHIV_A014_95LL = lower_ci(NHIV_A014_M, NHIV_A014_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    NHIV_A014_95UL = upper_ci(NHIV_A014_M, NHIV_A014_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-NHIV_A014_M_sd)
+
+# NHIV_FSW1599_M
+p4 <- sim.results.base %>% 
+  filter(Gender == 1, Age >=15, IP_Key.Risk == "HIGH") %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(pop = sum(Population * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(NHIV_FSW1599_M_sd = sd(pop), 
+            NHIV_FSW1599_M = mean(pop), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    NHIV_FSW1599_LL = lower_ci(NHIV_FSW1599_M, NHIV_FSW1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    NHIV_FSW1599_UL = upper_ci(NHIV_FSW1599_M, NHIV_FSW1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-NHIV_FSW1599_M_sd)
+
+NHIV.base <- merge(p1, p2, by = 'Year') %>% 
+  merge(p3, by = 'Year') %>% 
+  merge(p4, by = 'Year') %>%
+  mutate(Year = floor(Year)) 
+```
+
+
+## Prevalence
+
+### PrEP Scenario
+```{r}
+# HIVprev_M1549_M
+p1 <- sim.results.prep %>% 
+  filter(Age >=15, Age<50, Gender == 0) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(pop = sum(Population * pop.scaling.factor), 
+            PLHIV = sum(Infected*pop.scaling.factor), .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(prev = case_when(pop > 0 ~ PLHIV/pop,
+                          pop == 0 ~ 0)) %>% 
+  group_by(Year) %>% 
+  summarize(HIVprev_M1549_M_sd = sd(prev), 
+            HIVprev_M1549_M = mean(prev), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    HIVprev_M1549_95LL = lower_ci(HIVprev_M1549_M, HIVprev_M1549_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    HIVprev_M1549_95UL = upper_ci(HIVprev_M1549_M, HIVprev_M1549_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-HIVprev_M1549_M_sd)
+
+# HIVprev_F1549_M
+p2 <- sim.results.prep %>% 
+  filter(Age >=15, Age<50, Gender == 1) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(pop = sum(Population * pop.scaling.factor), 
+            PLHIV = sum(Infected*pop.scaling.factor), .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(prev = case_when(pop > 0 ~ PLHIV/pop,
+                          pop == 0 ~ 0)) %>% 
+  group_by(Year) %>% 
+  summarize(HIVprev_F1549_M_sd = sd(prev), 
+            HIVprev_F1549_M = mean(prev), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    HIVprev_F1549_95LL = lower_ci(HIVprev_F1549_M, HIVprev_F1549_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    HIVprev_F1549_95UL = upper_ci(HIVprev_F1549_M, HIVprev_F1549_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-HIVprev_F1549_M_sd)
+
+# HIVprev_A1549_M
+p3 <- sim.results.prep %>% 
+  filter(Age >=15, Age<50) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(pop = sum(Population * pop.scaling.factor), 
+            PLHIV = sum(Infected*pop.scaling.factor), .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(prev = case_when(pop > 0 ~ PLHIV/pop,
+                          pop == 0 ~ 0)) %>% 
+  group_by(Year) %>% 
+  summarize(HIVprev_A1549_M_sd = sd(prev), 
+            HIVprev_A1549_M = mean(prev), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    HIVprev_A1549_95LL = lower_ci(HIVprev_A1549_M, HIVprev_A1549_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    HIVprev_A1549_95UL = upper_ci(HIVprev_A1549_M, HIVprev_A1549_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-HIVprev_A1549_M_sd)
+
+# HIVprev_F1524_M
+p4 <- sim.results.prep %>% 
+  filter(Age >=15, Age<25, Gender == 1) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(pop = sum(Population * pop.scaling.factor), 
+            PLHIV = sum(Infected*pop.scaling.factor), .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(prev = case_when(pop > 0 ~ PLHIV/pop,
+                          pop == 0 ~ 0)) %>% 
+  group_by(Year) %>% 
+  summarize(HIVprev_F1524_M_sd = sd(prev), 
+            HIVprev_F1524_M = mean(prev), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    HIVprev_F1524_95LL = lower_ci(HIVprev_F1524_M, HIVprev_F1524_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    HIVprev_F1524_95UL = upper_ci(HIVprev_F1524_M, HIVprev_F1524_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-HIVprev_F1524_M_sd)
+
+# HIVprev_FSW1599_M
+p5 <- sim.results.prep %>% 
+  filter(Age >=15, Gender == 1, IP_Key.Risk == "HIGH") %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(pop = sum(Population * pop.scaling.factor), 
+            PLHIV = sum(Infected*pop.scaling.factor), .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(prev = case_when(pop > 0 ~ PLHIV/pop,
+                          pop == 0 ~ 0)) %>% 
+  group_by(Year) %>% 
+  summarize(HIVprev_FSW1599_M_sd = sd(prev), 
+            HIVprev_FSW1599_M = mean(prev), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    HIVprev_FSW1599_95LL = lower_ci(HIVprev_FSW1599_M, HIVprev_FSW1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    HIVprev_FSW1599_95UL = upper_ci(HIVprev_FSW1599_M, HIVprev_FSW1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-HIVprev_FSW1599_M_sd)
+
+HIVprev.prep <- merge(p1, p2, by = 'Year') %>% 
+  merge(p3, by = 'Year') %>% 
+  merge(p4, by = 'Year') %>%
+  merge(p5, by = 'Year') %>%
+  mutate(Year = floor(Year)) 
+```
+
+### Essential Scenario
+```{r}
+# HIVprev_M1549_M
+p1 <- sim.results.base %>% 
+  filter(Age >=15, Age<50, Gender == 0) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(pop = sum(Population * pop.scaling.factor), 
+            PLHIV = sum(Infected*pop.scaling.factor), .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(prev = case_when(pop > 0 ~ PLHIV/pop,
+                          pop == 0 ~ 0)) %>% 
+  group_by(Year) %>% 
+  summarize(HIVprev_M1549_M_sd = sd(prev), 
+            HIVprev_M1549_M = mean(prev), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    HIVprev_M1549_95LL = lower_ci(HIVprev_M1549_M, HIVprev_M1549_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    HIVprev_M1549_95UL = upper_ci(HIVprev_M1549_M, HIVprev_M1549_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-HIVprev_M1549_M_sd)
+
+# HIVprev_F1549_M
+p2 <- sim.results.base %>% 
+  filter(Age >=15, Age<50, Gender == 1) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(pop = sum(Population * pop.scaling.factor), 
+            PLHIV = sum(Infected*pop.scaling.factor), .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(prev = case_when(pop > 0 ~ PLHIV/pop,
+                          pop == 0 ~ 0)) %>% 
+  group_by(Year) %>% 
+  summarize(HIVprev_F1549_M_sd = sd(prev), 
+            HIVprev_F1549_M = mean(prev), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    HIVprev_F1549_95LL = lower_ci(HIVprev_F1549_M, HIVprev_F1549_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    HIVprev_F1549_95UL = upper_ci(HIVprev_F1549_M, HIVprev_F1549_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-HIVprev_F1549_M_sd)
+
+# HIVprev_A1549_M
+p3 <- sim.results.base %>% 
+  filter(Age >=15, Age<50) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(pop = sum(Population * pop.scaling.factor), 
+            PLHIV = sum(Infected*pop.scaling.factor), .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(prev = case_when(pop > 0 ~ PLHIV/pop,
+                          pop == 0 ~ 0)) %>% 
+  group_by(Year) %>% 
+  summarize(HIVprev_A1549_M_sd = sd(prev), 
+            HIVprev_A1549_M = mean(prev), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    HIVprev_A1549_95LL = lower_ci(HIVprev_A1549_M, HIVprev_A1549_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    HIVprev_A1549_95UL = upper_ci(HIVprev_A1549_M, HIVprev_A1549_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-HIVprev_A1549_M_sd)
+
+# HIVprev_F1524_M
+p4 <- sim.results.base %>% 
+  filter(Age >=15, Age<25, Gender == 1) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(pop = sum(Population * pop.scaling.factor), 
+            PLHIV = sum(Infected*pop.scaling.factor), .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(prev = case_when(pop > 0 ~ PLHIV/pop,
+                          pop == 0 ~ 0)) %>% 
+  group_by(Year) %>% 
+  summarize(HIVprev_F1524_M_sd = sd(prev), 
+            HIVprev_F1524_M = mean(prev), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    HIVprev_F1524_95LL = lower_ci(HIVprev_F1524_M, HIVprev_F1524_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    HIVprev_F1524_95UL = upper_ci(HIVprev_F1524_M, HIVprev_F1524_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-HIVprev_F1524_M_sd)
+
+# HIVprev_FSW1599_M
+p5 <- sim.results.base %>% 
+  filter(Age >=15, Gender == 1, IP_Key.Risk == "HIGH") %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(pop = sum(Population * pop.scaling.factor), 
+            PLHIV = sum(Infected*pop.scaling.factor), .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(prev = case_when(pop > 0 ~ PLHIV/pop,
+                          pop == 0 ~ 0)) %>% 
+  group_by(Year) %>% 
+  summarize(HIVprev_FSW1599_M_sd = sd(prev), 
+            HIVprev_FSW1599_M = mean(prev), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    HIVprev_FSW1599_95LL = lower_ci(HIVprev_FSW1599_M, HIVprev_FSW1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    HIVprev_FSW1599_95UL = upper_ci(HIVprev_FSW1599_M, HIVprev_FSW1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-HIVprev_FSW1599_M_sd)
+
+HIVprev.base <- merge(p1, p2, by = 'Year') %>% 
+  merge(p3, by = 'Year') %>% 
+  merge(p4, by = 'Year') %>%
+  merge(p5, by = 'Year') %>%
+  mutate(Year = floor(Year)) 
+```
+
+## Deaths
+
+### PrEP Scenario
+```{r}
+# TOTDeaths_M1599_M
+p1 <- sim.results.prep %>% 
+  mutate(Year = ceiling(Year)) %>% 
+  filter(Age >=15, Gender == 0) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(TOTDeaths_M1599_M = sum(Died * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(TOTDeaths_M1599_M_sd = sd(TOTDeaths_M1599_M), 
+            TOTDeaths_M1599_M = mean(TOTDeaths_M1599_M), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    TOTDeaths_M1599_95LL = lower_ci(TOTDeaths_M1599_M, TOTDeaths_M1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    TOTDeaths_M1599_95UL = upper_ci(TOTDeaths_M1599_M, TOTDeaths_M1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-TOTDeaths_M1599_M_sd)
+
+# TOTDeaths_F1599_M
+p2 <- sim.results.prep %>% 
+  mutate(Year = ceiling(Year)) %>% 
+  filter(Age >=15, Gender == 1) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(TOTDeaths_F1599_M = sum(Died * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(TOTDeaths_F1599_M_sd = sd(TOTDeaths_F1599_M), 
+            TOTDeaths_F1599_M = mean(TOTDeaths_F1599_M), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    TOTDeaths_F1599_95LL = lower_ci(TOTDeaths_F1599_M, TOTDeaths_F1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    TOTDeaths_F1599_95UL = upper_ci(TOTDeaths_F1599_M, TOTDeaths_F1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-TOTDeaths_F1599_M_sd)
+
+# TOTDeaths_A014_M
+p3 <- sim.results.prep %>% 
+  mutate(Year = ceiling(Year)) %>% 
+  filter(Age <15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(TOTDeaths_A014_M = sum(Died * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(TOTDeaths_A014_M_sd = sd(TOTDeaths_A014_M), 
+            TOTDeaths_A014_M = mean(TOTDeaths_A014_M), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    TOTDeaths_A014_95LL = lower_ci(TOTDeaths_A014_M, TOTDeaths_A014_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    TOTDeaths_A014_95UL = upper_ci(TOTDeaths_A014_M, TOTDeaths_A014_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-TOTDeaths_A014_M_sd)
+
+# TOTDeaths_A1599_M
+p4 <- sim.results.prep %>% 
+  mutate(Year = ceiling(Year)) %>% 
+  filter(Age <15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(TOTDeaths_A1599_M = sum(Died * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(TOTDeaths_A1599_M_sd = sd(TOTDeaths_A1599_M), 
+            TOTDeaths_A1599_M = mean(TOTDeaths_A1599_M), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    TOTDeaths_A1599_95LL = lower_ci(TOTDeaths_A1599_M, TOTDeaths_A1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    TOTDeaths_A1599_95UL = upper_ci(TOTDeaths_A1599_M, TOTDeaths_A1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-TOTDeaths_A1599_M_sd)
+
+
+TOTDeaths.prep <- merge(p1, p2, by = 'Year') %>% 
+  merge(p3, by = 'Year') %>% 
+  merge(p4, by = 'Year') %>%
+  mutate(Year = floor(Year)) 
+```
+
+
+### Essential Scenario
+```{r}
+# TOTDeaths_M1599_M
+p1 <- sim.results.base %>% 
+  mutate(Year = ceiling(Year)) %>% 
+  filter(Age >=15, Gender == 0) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(TOTDeaths_M1599_M = sum(Died * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(TOTDeaths_M1599_M_sd = sd(TOTDeaths_M1599_M), 
+            TOTDeaths_M1599_M = mean(TOTDeaths_M1599_M), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    TOTDeaths_M1599_95LL = lower_ci(TOTDeaths_M1599_M, TOTDeaths_M1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    TOTDeaths_M1599_95UL = upper_ci(TOTDeaths_M1599_M, TOTDeaths_M1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-TOTDeaths_M1599_M_sd)
+
+# TOTDeaths_F1599_M
+p2 <- sim.results.base %>% 
+  mutate(Year = ceiling(Year)) %>% 
+  filter(Age >=15, Gender == 1) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(TOTDeaths_F1599_M = sum(Died * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(TOTDeaths_F1599_M_sd = sd(TOTDeaths_F1599_M), 
+            TOTDeaths_F1599_M = mean(TOTDeaths_F1599_M), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    TOTDeaths_F1599_95LL = lower_ci(TOTDeaths_F1599_M, TOTDeaths_F1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    TOTDeaths_F1599_95UL = upper_ci(TOTDeaths_F1599_M, TOTDeaths_F1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-TOTDeaths_F1599_M_sd)
+
+# TOTDeaths_A014_M
+p3 <- sim.results.base %>% 
+  mutate(Year = ceiling(Year)) %>% 
+  filter(Age <15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(TOTDeaths_A014_M = sum(Died * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(TOTDeaths_A014_M_sd = sd(TOTDeaths_A014_M), 
+            TOTDeaths_A014_M = mean(TOTDeaths_A014_M), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    TOTDeaths_A014_95LL = lower_ci(TOTDeaths_A014_M, TOTDeaths_A014_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    TOTDeaths_A014_95UL = upper_ci(TOTDeaths_A014_M, TOTDeaths_A014_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-TOTDeaths_A014_M_sd)
+
+# TOTDeaths_A1599_M
+p4 <- sim.results.base %>% 
+  mutate(Year = ceiling(Year)) %>% 
+  filter(Age <15) %>% 
+  group_by(Year, sim.id) %>% 
+  summarize(TOTDeaths_A1599_M = sum(Died * pop.scaling.factor), .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(TOTDeaths_A1599_M_sd = sd(TOTDeaths_A1599_M), 
+            TOTDeaths_A1599_M = mean(TOTDeaths_A1599_M), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    TOTDeaths_A1599_95LL = lower_ci(TOTDeaths_A1599_M, TOTDeaths_A1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    TOTDeaths_A1599_95UL = upper_ci(TOTDeaths_A1599_M, TOTDeaths_A1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-TOTDeaths_A1599_M_sd)
+
+
+TOTDeaths.base <- merge(p1, p2, by = 'Year') %>% 
+  merge(p3, by = 'Year') %>% 
+  merge(p4, by = 'Year') %>%
+  mutate(Year = floor(Year)) 
+```
+
+## Testing
+
+## PrEP
+
+Unfortunately this part isn't ready yet
+
+# Write out results to form
+
+## PrEP Scenario
 ```{r}
 analysis.path <- "/gpfs/data/bershteynlab/EMOD/citrod01/ZWE_calib_20220627/Analysis/"
 
@@ -982,13 +2234,26 @@ analysis.path <- "/gpfs/data/bershteynlab/EMOD/citrod01/ZWE_calib_20220627/Analy
       by = "Year") %>% 
   merge(prep.prep.summary  %>% filter(Year >= 2022),
         by = "Year") %>% 
+  merge(TOTDeaths.prep %>% filter(Year >= 2022),
+        by = "Year") %>%  
   write_csv(file = paste0(analysis.path, 'Template_FLOW_prep_scenario.csv'))
 
+
 ylds.current.prep %>% filter(Year >= 2023) %>% 
+  merge(NAlive.prep %>% filter(Year >= 2023),
+        by = "Year") %>% 
+  merge(NHIV.prep %>% filter(Year >= 2023),
+        by = "Year") %>% 
+  merge(HIVprev.prep %>% filter(Year >= 2023),
+        by = "Year") %>% 
+  merge(NOnART.current.prep %>% filter(Year >= 2023),
+      by = "Year") %>% 
+  merge(P_onART.current.prep %>% filter(Year >= 2023),
+      by = "Year") %>% 
   write_csv(file = paste0(analysis.path, 'Template_STOCK_prep_scenario.csv'))
 ```
 
-### Essential Scenario
+## Essential Scenario
 ```{r}
 analysis.path <- "/gpfs/data/bershteynlab/EMOD/citrod01/ZWE_calib_20220627/Analysis/"
 
@@ -997,9 +2262,21 @@ analysis.path <- "/gpfs/data/bershteynlab/EMOD/citrod01/ZWE_calib_20220627/Analy
       by = "Year") %>% 
   merge(prep.base.summary  %>% filter(Year >= 2022),
         by = "Year") %>% 
+    merge(TOTDeaths.base %>% filter(Year >= 2022),
+        by = "Year") %>%  
   write_csv(file = paste0(analysis.path, 'Template_FLOW_essential_scenario.csv'))
 
 ylds.current.base %>% filter(Year >= 2023) %>% 
+    merge(NAlive.base %>% filter(Year >= 2023),
+        by = "Year") %>% 
+  merge(NHIV.base %>% filter(Year >= 2023),
+        by = "Year") %>% 
+  merge(HIVprev.base %>% filter(Year >= 2023),
+        by = "Year") %>% 
+  merge(NOnART.current.base %>% filter(Year >= 2023),
+      by = "Year") %>% 
+  merge(P_onART.current.base %>% filter(Year >= 2023),
+      by = "Year") %>% 
   write_csv(file = paste0(analysis.path, 'Template_STOCK_essential_scenario.csv'))
 ```
 
