@@ -129,121 +129,6 @@ nruns
 ```
 
 
-# Compare results to calibration targets
-
-## Prevalence plots
-
-```{r Prevalence calibration targets}
-zwe.phia = data.frame(
-  Year = c(2016, 2016),
-  Gender = c("Male", "Female"),
-  mean.prev= c(12, 16),
-  lower = c(11.1, 15.3),
-  upper = c(12.8,16.8)
-)
-zwe.dhs = data.frame(
-  Year = c(2006, 2010, 2015, 2006, 2010, 2015),
-  Gender = c("Male", "Male", "Male", "Female", "Female", "Female"),
-  mean.prev = c(14.5, 12.3, 10.5, 21.1, 17.7, 16.7),
-  lower = c(13.2, 11.3, 9.5, 19.6, 16.6, 15.5),
-  upper = c(15.9, 13.3, 11.5, 22.6, 18.8, 17.8)
-)
- 
-prev.target <- rbind(zwe.phia, zwe.dhs) %>% arrange(Year, Gender)
-```
-
-```{r Prevalence}
-p <- EMODAnalyzeR::emodplot.prevalence(
-      #sim.results.base %>% filter(Age >= 15, Age < 50),
-      sim.results.prep %>% filter(Age >= 15, Age < 50),
-  date.start = 1990,
-  date.end = 2020
-)
-
-p +
-  geom_errorbar(data = prev.target,
-             mapping = aes(x = Year, ymin = lower/100, ymax = upper/100)) + 
-  facet_wrap(~ Gender, ncol=2)
-```
-
-```{r Prevalence by Age}
-
-# Read in the calibration targets data
-prev.target <- read_csv("/gpfs/data/bershteynlab/EMOD/citrod01/ZWE_calib_20220627/Analysis/zwe_age_prevalence_data.csv")
-
-# Convenient relabels of age bins
-prev.target$Age = factor(prev.target$AgeBin, 
-                         levels = c("[0:5)", "[5:10)", "[10:15)", "[15:20)", "[20:25)", "[25:30)", "[30:35)", "[35:40)", "[40:45)", "[45:50)", "[50:55)", "[55:60)", "[60:65)"),
-                         labels = c(1:13)
-                         )
-
-prev.target$Year.label = factor(prev.target$Year, 
-                          levels = c(2006.0, 2011.0, 2015.0, 2016),
-                          labels = c( "2006 (DHS)","2011 (DHS)", "2015 (DHS)", "2016 (PHIA)"))
-
-#head(prev.target)
-
-```
-
-```{r}
-age_bins = c(0,5,10,15,20,25,30,35,40,45,50,55,60,65)
-age_labels = c()
-for (i in 1:(length(age_bins) - 1)){
-  age_labels <- append(age_labels, paste0("[",age_bins[i],":",age_bins[i + 1],")"))
-}
-
-subset_years = c(2006.0, 2011.0, 2015.0, 2016)
-
-data <- sim.results.prep %>% 
-  select(Year, Age, Gender, sim.id, Infected, Population) %>% 
-  filter(Year %in% subset_years) %>% 
-  mutate(AgeBin = cut(Age, breaks = age_bins, right = FALSE)) %>% 
-  group_by(Year, AgeBin, Gender, sim.id) %>% 
-  summarize(Infected = sum(Infected), Population = sum(Population)) %>% ungroup() %>% 
-  mutate(Prevalence = Infected/Population)
-
-data.mean <-  data %>% 
-  group_by(Year, AgeBin, Gender) %>% 
-  summarize(Prevalence = mean(Prevalence), .groups = 'keep')  %>% 
-  ungroup() %>% 
-  mutate(Gender = case_when(Gender==0 ~ "Male", Gender==1 ~ "Female"))
-data.mean$AgeBin_index = factor(data.mean$AgeBin,labels = 1:length(age_labels))
-
-ggplot() + 
-  geom_point(data.mean, mapping = aes(x = AgeBin_index, y = Prevalence), color = 'blue') + 
-  geom_point(data = prev.target, 
-             mapping = aes(x = Age, y = Prevalence)) + 
-  geom_errorbar(data = prev.target,
-                mapping = aes(x = Age, ymin = lower, ymax = upper)) +
-  facet_grid(cols = vars(Gender), rows = vars(Year)) 
-
-```
-
-## ART Plots
-
-```{r}
-xl.path = "/gpfs/data/bershteynlab/EMOD/citrod01/ZWE_calib_20220627/Data/calibration_ingest_form_ZWE_2022-07-15.xlsm"
-obs.onart.sheet <- EMODAnalyzeR::read.ingest.sheet(xl.path, sheet = 'Obs-OnART')
-```
-
-
-```{r}
-data <- sim.results.prep %>% 
-    group_by(Year, Gender, sim.id, scenario_name) %>% 
-    summarize(On_ART = sum(On_ART*pop.scaling.factor), 
-              Population = sum(Population*pop.scaling.factor), .groups = 'keep') %>% 
-  ungroup()
-
-p <- EMODAnalyzeR::emodplot.by_gender(data, 1990, 2040, 'On_ART', title="ART") 
-
-p + 
-  geom_point(data = obs.onart.sheet %>% filter(Province == "All", AgeBin == '[15:100)') %>% 
-    group_by(Year, Gender) %>% 
-    summarize(OnART = sum(OnART), .groups = 'keep'),
-    mapping= aes(x = Year, y = OnART))
-```
-
-
 # Extract Results for MIHPSA
 
 ## HIV Incidence
@@ -2222,6 +2107,123 @@ TOTDeaths.base <- merge(p1, p2, by = 'Year') %>%
 ## PrEP
 
 Unfortunately this part isn't ready yet
+
+
+# Compare results to calibration targets
+
+## Prevalence plots
+
+```{r Prevalence calibration targets}
+zwe.phia = data.frame(
+  Year = c(2016, 2016),
+  Gender = c("Male", "Female"),
+  mean.prev= c(12, 16),
+  lower = c(11.1, 15.3),
+  upper = c(12.8,16.8)
+)
+zwe.dhs = data.frame(
+  Year = c(2006, 2010, 2015, 2006, 2010, 2015),
+  Gender = c("Male", "Male", "Male", "Female", "Female", "Female"),
+  mean.prev = c(14.5, 12.3, 10.5, 21.1, 17.7, 16.7),
+  lower = c(13.2, 11.3, 9.5, 19.6, 16.6, 15.5),
+  upper = c(15.9, 13.3, 11.5, 22.6, 18.8, 17.8)
+)
+ 
+prev.target <- rbind(zwe.phia, zwe.dhs) %>% arrange(Year, Gender)
+```
+
+```{r Prevalence}
+p <- EMODAnalyzeR::emodplot.prevalence(
+      #sim.results.base %>% filter(Age >= 15, Age < 50),
+      sim.results.prep %>% filter(Age >= 15, Age < 50),
+  date.start = 1990,
+  date.end = 2020
+)
+
+p +
+  geom_errorbar(data = prev.target,
+             mapping = aes(x = Year, ymin = lower/100, ymax = upper/100)) + 
+  facet_wrap(~ Gender, ncol=2)
+```
+
+```{r Prevalence by Age}
+
+# Read in the calibration targets data
+prev.target <- read_csv("/gpfs/data/bershteynlab/EMOD/citrod01/ZWE_calib_20220627/Analysis/zwe_age_prevalence_data.csv")
+
+# Convenient relabels of age bins
+prev.target$Age = factor(prev.target$AgeBin, 
+                         levels = c("[0:5)", "[5:10)", "[10:15)", "[15:20)", "[20:25)", "[25:30)", "[30:35)", "[35:40)", "[40:45)", "[45:50)", "[50:55)", "[55:60)", "[60:65)"),
+                         labels = c(1:13)
+                         )
+
+prev.target$Year.label = factor(prev.target$Year, 
+                          levels = c(2006.0, 2011.0, 2015.0, 2016),
+                          labels = c( "2006 (DHS)","2011 (DHS)", "2015 (DHS)", "2016 (PHIA)"))
+
+#head(prev.target)
+
+```
+
+```{r}
+age_bins = c(0,5,10,15,20,25,30,35,40,45,50,55,60,65)
+age_labels = c()
+for (i in 1:(length(age_bins) - 1)){
+  age_labels <- append(age_labels, paste0("[",age_bins[i],":",age_bins[i + 1],")"))
+}
+
+subset_years = c(2006.0, 2011.0, 2015.0, 2016)
+
+data <- sim.results.prep %>% 
+  select(Year, Age, Gender, sim.id, Infected, Population) %>% 
+  filter(Year %in% subset_years) %>% 
+  mutate(AgeBin = cut(Age, breaks = age_bins, right = FALSE)) %>% 
+  group_by(Year, AgeBin, Gender, sim.id) %>% 
+  summarize(Infected = sum(Infected), Population = sum(Population)) %>% ungroup() %>% 
+  mutate(Prevalence = Infected/Population)
+
+data.mean <-  data %>% 
+  group_by(Year, AgeBin, Gender) %>% 
+  summarize(Prevalence = mean(Prevalence), .groups = 'keep')  %>% 
+  ungroup() %>% 
+  mutate(Gender = case_when(Gender==0 ~ "Male", Gender==1 ~ "Female"))
+data.mean$AgeBin_index = factor(data.mean$AgeBin,labels = 1:length(age_labels))
+
+ggplot() + 
+  geom_point(data.mean, mapping = aes(x = AgeBin_index, y = Prevalence), color = 'blue') + 
+  geom_point(data = prev.target, 
+             mapping = aes(x = Age, y = Prevalence)) + 
+  geom_errorbar(data = prev.target,
+                mapping = aes(x = Age, ymin = lower, ymax = upper)) +
+  facet_grid(cols = vars(Gender), rows = vars(Year)) 
+
+```
+
+## ART Plots
+
+```{r}
+xl.path = "/gpfs/data/bershteynlab/EMOD/citrod01/ZWE_calib_20220627/Data/calibration_ingest_form_ZWE_2022-07-15.xlsm"
+obs.onart.sheet <- EMODAnalyzeR::read.ingest.sheet(xl.path, sheet = 'Obs-OnART')
+```
+
+
+```{r}
+data <- sim.results.prep %>% 
+    group_by(Year, Gender, sim.id, scenario_name) %>% 
+    summarize(On_ART = sum(On_ART*pop.scaling.factor), 
+              Population = sum(Population*pop.scaling.factor), .groups = 'keep') %>% 
+  ungroup()
+
+p <- EMODAnalyzeR::emodplot.by_gender(data, 1990, 2040, 'On_ART', title="ART") 
+
+p + 
+  geom_point(data = obs.onart.sheet %>% filter(Province == "All", AgeBin == '[15:100)') %>% 
+    group_by(Year, Gender) %>% 
+    summarize(OnART = sum(OnART), .groups = 'keep'),
+    mapping= aes(x = Year, y = OnART))
+```
+
+
 
 # Write out results to form
 

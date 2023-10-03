@@ -507,6 +507,7 @@
                 "HIVNegativeHIVTest",
                 "Needs_PMTCT_Diagnostic_Test",
                 "NewlySymptomatic",
+                "Program_VMMC",
                 "ReceivePrEP_HIGH"
             ],
             "Report_HIV_Event_Channels_List": [ ],
