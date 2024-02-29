@@ -9,21 +9,19 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r Load libraries}
 library(tidyverse)
-library(tidyr)
 library(data.table)
 library(magrittr)
-library(ggplot2)
 library(devtools)
 devtools::install_github("BershteynLab/EMODAnalyzeR")
 
 ```
 
 ```{r Functions}
-
 # Confidence interval functions
 lower_ci <- function(mean, se, n, conf_level = 0.95){
   lower_ci <- mean - qt(1 - ((1 - conf_level) / 2), n - 1) * se/sqrt(n)
 }
+
 upper_ci <- function(mean, se, n, conf_level = 0.95){
   upper_ci <- mean + qt(1 - ((1 - conf_level) / 2), n - 1) * se/sqrt(n)
 }
@@ -45,11 +43,53 @@ There are two sets of outputs to analyze:
 ## Read in Essential Scenario Simulation
 
 ```{r}
-#res_path = "/gpfs/data/bershteynlab/EMOD/citrod01/ZWE_calib_20220627/ZWE_phase2/Baseline-campaign_ZWE_MIHPSA_2023_noprep-noprep/ReportHIVByAgeAndGender"
-res.path.prep = "/gpfs/data/bershteynlab/EMOD/citrod01/ZWE_calib_20220627/ZWE_phase2_2/Baseline-campaign_ZWE_MIHPSA_2023_noprep-noprep/ReportHIVByAgeAndGender"
+#res.path.noprep = "/gpfs/data/bershteynlab/EMOD/citrod01/ZWE_calib_20220627/ZWE_phase2_2/Baseline-campaign_ZWE_MIHPSA_2023_noprep-noprep/ReportHIVByAgeAndGender"
 
-sim.results.base <- EMODAnalyzeR::read.simulation.results(
-  results_path  = res.path.prep,
+res.path.noprep = "/gpfs/scratch/citrod01/experiments/Zimbabwe/Baseline-campaign_ZWE_MIHPSA_2023_noprep-noprep___2023_10_03_13_03_43_434191"
+
+sim.results.essential <- EMODAnalyzeR::read.simulation.results.bigpurple(
+  experiment_path = res.path.noprep,
+  scenario_name = 'noprep',
+  summarize_columns = c("Population","Infected", "On_ART",
+                        "Died", "Died_from_HIV",
+                        "Newly.Infected","Diagnosed", 
+                        "Newly.Tested.Positive", "Newly.Tested.Negative","HIVPositiveHIVTest","HIVNegativeHIVTest",
+                        "Needs_PMTCT_Diagnostic_Test","NewlySymptomatic",
+                        "Infected.CD4.Under.200..Not.On.ART.", "Infected.CD4.200.To.349..Not.On.ART.",
+                        "Infected.CD4.350.To.499..Not.On.ART.", "Infected.CD4.500.Plus..Not.On.ART.",
+                        "ReceivePrEP_HIGH", "Program_VMMC"),
+  stratify_columns = c("Year", "Gender", "Age", "IP_Key.Risk"),
+  min_age_inclusive = 0,
+  max_age_inclusive = 99
+)
+
+# sim.results.base <- EMODAnalyzeR::read.simulation.results(
+#   results_path  = res.path.noprep,
+#   scenario_name = 'noprep',
+#   summarize_columns = c("Population","Infected", "On_ART",
+#                         "Died", "Died_from_HIV",
+#                         "Newly.Infected","Diagnosed", 
+#                         "Newly.Tested.Positive", "Newly.Tested.Negative","HIVPositiveHIVTest","HIVNegativeHIVTest",
+#                         "Needs_PMTCT_Diagnostic_Test","NewlySymptomatic",
+#                         "Infected.CD4.Under.200..Not.On.ART.", "Infected.CD4.200.To.349..Not.On.ART.",
+#                         "Infected.CD4.350.To.499..Not.On.ART.", "Infected.CD4.500.Plus..Not.On.ART.",
+#                         "ReceivePrEP_HIGH", "Program_VMMC"),
+#   stratify_columns = c("Year", "Gender", "Age", "IP_Key.Risk"),
+#   min_age_inclusive = 0,
+#   max_age_inclusive = 99
+# )
+
+```
+
+## Read in PrEP Scenario Simulation Runs
+```{r Read in PrEP Scenario Simulation Runs}
+
+#res.path.prep = "/gpfs/data/bershteynlab/EMOD/citrod01/ZWE_calib_20220627/ZWE_phase2/Baseline-campaign_ZWE_MIHPSA_2023-prep/ReportHIVByAgeAndGender"
+
+res.path.prep = "/gpfs/scratch/citrod01/experiments/Zimbabwe/Baseline-campaign_ZWE_MIHPSA_2023-prep___2023_10_03_13_05_25_712004"
+
+sim.results.prep <- EMODAnalyzeR::read.simulation.results.bigpurple(
+  experiment_path = res.path.prep,
   scenario_name = 'prep',
   summarize_columns = c("Population","Infected", "On_ART",
                         "Died", "Died_from_HIV",
@@ -57,33 +97,26 @@ sim.results.base <- EMODAnalyzeR::read.simulation.results(
                         "Newly.Tested.Positive", "Newly.Tested.Negative","HIVPositiveHIVTest","HIVNegativeHIVTest",
                         "Needs_PMTCT_Diagnostic_Test","NewlySymptomatic",
                         "Infected.CD4.Under.200..Not.On.ART.", "Infected.CD4.200.To.349..Not.On.ART.",
-                        "Infected.CD4.350.To.499..Not.On.ART.", "Infected.CD4.500.Plus..Not.On.ART."),
-                        #"ReceivePrEP_HIGH"),
-  stratify_columns = c("Year", "Gender", "Age", "IP_Key.Risk"),
-  min_age_inclusive = 0,
-  max_age_inclusive = 99
-)
-
-```
-
-## Read in PrEP Scenario Simulation Runs
-```{r Read in PrEP Scenario Simulation Runs}
-
-res_path = "/gpfs/data/bershteynlab/EMOD/citrod01/ZWE_calib_20220627/ZWE_phase2/Baseline-campaign_ZWE_MIHPSA_2023-prep/ReportHIVByAgeAndGender"
-
-sim.results.prep <- EMODAnalyzeR::read.simulation.results(
-  results_path  = res_path,
-  scenario_name = 'prep',
-  summarize_columns = c("Population","Infected", "On_ART",
-                        "Died", "Died_from_HIV",
-                        "Newly.Infected","Diagnosed", 
-                        "Infected.CD4.Under.200..Not.On.ART.", "Infected.CD4.200.To.349..Not.On.ART.",
                         "Infected.CD4.350.To.499..Not.On.ART.", "Infected.CD4.500.Plus..Not.On.ART.",
-                        "ReceivePrEP_HIGH"),
+                        "ReceivePrEP_HIGH", "Program_VMMC"),
   stratify_columns = c("Year", "Gender", "Age", "IP_Key.Risk"),
   min_age_inclusive = 0,
   max_age_inclusive = 99
 )
+
+# sim.results.prep <- EMODAnalyzeR::read.simulation.results(
+#   results_path  = res.path.prep,
+#   scenario_name = 'prep',
+#   summarize_columns = c("Population","Infected", "On_ART",
+#                         "Died", "Died_from_HIV",
+#                         "Newly.Infected","Diagnosed", 
+#                         "Infected.CD4.Under.200..Not.On.ART.", "Infected.CD4.200.To.349..Not.On.ART.",
+#                         "Infected.CD4.350.To.499..Not.On.ART.", "Infected.CD4.500.Plus..Not.On.ART.",
+#                         "ReceivePrEP_HIGH", "Program_VMMC"),
+#   stratify_columns = c("Year", "Gender", "Age", "IP_Key.Risk"),
+#   min_age_inclusive = 0,
+#   max_age_inclusive = 99
+# )
 
 
 ```
@@ -93,13 +126,13 @@ sim.results.prep <- EMODAnalyzeR::read.simulation.results(
 CENSUS_YEAR = 2010
 ZWE_CENSUS_POP = 12696893 # WPP data
 
-sim.results.pop.scaling <- sim.results.base %>% 
+sim.results.pop.scaling <- sim.results.essential %>% 
       filter(Year == CENSUS_YEAR) %>%
       group_by(sim.id) %>%
       summarize(total.pop = sum(Population), .groups = 'keep') %>% 
       mutate(pop.scaling.factor = ZWE_CENSUS_POP/total.pop)
 
-sim.results.base <- sim.results.base %>% 
+sim.results.essential <- sim.results.essential %>% 
   inner_join(
     sim.results.pop.scaling,
     by = c("sim.id")
@@ -123,7 +156,7 @@ sim.results.prep <- sim.results.prep %>%
 ```
 
 ```{r}
-nruns = sim.results.base$sim.ix %>% unique %>% length()
+nruns = sim.results.essential$sim.ix %>% unique %>% length()
 
 nruns
 ```
@@ -2108,6 +2141,75 @@ TOTDeaths.base <- merge(p1, p2, by = 'Year') %>%
 
 Unfortunately this part isn't ready yet
 
+## VMMC
+
+NB: we distribute VMMC to 10-25 year olds, which is slightly different from the metric we are being asked for here.
+
+### PrEP scenario
+
+```{r}
+VMMC_prep <- sim.results.prep %>% 
+  filter(Age >=10, Age < 50) %>% 
+  group_by(Year, sim.ix, scenario_name) %>% 
+  summarize(CIRC_PREV_M1549_M = sum(Program_VMMC*pop.scaling.factor), .groups = "keep") %>% 
+  group_by(Year) %>% 
+  summarize(CIRC_PREV_M1549_M_sd = sd(CIRC_PREV_M1549_M), 
+            CIRC_PREV_M1549_M = mean(CIRC_PREV_M1549_M), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    CIRC_PREV_M1549_95LL = lower_ci(CIRC_PREV_M1549_M, CIRC_PREV_M1549_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    CIRC_PREV_M1549_95UL = upper_ci(CIRC_PREV_M1549_M, CIRC_PREV_M1549_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-CIRC_PREV_M1549_M_sd)
+```
+
+
+### Essential scenario
+
+```{r}
+VMMC_essential <- sim.results.essential %>% 
+  filter(Age >=10, Age < 50) %>% 
+  group_by(Year, sim.ix, scenario_name) %>% 
+  summarize(CIRC_PREV_M1549_M = sum(Program_VMMC*pop.scaling.factor), .groups = "keep") %>% 
+  group_by(Year) %>% 
+  summarize(CIRC_PREV_M1549_M_sd = sd(CIRC_PREV_M1549_M), 
+            CIRC_PREV_M1549_M = mean(CIRC_PREV_M1549_M), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    CIRC_PREV_M1549_95LL = lower_ci(CIRC_PREV_M1549_M, CIRC_PREV_M1549_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    CIRC_PREV_M1549_95UL = upper_ci(CIRC_PREV_M1549_M, CIRC_PREV_M1549_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-CIRC_PREV_M1549_M_sd)
+```
+
+### Plot
+
+```{r}
+ggplot() + 
+  geom_point(
+    data = VMMC_prep,
+    mapping = aes(x = Year, y = CIRC_PREV_M1549_M), color = 'red') + 
+  geom_errorbar(
+    data = VMMC_prep,
+    mapping = aes(x = Year, ymin = CIRC_PREV_M1549_95LL, ymax = CIRC_PREV_M1549_95UL), color = 'red') + 
+  geom_point(
+    data = VMMC_essential,
+    mapping = aes(x = Year, y = CIRC_PREV_M1549_M), color = 'blue') +
+  geom_errorbar(
+    data = VMMC_essential,
+    mapping = aes(x = Year, ymin = CIRC_PREV_M1549_95LL, ymax = CIRC_PREV_M1549_95UL), color = 'blue')
+```
+
+### Save
+
+```{r}
+# write_csv(VMMC_essential, "ZWE_MIHPSA_VMMC_essential.csv")
+
+# write_csv(VMMC_prep, "ZWE_MIHPSA_VMMC_prep.csv")
+```
+
 
 # Compare results to calibration targets
 
@@ -2248,6 +2350,8 @@ ylds.current.prep %>% filter(Year >= 2023) %>%
         by = "Year") %>% 
   merge(HIVprev.prep %>% filter(Year >= 2023),
         by = "Year") %>% 
+  merge(VMMC_prep %>% filter(Year >= 2023),
+        by = "Year") %>% 
   merge(NOnART.current.prep %>% filter(Year >= 2023),
       by = "Year") %>% 
   merge(P_onART.current.prep %>% filter(Year >= 2023),
@@ -2274,6 +2378,8 @@ ylds.current.base %>% filter(Year >= 2023) %>%
   merge(NHIV.base %>% filter(Year >= 2023),
         by = "Year") %>% 
   merge(HIVprev.base %>% filter(Year >= 2023),
+        by = "Year") %>% 
+    merge(VMMC_essential %>% filter(Year >= 2023),
         by = "Year") %>% 
   merge(NOnART.current.base %>% filter(Year >= 2023),
       by = "Year") %>% 
