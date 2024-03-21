@@ -917,6 +917,123 @@
             }
         },
         {
+            "Event_Name":"Pre-2018 testing rates",
+            "COMMENT": "Phase 1 results want to show dip in testing rates around 2018",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear",
+            "Event_Coordinator_Config":{
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Duration":21170,
+                    "Trigger_Condition_List": [
+                        "HCTTestingLoop1"
+                    ],
+                    "Actual_IndividualIntervention_Config": {
+                        "class":"HIVRandomChoice",
+                        "Choice_Names": [
+                            "HCTTestingLoopRapidTest"
+                        ],
+                        "Choice_Probabilities": [
+                            1
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "Event_Name":"Post-2018 testing rates, 2018",
+            "COMMENT": "Phase 1 results want to show dip in testing rates around 2020",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 2018,
+            "class": "CampaignEventByYear",
+            "Event_Coordinator_Config":{
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Duration":365,
+                    "Trigger_Condition_List": [
+                        "HCTTestingLoop1"
+                    ],
+                    "Actual_IndividualIntervention_Config": {
+                        "class":"HIVRandomChoice",
+                        "Choice_Names": [
+                            "HCTTestingLoopRapidTest",
+                            "HCTTestingLoop0"
+                        ],
+                        "Choice_Probabilities": [
+                            0.8355,
+                            0.1645
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "Event_Name":"Post-2018 testing rates, 2019",
+            "COMMENT": "Phase 1 results want to show dip in testing rates around 2020",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 2019,
+            "class": "CampaignEventByYear",
+            "Event_Coordinator_Config":{
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Duration":365,
+                    "Trigger_Condition_List": [
+                        "HCTTestingLoop1"
+                    ],
+                    "Actual_IndividualIntervention_Config": {
+                        "class":"HIVRandomChoice",
+                        "Choice_Names": [
+                            "HCTTestingLoopRapidTest",
+                            "HCTTestingLoop0"
+                        ],
+                        "Choice_Probabilities": [
+                            0.6519,
+                            0.3481
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "Event_Name":"Post-2018 testing rates, 2020",
+            "COMMENT": "Phase 1 results want to show dip in testing rates around 2020",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 2020,
+            "class": "CampaignEventByYear",
+            "Event_Coordinator_Config":{
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition_List": [
+                        "HCTTestingLoop1"
+                    ],
+                    "Actual_IndividualIntervention_Config": {
+                        "class":"HIVRandomChoice",
+                        "Choice_Names": [
+                            "HCTTestingLoopRapidTest",
+                            "HCTTestingLoop0"
+                        ],
+                        "Choice_Probabilities": [
+                            0.4148,
+                            0.5842
+                        ]
+                    }
+                }
+            }
+        },
+        {
             "Event_Name": "HCTTestingLoop: state 1 (HIV rapid diagnostic)",
             "class": "CampaignEventByYear",
             "Start_Year": 1990,
@@ -928,7 +1045,7 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": ["HCTTestingLoop1"],
+                    "Trigger_Condition_List": ["HCTTestingLoopRapidTest"],
                     "Actual_IndividualIntervention_Config": {
                         "class": "HIVRapidHIVDiagnostic",
                         "Event_Or_Config": "Event",

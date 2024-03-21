@@ -259,7 +259,8 @@
                 "Receive_Control_Intervention",
                 "Receive_DMPA_Intervention",
                 "End_of_Control_Label",
-                "End_of_Intervention_Label"
+                "End_of_Intervention_Label",
+                "HCTTestingLoopRapidTest"
             ],
             "Custom_Node_Events": [
                 "ARTStaging3",

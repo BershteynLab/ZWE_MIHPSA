@@ -15,6 +15,14 @@ Zimbabwe--0.01--rep3--test3/
 ZWE_calib_big_test/
 ZWE_calib_big/
 ZWE_mihpsa_worksheet/
-ZWE_phase2/
+ZWE_phase1/
+ZWE_phase1_2/
+ZWE_phase2_2/
+
 
 ZWE_MIHPSA.code-workspace
+.Rproj.user
+.Rhistory
+ZWE_calib_20220627.Rproj
+
+Analysis/*.csv
