@@ -1,3 +1,5 @@
 ﻿Scenario,Campaign
-noprep,campaign_ZWE_MIHPSA_2023_noprep.json
-prep,campaign_ZWE_MIHPSA_2023.json
+minimal,campaign_ZWE_MIHPSA_phase2_minimal.json
+vmmc,campaign_ZWE_MIHPSA_phase2_vmmc.json
+tdf_agyw,campaign_ZWE_MIHPSA_phase2_tdf_agyw.json
+tdf_fsw,campaign_ZWE_MIHPSA_phase2_tdf_fsw.json

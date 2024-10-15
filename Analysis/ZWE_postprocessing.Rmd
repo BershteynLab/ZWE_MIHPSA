@@ -13,7 +13,6 @@ library(data.table)
 library(magrittr)
 library(devtools)
 devtools::install_github("BershteynLab/EMODAnalyzeR")
-
 ```
 
 ```{r Functions}
@@ -45,6 +44,7 @@ There are two sets of outputs to analyze:
 ```{r}
 #res.path.noprep = "/gpfs/data/bershteynlab/EMOD/citrod01/ZWE_calib_20220627/ZWE_phase2_2/Baseline-campaign_ZWE_MIHPSA_2023_noprep-noprep/ReportHIVByAgeAndGender"
 
+# Results generated prior to changing the testing rates
 res.path.noprep = "/gpfs/scratch/citrod01/experiments/Zimbabwe/Baseline-campaign_ZWE_MIHPSA_2023_noprep-noprep___2023_10_03_13_03_43_434191"
 
 sim.results.essential <- EMODAnalyzeR::read.simulation.results.bigpurple(
@@ -58,26 +58,31 @@ sim.results.essential <- EMODAnalyzeR::read.simulation.results.bigpurple(
                         "Infected.CD4.Under.200..Not.On.ART.", "Infected.CD4.200.To.349..Not.On.ART.",
                         "Infected.CD4.350.To.499..Not.On.ART.", "Infected.CD4.500.Plus..Not.On.ART.",
                         "ReceivePrEP_HIGH", "Program_VMMC"),
-  stratify_columns = c("Year", "Gender", "Age", "IP_Key.Risk"),
+  stratify_columns = c("Year", "Gender", "Age", "IP_Key.Risk", "IsCircumcised"),
   min_age_inclusive = 0,
   max_age_inclusive = 99
 )
 
-# sim.results.base <- EMODAnalyzeR::read.simulation.results(
-#   results_path  = res.path.noprep,
-#   scenario_name = 'noprep',
-#   summarize_columns = c("Population","Infected", "On_ART",
-#                         "Died", "Died_from_HIV",
-#                         "Newly.Infected","Diagnosed", 
-#                         "Newly.Tested.Positive", "Newly.Tested.Negative","HIVPositiveHIVTest","HIVNegativeHIVTest",
-#                         "Needs_PMTCT_Diagnostic_Test","NewlySymptomatic",
-#                         "Infected.CD4.Under.200..Not.On.ART.", "Infected.CD4.200.To.349..Not.On.ART.",
-#                         "Infected.CD4.350.To.499..Not.On.ART.", "Infected.CD4.500.Plus..Not.On.ART.",
-#                         "ReceivePrEP_HIGH", "Program_VMMC"),
-#   stratify_columns = c("Year", "Gender", "Age", "IP_Key.Risk"),
-#   min_age_inclusive = 0,
-#   max_age_inclusive = 99
-# )
+#  Results using adjusted testing rates after 2018
+#res.path.noprep = "/gpfs/data/bershteynlab/EMOD/citrod01/ZWE_calib_20220627/ZWE_phase1_2_bad_testing/Baseline-campaign_ZWE_MIHPSA_2023_noprep-phase1/ReportHIVByAgeAndGender"
+
+res.path.noprep = "/gpfs/data/bershteynlab/EMOD/citrod01/ZWE_calib_20220627/ZWE_phase1_2/Baseline-campaign_ZWE_MIHPSA_2023_noprep-phase1/ReportHIVByAgeAndGender"
+
+sim.results.essential <- EMODAnalyzeR::read.simulation.results(
+  results_path  = res.path.noprep,
+  scenario_name = 'noprep',
+  summarize_columns = c("Population","Infected", "On_ART",
+                        "Died", "Died_from_HIV",
+                        "Newly.Infected","Diagnosed",
+                        "Newly.Tested.Positive", "Newly.Tested.Negative","HIVPositiveHIVTest","HIVNegativeHIVTest",
+                        "Needs_PMTCT_Diagnostic_Test","NewlySymptomatic",
+                        "Infected.CD4.Under.200..Not.On.ART.", "Infected.CD4.200.To.349..Not.On.ART.",
+                        "Infected.CD4.350.To.499..Not.On.ART.", "Infected.CD4.500.Plus..Not.On.ART.",
+                        "ReceivePrEP_HIGH", "Program_VMMC"),
+  stratify_columns = c("Year", "Gender", "Age", "IP_Key.Risk", "IsCircumcised"),
+  min_age_inclusive = 0,
+  max_age_inclusive = 99
+)
 
 ```
 
@@ -2137,6 +2142,80 @@ TOTDeaths.base <- merge(p1, p2, by = 'Year') %>%
 
 ## Testing
 
+Count tests over time in adults:
+
+```{r}
+# These are the data in the phase1 paper
+test.dat <- data.table(
+  year = c(2011, 2012, 2013,2014, 2015, 2016, 2017, 2018, 2019, 2020),
+  tests = c(1656719,	1868842,	1430246,	1756524,	2201250,	2664844,	3174630,	3011027,	2382768,	1521942)
+)
+```
+
+
+### Essential Scenario
+```{r}
+# TOTTests_M1599_M
+p1 <- sim.results.essential %>% 
+  mutate(Year = ceiling(Year)) %>% 
+  filter(Age >=15, Gender == 0) %>%
+  group_by(Year, sim.id) %>% 
+  summarize(TOTTests_M1599_M = sum((Newly.Tested.Positive + Newly.Tested.Negative) * pop.scaling.factor), 
+            .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(TOTTests_M1599_M_sd = sd(TOTTests_M1599_M), 
+            TOTTests_M1599_M = mean(TOTTests_M1599_M), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    TOTTests_M1599_95LL = lower_ci(TOTTests_M1599_M, TOTTests_M1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    TOTTests_M1599_95UL = upper_ci(TOTTests_M1599_M, TOTTests_M1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-TOTTests_M1599_M_sd)
+
+p2 <- sim.results.essential %>% 
+  mutate(Year = ceiling(Year)) %>% 
+  filter(Age >=15, Gender == 1) %>%
+  group_by(Year, sim.id) %>% 
+  summarize(TOTTests_M1599_M = sum((Newly.Tested.Positive + Newly.Tested.Negative) * pop.scaling.factor), 
+            .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(TOTTests_M1599_M_sd = sd(TOTTests_M1599_M), 
+            TOTTests_M1599_M = mean(TOTTests_M1599_M), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    TOTTests_M1599_95LL = lower_ci(TOTTests_M1599_M, TOTTests_M1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    TOTTests_M1599_95UL = upper_ci(TOTTests_M1599_M, TOTTests_M1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-TOTTests_M1599_M_sd)
+
+p3 <- sim.results.essential %>% 
+  mutate(Year = ceiling(Year)) %>% 
+  filter(Age >=15) %>%
+  group_by(Year, sim.id) %>% 
+  summarize(TOTTests_A1599_M = sum((Newly.Tested.Positive + Newly.Tested.Negative) * pop.scaling.factor), 
+            .groups = 'keep') %>% 
+  group_by(Year) %>% 
+  summarize(TOTTests_A1599_M_sd = sd(TOTTests_A1599_M), 
+            TOTTests_A1599_M = mean(TOTTests_A1599_M), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    TOTTests_A1599_95LL = lower_ci(TOTTests_A1599_M, TOTTests_A1599_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    TOTTests_A1599_95UL = upper_ci(TOTTests_A1599_M, TOTTests_A1599_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-TOTTests_A1599_M_sd)
+
+p3 %>% ggplot() + 
+  geom_line(mapping = aes(x = Year, y = TOTTests_A1599_M)) + 
+  geom_point(data = test.dat, mapping = aes(x = year, y = tests))
+
+```
+
+### Save
+
+
 ## PrEP
 
 Unfortunately this part isn't ready yet
@@ -2151,17 +2230,17 @@ NB: we distribute VMMC to 10-25 year olds, which is slightly different from the 
 VMMC_prep <- sim.results.prep %>% 
   filter(Age >=10, Age < 50) %>% 
   group_by(Year, sim.ix, scenario_name) %>% 
-  summarize(CIRC_PREV_M1549_M = sum(Program_VMMC*pop.scaling.factor), .groups = "keep") %>% 
+  summarize(TOT_VMMC_M1549_M = sum(Program_VMMC*pop.scaling.factor), .groups = "keep") %>% 
   group_by(Year) %>% 
-  summarize(CIRC_PREV_M1549_M_sd = sd(CIRC_PREV_M1549_M), 
-            CIRC_PREV_M1549_M = mean(CIRC_PREV_M1549_M), 
+  summarize(TOT_VMMC_M1549_M_sd = sd(TOT_VMMC_M1549_M), 
+            TOT_VMMC_M1549_M = mean(TOT_VMMC_M1549_M), 
             .groups = 'keep') %>% 
   ungroup() %>% 
   mutate(
-    CIRC_PREV_M1549_95LL = lower_ci(CIRC_PREV_M1549_M, CIRC_PREV_M1549_M_sd/sqrt(nruns), nruns, conf_level = .95),
-    CIRC_PREV_M1549_95UL = upper_ci(CIRC_PREV_M1549_M, CIRC_PREV_M1549_M_sd/sqrt(nruns), nruns, conf_level = .95)
+    CIRC_PREV_M1549_95LL = lower_ci(TOT_VMMC_M1549_M, TOT_VMMC_M1549_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    CIRC_PREV_M1549_95UL = upper_ci(TOT_VMMC_M1549_M, TOT_VMMC_M1549_M_sd/sqrt(nruns), nruns, conf_level = .95)
   ) %>% 
-  select(-CIRC_PREV_M1549_M_sd)
+  select(-TOT_VMMC_M1549_M_sd)
 ```
 
 
@@ -2171,7 +2250,61 @@ VMMC_prep <- sim.results.prep %>%
 VMMC_essential <- sim.results.essential %>% 
   filter(Age >=10, Age < 50) %>% 
   group_by(Year, sim.ix, scenario_name) %>% 
-  summarize(CIRC_PREV_M1549_M = sum(Program_VMMC*pop.scaling.factor), .groups = "keep") %>% 
+  summarize(TOT_VMMC_M1549_M = sum(Program_VMMC*pop.scaling.factor), .groups = "keep") %>% 
+  group_by(Year) %>% 
+  summarize(TOT_VMMC_M1549_M_sd = sd(TOT_VMMC_M1549_M), 
+            TOT_VMMC_M1549_M = mean(TOT_VMMC_M1549_M), 
+            .groups = 'keep') %>% 
+  ungroup() %>% 
+  mutate(
+    TOT_VMMC_M1549_95LL = lower_ci(TOT_VMMC_M1549_M, TOT_VMMC_M1549_M_sd/sqrt(nruns), nruns, conf_level = .95),
+    TOT_VMMC_M1549_95UL = upper_ci(TOT_VMMC_M1549_M, TOT_VMMC_M1549_M_sd/sqrt(nruns), nruns, conf_level = .95)
+  ) %>% 
+  select(-TOT_VMMC_M1549_M_sd)
+```
+
+### Plot
+
+```{r}
+ggplot() + 
+  # geom_point(
+  #   data = VMMC_prep,
+  #   mapping = aes(x = Year, y = TOT_VMMC_M1549_M), color = 'red') + 
+  # geom_errorbar(
+  #   data = VMMC_prep,
+  #   mapping = aes(x = Year, ymin = TOT_VMMC_M1549_95LL, ymax = TOT_VMMC_M1549_95UL), color = 'red') + 
+  geom_point(
+    data = VMMC_essential,
+    mapping = aes(x = Year, y = TOT_VMMC_M1549_M), color = 'blue') +
+  geom_errorbar(
+    data = VMMC_essential,
+    mapping = aes(x = Year, ymin = TOT_VMMC_M1549_95LL, ymax = TOT_VMMC_M1549_95UL), color = 'blue')
+```
+
+### Save
+
+```{r}
+# write_csv(VMMC_essential, "ZWE_MIHPSA_VMMC_essential.csv")
+
+# write_csv(VMMC_prep, "ZWE_MIHPSA_VMMC_prep.csv")
+```
+
+## VMMC - Proportion of men Age 15-49 who are circumcised
+
+```{r}
+
+sim.results.essential %>% colnames
+
+CIRC_PREV_essential <- sim.results.essential %>% 
+  filter(Age >=10, Age < 50, Gender == 0) %>% 
+  group_by(Year, sim.ix, scenario_name, IsCircumcised) %>% 
+  summarize(Population = sum(Population), .groups = 'keep') %>% 
+  ungroup() %>%
+  pivot_wider(id_cols = c(Year, sim.ix,scenario_name), values_from = c(Population), 
+              names_from = c(IsCircumcised), names_prefix = "IsCircumcised") %>% 
+  mutate(tot = IsCircumcised0 + IsCircumcised1) %>% 
+  mutate(CIRC_PREV_M1549_M = case_when(tot == 0 ~ 0,
+                                       tot > 0 ~ IsCircumcised1/tot)) %>% 
   group_by(Year) %>% 
   summarize(CIRC_PREV_M1549_M_sd = sd(CIRC_PREV_M1549_M), 
             CIRC_PREV_M1549_M = mean(CIRC_PREV_M1549_M), 
@@ -2185,31 +2318,23 @@ VMMC_essential <- sim.results.essential %>%
 ```
 
 ### Plot
-
 ```{r}
-ggplot() + 
-  geom_point(
-    data = VMMC_prep,
-    mapping = aes(x = Year, y = CIRC_PREV_M1549_M), color = 'red') + 
-  geom_errorbar(
-    data = VMMC_prep,
-    mapping = aes(x = Year, ymin = CIRC_PREV_M1549_95LL, ymax = CIRC_PREV_M1549_95UL), color = 'red') + 
-  geom_point(
-    data = VMMC_essential,
-    mapping = aes(x = Year, y = CIRC_PREV_M1549_M), color = 'blue') +
-  geom_errorbar(
-    data = VMMC_essential,
-    mapping = aes(x = Year, ymin = CIRC_PREV_M1549_95LL, ymax = CIRC_PREV_M1549_95UL), color = 'blue')
+CIRC_PREV_essential %>% 
+  ggplot() + 
+  geom_line(mapping = aes(x = Year, y = CIRC_PREV_M1549_M)) + 
+  ylim(0,1)
 ```
-
 ### Save
 
 ```{r}
-# write_csv(VMMC_essential, "ZWE_MIHPSA_VMMC_essential.csv")
-
-# write_csv(VMMC_prep, "ZWE_MIHPSA_VMMC_prep.csv")
+merge(VMMC_essential, CIRC_PREV_essential, 
+      by = "Year") %>% 
+  write_csv(file = "ZWE_MIHPSA_CIRC_essential.csv")
 ```
 
+
+
+### Essential Scenario
 
 # Compare results to calibration targets
 

@@ -385,7 +385,7 @@
 
             "Report_HIV_ByAgeAndGender": 1,
             "Report_HIV_ByAgeAndGender_Add_Concordant_Relationships": 0,
-            "Report_HIV_ByAgeAndGender_Start_Year": 1990,
+            "Report_HIV_ByAgeAndGender_Start_Year": 2022,
             "Report_HIV_ByAgeAndGender_Stop_Year": 2073,
             "Report_HIV_ByAgeAndGender_Collect_Gender_Data": 1,
             "Report_HIV_ByAgeAndGender_Collect_Age_Bins_Data": [
@@ -509,7 +509,8 @@
                 "Needs_PMTCT_Diagnostic_Test",
                 "NewlySymptomatic",
                 "Program_VMMC",
-                "ReceivePrEP_HIGH"
+                "ReceivePrEP_HIGH",
+                "GaveBirth"
             ],
             "Report_HIV_Event_Channels_List": [ ],
 

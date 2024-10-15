@@ -4,6 +4,8 @@ These are the configuration files for the Zimbabwe MIHPSA collaboration.
 
 ## Major updates
 
+* 2024-10-14 - Starting to work on Phase 2 for MIHPSA Zimbabwe, including a number of new interventions to explore
+
 * 2023-09-29 - Need to go back and reproduce the Phase 1 outputs from 2020-2073
 
 `python run_scenarios.py -c optim_script_20220627.py --resample-method provided --samples resampled_parameter_sets.csv --output-dir ZWE_phase2/ --suite-name ZWE_phase2/ --table scenarios_phase_2.csv`

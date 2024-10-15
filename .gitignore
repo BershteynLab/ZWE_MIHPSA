@@ -18,11 +18,14 @@ ZWE_mihpsa_worksheet/
 ZWE_phase1/
 ZWE_phase1_2/
 ZWE_phase2_2/
-
+ZWE_phase1_2_bad_testing/
 
 ZWE_MIHPSA.code-workspace
 .Rproj.user
+.RData
 .Rhistory
 ZWE_calib_20220627.Rproj
+
+slurm_*.out
 
 Analysis/*.csv
