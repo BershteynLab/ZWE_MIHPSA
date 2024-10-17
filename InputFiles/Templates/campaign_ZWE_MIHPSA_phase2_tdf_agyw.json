@@ -1,6 +1,6 @@
 {
     "Campaign_Name": "Campaign for Zimbabwe: MIHPSA",
-    "COMMENT":"2024-10-14 - Minimal scenario for ZWE MIHPSA, Oral TDF for AGYW through 2072",
+    "COMMENT":"2024-10-14 - Intervention scenario for ZWE MIHPSA, Oral TDF for AGYW through 2072",
     "Default_Campaign_Path": "campaign.json",
     "Use_Defaults": 1,
     "Events": [
@@ -2822,7 +2822,7 @@
         {
             "BEGIN": "PREP INTERVENTION",
             "END": "PREP INTERVENTION",
-            "Event_Name": "NChooser to implement specified number of PrEP uptake",
+            "Event_Name": "NChooser to implement specified number of Oral TDF/FTC PrEP uptake",
             "Nodeset_Config": {
                 "Node_List": [
                    1
@@ -2840,17 +2840,22 @@
                     "Cost_To_Consumer": 1.0,
                     "Vaccine_Take": 1,
                     "Vaccine_Type": "AcquisitionBlocking",
-                    "Waning_Config__KP_PrEP_HIGH_Waning": "<-- MARKER",
+                    "Disqualifying_Properties": [
+                        "InterventionStatus:LostForever",
+                        "InterventionStatus:OnEffectiveART",
+                        "InterventionStatus:OnNonSuppressiveART",
+                        "InterventionStatus:LinkingToART",
+                        "InterventionStatus:OnPreART",
+                        "InterventionStatus:LinkingToPreART",
+                        "InterventionStatus:ARTStaging"
+                    ],
                     "Waning_Config": {
-                        "class": "WaningEffectMapLinear",
-                        "Durability_Map": {
-                            "Times": [ 0, 365 ],
-                            "Values": [ 1, 1 ]
-                        },
-                        "Expire_At_Durability_Map_End": 1,
-                        "Initial_Effect": 0.73,
-                        "Initial_Effect_Source": "Partners PrEP Study, efficacy for Truvada"
-                    }
+						"class": "WaningEffectRandomBox",
+						"Initial_Effect": 0.73,
+                        "Expected_Discard_Time": 145, 
+						"Initial_Effect_Source": "Partners PrEP Study, efficacy for Truvada",
+						"Expected_Discard_Time_Source": "Thembisa_model_version_4.6"
+					}
                 },
                 "Distributions": [
                     {
