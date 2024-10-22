@@ -1,4 +1,6 @@
 ﻿Scenario,Campaign
 sq,campaign_ZWE_MIHPSA_phase2_statusquo.json
-plw,campaign_ZWE_MIHPSA_phase2_plw.json
-sd,campaign_ZWE_MIHPSA_phase2_sd.json
+cabla_agyw,campaign_ZWE_MIHPSA_phase2_cabla_agyw.json
+cabla_fsw,campaign_ZWE_MIHPSA_phase2_cabla_fsw.json
+cabla_sd,campaign_ZWE_MIHPSA_phase2_cabla_sd.json
+cabla_plw,campaign_ZWE_MIHPSA_phase2_cabla_plw.json

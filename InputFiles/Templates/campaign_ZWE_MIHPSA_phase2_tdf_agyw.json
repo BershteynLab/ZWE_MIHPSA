@@ -2844,10 +2844,7 @@
                         "InterventionStatus:LostForever",
                         "InterventionStatus:OnEffectiveART",
                         "InterventionStatus:OnNonSuppressiveART",
-                        "InterventionStatus:LinkingToART",
-                        "InterventionStatus:OnPreART",
-                        "InterventionStatus:LinkingToPreART",
-                        "InterventionStatus:ARTStaging"
+                        "InterventionStatus:OnPreART"
                     ],
                     "Waning_Config": {
 						"class": "WaningEffectRandomBox",

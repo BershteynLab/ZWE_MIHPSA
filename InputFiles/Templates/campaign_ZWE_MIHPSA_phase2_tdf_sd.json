@@ -2829,11 +2829,12 @@
                 ],
                 "class": "NodeSetNodeList"
             },
-            "class": "CampaignEventbyYear",
+            "class": "CampaignEventByYear",
             "Start_Year": 2023,
             "Event_Coordinator_Config": {
                 "class": "StandardInterventionDistributionEventCoordinator",
-                "Number_Repetitions":50,
+                "Timesteps_Between_Repetitions": 12,
+                "Number_Repetitions":-1,
                 "Individual_Selection_Type":"TARGET_NUM_INDIVIDUALS",
                 "Target_Num_Individuals":102,
                 "Target_Demographic": "ExplicitAgeRanges",

@@ -1,6 +1,6 @@
 {
     "Campaign_Name": "Campaign for Zimbabwe: MIHPSA",
-    "COMMENT":"2024-10-14 - Intervention scenario for ZWE MIHPSA, CAB-LA for AGYW through 2072",
+    "COMMENT":"2024-10-14 - Intervention scenario for ZWE MIHPSA, CAB-LA for pregnant women through 2072",
     "Default_Campaign_Path": "campaign.json",
     "Use_Defaults": 1,
     "Events": [
@@ -2820,19 +2820,45 @@
             }
         },
         {
-            "BEGIN": "CAB-LA PREP INTERVENTION",
-            "END": "CAB-LA PREP INTERVENTION",
-            "Event_Name": "NChooser to implement specified number of CAB-LA PrEP uptake",
+            "BEGIN": "PREP INTERVENTION",
+            "END": "PREP INTERVENTION",
+            "Event_Name": "Standard Event Coordinator for distributing CAB-LA each year",
             "Nodeset_Config": {
                 "Node_List": [
                    1
                 ],
                 "class": "NodeSetNodeList"
             },
-            "Start_Year": 2023.5,
-            "class": "CampaignEvent",
+            "class": "CampaignEventByYear",
+            "Start_Year": 2023,
             "Event_Coordinator_Config": {
-                "class": "NChooserEventCoordinatorHIV",
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Timesteps_Between_Repetitions": 12,
+                "Number_Repetitions":-1,
+                "Individual_Selection_Type":"TARGET_NUM_INDIVIDUALS",
+                "Target_Num_Individuals":189,
+                "Target_Demographic": "ExplicitAgeRanges",
+                "Target_Age_Min": 15,
+                "Target_Age_Max": 99,
+                "Targeting_Config": {
+                    "class": "TargetingLogic",
+                    "Logic": [
+                        [
+                            {
+                                "class": "IsHivPositive",
+                                "Is_Equal_To": 0,
+                                "And_Has_Ever_Been_Tested": "YES",
+                                "And_Has_Ever_Tested_Positive": "NO",
+                                "And_Has_Received_Positive_Results": "NA"
+                            },
+                            {
+                                "class" : "IsPregnant",
+                                "Is_Equal_To": 1
+                            }
+                        ]
+                    ]
+
+                },
                 "Intervention_Config": {
                     "class": "ControlledVaccine",
                     "Distributed_Event_Trigger": "ReceivePrEP_HIGH",
@@ -2840,12 +2866,6 @@
                     "Cost_To_Consumer": 1.0,
                     "Vaccine_Take": 1,
                     "Vaccine_Type": "AcquisitionBlocking",
-                    "Disqualifying_Properties": [
-                        "InterventionStatus:LostForever",
-                        "InterventionStatus:OnEffectiveART",
-                        "InterventionStatus:OnNonSuppressiveART",
-                        "InterventionStatus:OnPreART"
-                    ],
                     "Waning_Config": {
                         "class": "WaningEffectRandomBox",
                         "Initial_Effect": 0.92,
@@ -2853,32 +2873,7 @@
                         "Initial_Effect_Source": "HPTN083_Study",
                         "Expected_Discard_Time_Source": "No data - Discard time expected to double oral PrEP discard time"
                     }
-                },
-                "Distributions": [
-                    {
-                        "Age_Ranges_Years": [
-                            {
-                                "Min": 15,
-                                "Max": 25
-                            }
-                        ],
-                        "Start_Year": 2023.5,
-                        "End_Year": 2073.5,
-                        "Num_Targeted_Females": [
-                            1857150
-                        ],
-                        "Num_Targeted_Males": [
-                            0
-                        ],
-                        "Target_Disease_State": [
-                            [
-                                "HIV_Negative",
-                                "Not_Have_Intervention"
-                            ]
-                        ],
-                        "Target_Disease_State_Has_Intervention_Name": "PrEP"
-                    }
-                ]
+                }
             }
         }
     ]
