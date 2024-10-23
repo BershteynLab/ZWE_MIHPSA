@@ -2841,10 +2841,12 @@
                     "Vaccine_Take": 1,
                     "Vaccine_Type": "AcquisitionBlocking",
                     "Disqualifying_Properties": [
-                        "InterventionStatus:LostForever",
-                        "InterventionStatus:OnEffectiveART",
-                        "InterventionStatus:OnNonSuppressiveART",
-                        "InterventionStatus:OnPreART"
+                        "CascadeState:LostForever",
+                        "CascadeState:LinkingToPreART",
+                        "CascadeState:LinkingToART",
+                        "CascadeState:OnPreART",
+                        "CascadeState:ARTStaging",
+                        "CascadeState:OnART"
                     ],
                     "Waning_Config": {
                         "class": "WaningEffectRandomBox",

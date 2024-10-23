@@ -2452,7 +2452,15 @@
                     "Cost_To_Consumer": 0,
                     "Distributed_Event_Trigger": "Program_VMMC",
                     "Intervention_Name": "Any_MC",
-                    "class": "MaleCircumcision"
+                    "class": "MaleCircumcision",
+                    "Disqualifying_Properties": [
+                        "CascadeState:LostForever",
+                        "CascadeState:LinkingToPreART",
+                        "CascadeState:LinkingToART",
+                        "CascadeState:OnPreART",
+                        "CascadeState:ARTStaging",
+                        "CascadeState:OnART"
+                    ]
                 },
                 "Distributions": [
                     {

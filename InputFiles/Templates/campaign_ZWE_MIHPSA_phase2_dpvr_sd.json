@@ -2876,6 +2876,14 @@
                     "Cost_To_Consumer": 1.0,
                     "Vaccine_Take": 1,
                     "Vaccine_Type": "AcquisitionBlocking",
+                    "Disqualifying_Properties": [
+                        "CascadeState:LostForever",
+                        "CascadeState:LinkingToPreART",
+                        "CascadeState:LinkingToART",
+                        "CascadeState:OnPreART",
+                        "CascadeState:ARTStaging",
+                        "CascadeState:OnART"
+                    ],
                     "Waning_Config": {
 						"class": "WaningEffectRandomBox",
 						"Initial_Effect": 0.30,
