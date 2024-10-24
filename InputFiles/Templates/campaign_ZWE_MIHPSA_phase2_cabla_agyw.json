@@ -2836,7 +2836,7 @@
                 "Intervention_Config": {
                     "class": "ControlledVaccine",
                     "Distributed_Event_Trigger": "ReceivePrEP_HIGH",
-                    "Intervention_Name": "CAB-LA",
+                    "Intervention_Name": "PrEP",
                     "Cost_To_Consumer": 1.0,
                     "Vaccine_Take": 1,
                     "Vaccine_Type": "AcquisitionBlocking",

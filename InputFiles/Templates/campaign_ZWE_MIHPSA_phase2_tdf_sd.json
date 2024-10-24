@@ -2845,6 +2845,11 @@
                     "Logic": [
                         [
                             {
+                                "class": "HasIntervention",
+                                "Is_Equal_To": 0,
+                                "Intervention_Name": "PrEP"
+                            },
+                            {
                                 "class": "IsHivPositive",
                                 "Is_Equal_To": 0,
                                 "And_Has_Ever_Been_Tested": "YES",
