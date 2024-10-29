@@ -1152,7 +1152,7 @@ HIVprev.summary <- merge(p1, p2, by = c('Year', 'scenario_name')) %>%
 ```{r}
 # NAlive_M1599_M
 p1 <- sim.results.all %>% 
-  filter(Age >=15, Gender == 0) %>%
+  #filter(Age >=15, Gender == 0) %>%
   group_by(Year, scenario_name, sim.ix) %>% 
   summarize(NAlive_M1599_M = sum(Population * pop.scaling.factor), .groups = 'keep') %>% 
   ungroup() %>% 
@@ -1248,7 +1248,9 @@ p7 <- sim.results.all %>%
 
 # NAlive_FSW1599_M
 p8 <- sim.results.all %>% 
-  filter(Age >=15, Gender == 1, IP_Key.Risk == "HIGH") %>%
+  filter(#Age >=15, 
+         
+         Gender == 1, IP_Key.Risk == "HIGH") %>%
   group_by(Year, scenario_name, sim.ix) %>% 
   summarize(NAlive_FSW1599_M = sum(Population * pop.scaling.factor), .groups = 'keep') %>% 
   ungroup() %>% 
@@ -1277,7 +1279,7 @@ NAlive.summary <- merge(p1, p2, by = c('Year', 'scenario_name')) %>%
 ```{r}
 # NHIV_M1599_M
 p1 <- sim.results.all %>% 
-  filter(Age >=15, Gender == 0) %>%
+  #filter(Age >=15, Gender == 0) %>%
   group_by(Year, scenario_name, sim.ix) %>% 
   summarize(NHIV_M1599_M = sum(Infected * pop.scaling.factor), .groups = 'keep') %>% 
   ungroup() %>% 
@@ -1294,7 +1296,7 @@ p1 <- sim.results.all %>%
 
 # NHIV_F1599_M
 p2 <- sim.results.all %>% 
-  filter(Age >=15, Gender == 1) %>%
+#  filter(Age >=15, Gender == 1) %>%
   group_by(Year, scenario_name, sim.ix) %>% 
   summarize(NHIV_F1599_M = sum(Infected * pop.scaling.factor), .groups = 'keep') %>% 
   ungroup() %>% 
@@ -1373,7 +1375,8 @@ p7 <- sim.results.all %>%
 
 # NHIV_FSW1599_M
 p8 <- sim.results.all %>% 
-  filter(Age >=15, Gender == 1, IP_Key.Risk == "HIGH") %>%
+  filter(#Age >=15, 
+    Gender == 1, IP_Key.Risk == "HIGH") %>%
   group_by(Year, scenario_name, sim.ix) %>% 
   summarize(NHIV_FSW1599_M = sum(Infected * pop.scaling.factor), .groups = 'keep') %>% 
   ungroup() %>% 
