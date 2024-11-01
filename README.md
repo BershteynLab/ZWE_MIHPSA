@@ -4,7 +4,17 @@ These are the configuration files for the Zimbabwe MIHPSA collaboration.
 
 ## Major updates
 
-* 2024-10-14 - Starting to work on Phase 2 for MIHPSA Zimbabwe, including a number of new interventions to explore
+* 2024-10-14 - Starting to work on Phase 2 for MIHPSA Zimbabwe, including a number of new interventions to explore. Scenarios included are:
+
+  * PrEP:
+    * Oral TDF/FCT
+    * Dapirivine ring
+    * CAB-LA
+  * Distributed to:
+    * AGYW
+    * FSW
+    * Serodiscordant couples
+    * Pregnant and lactating women
 
 * 2023-09-29 - Need to go back and reproduce the Phase 1 outputs from 2020-2073
 
