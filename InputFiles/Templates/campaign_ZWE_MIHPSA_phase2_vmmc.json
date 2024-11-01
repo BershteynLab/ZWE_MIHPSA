@@ -1,6 +1,6 @@
 {
     "Campaign_Name": "Campaign for Zimbabwe: MIHPSA",
-    "COMMENT":"2023-04-07 - Baseline scenario for ZWE MIHPSA, no PrEP",
+    "COMMENT":"2024-10-14 - Minimal scenario for ZWE MIHPSA, 2022-levels of VMMC for Males age 15-50 through 2072",
     "Default_Campaign_Path": "campaign.json",
     "Use_Defaults": 1,
     "Events": [
@@ -2452,14 +2452,22 @@
                     "Cost_To_Consumer": 0,
                     "Distributed_Event_Trigger": "Program_VMMC",
                     "Intervention_Name": "Any_MC",
-                    "class": "MaleCircumcision"
+                    "class": "MaleCircumcision",
+                    "Disqualifying_Properties": [
+                        "CascadeState:LostForever",
+                        "CascadeState:LinkingToPreART",
+                        "CascadeState:LinkingToART",
+                        "CascadeState:OnPreART",
+                        "CascadeState:ARTStaging",
+                        "CascadeState:OnART"
+                    ]
                 },
                 "Distributions": [
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 10,
-                                "Max": 25
+                                "Min": 15,
+                                "Max": 50
                             }
                         ],
                         "Start_Year": 2008.5,
@@ -2482,8 +2490,8 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 10,
-                                "Max": 25
+                                "Min": 15,
+                                "Max": 50
                             }
                         ],
                         "Start_Year": 2009.5,
@@ -2506,8 +2514,8 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 10,
-                                "Max": 25
+                                "Min": 15,
+                                "Max": 50
                             }
                         ],
                         "Start_Year": 2010.5,
@@ -2530,8 +2538,8 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 10,
-                                "Max": 25
+                                "Min": 15,
+                                "Max": 50
                             }
                         ],
                         "Start_Year": 2011.5,
@@ -2554,8 +2562,8 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 10,
-                                "Max": 25
+                                "Min": 15,
+                                "Max": 50
                             }
                         ],
                         "Start_Year": 2012.5,
@@ -2578,8 +2586,8 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 10,
-                                "Max": 25
+                                "Min": 15,
+                                "Max": 50
                             }
                         ],
                         "Start_Year": 2013.5,
@@ -2602,8 +2610,8 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 10,
-                                "Max": 25
+                                "Min": 15,
+                                "Max": 50
                             }
                         ],
                         "Start_Year": 2014.5,
@@ -2626,8 +2634,8 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 10,
-                                "Max": 25
+                                "Min": 15,
+                                "Max": 50
                             }
                         ],
                         "Start_Year": 2015.5,
@@ -2650,8 +2658,8 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 10,
-                                "Max": 25
+                                "Min": 15,
+                                "Max": 50
                             }
                         ],
                         "Start_Year": 2016.5,
@@ -2674,8 +2682,8 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 10,
-                                "Max": 25
+                                "Min": 15,
+                                "Max": 50
                             }
                         ],
                         "Start_Year": 2017.5,
@@ -2698,8 +2706,8 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 10,
-                                "Max": 25
+                                "Min": 15,
+                                "Max": 50
                             }
                         ],
                         "Start_Year": 2018.5,
@@ -2722,8 +2730,8 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 10,
-                                "Max": 25
+                                "Min": 15,
+                                "Max": 50
                             }
                         ],
                         "Start_Year": 2019.5,
@@ -2746,8 +2754,8 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 10,
-                                "Max": 25
+                                "Min": 15,
+                                "Max": 50
                             }
                         ],
                         "Start_Year": 2020.5,
@@ -2770,17 +2778,65 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 10,
-                                "Max": 25
+                                "Min": 15,
+                                "Max": 50
                             }
                         ],
                         "Start_Year": 2021.5,
+                        "End_Year": 2022.5,
+                        "Num_Targeted_Females": [
+                        0
+                        ],
+                        "Num_Targeted_Males": [
+                            151037
+                        ],
+                        "Property_Restrictions_Within_Node": [],
+                        "Target_Disease_State": [
+                        [
+                            "HIV_Negative",
+                            "Not_Have_Intervention"
+                        ]
+                        ],
+                        "Target_Disease_State_Has_Intervention_Name": "Any_MC"
+                    },
+                    {
+                        "Age_Ranges_Years": [
+                            {
+                                "Min": 15,
+                                "Max": 50
+                            }
+                        ],
+                        "Start_Year": 2022.5,
+                        "End_Year": 2023.5,
+                        "Num_Targeted_Females": [
+                        0
+                        ],
+                        "Num_Targeted_Males": [
+                            171033
+                        ],
+                        "Property_Restrictions_Within_Node": [],
+                        "Target_Disease_State": [
+                        [
+                            "HIV_Negative",
+                            "Not_Have_Intervention"
+                        ]
+                        ],
+                        "Target_Disease_State_Has_Intervention_Name": "Any_MC"
+                    },
+                    {
+                        "Age_Ranges_Years": [
+                            {
+                                "Min": 15,
+                                "Max": 50
+                            }
+                        ],
+                        "Start_Year": 2023.5,
                         "End_Year": 2073.5,
                         "Num_Targeted_Females": [
                         0
                         ],
                         "Num_Targeted_Males": [
-                            11148800
+                            8551650
                         ],
                         "Property_Restrictions_Within_Node": [],
                         "Target_Disease_State": [

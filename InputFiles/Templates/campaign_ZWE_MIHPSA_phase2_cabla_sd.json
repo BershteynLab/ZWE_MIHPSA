@@ -1,6 +1,6 @@
 {
     "Campaign_Name": "Campaign for Zimbabwe: MIHPSA",
-    "COMMENT":"2023-04-07 - Baseline scenario for ZWE MIHPSA, no PrEP",
+    "COMMENT":"2024-10-14 - Minimal scenario for ZWE MIHPSA, CAB-LA for men and women in serodiscordant relationships through 2072",
     "Default_Campaign_Path": "campaign.json",
     "Use_Defaults": 1,
     "Events": [
@@ -2458,8 +2458,8 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 10,
-                                "Max": 25
+                                "Min": 15,
+                                "Max": 50
                             }
                         ],
                         "Start_Year": 2008.5,
@@ -2482,8 +2482,8 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 10,
-                                "Max": 25
+                                "Min": 15,
+                                "Max": 50
                             }
                         ],
                         "Start_Year": 2009.5,
@@ -2506,8 +2506,8 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 10,
-                                "Max": 25
+                                "Min": 15,
+                                "Max": 50
                             }
                         ],
                         "Start_Year": 2010.5,
@@ -2530,8 +2530,8 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 10,
-                                "Max": 25
+                                "Min": 15,
+                                "Max": 50
                             }
                         ],
                         "Start_Year": 2011.5,
@@ -2554,8 +2554,8 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 10,
-                                "Max": 25
+                                "Min": 15,
+                                "Max": 50
                             }
                         ],
                         "Start_Year": 2012.5,
@@ -2578,8 +2578,8 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 10,
-                                "Max": 25
+                                "Min": 15,
+                                "Max": 50
                             }
                         ],
                         "Start_Year": 2013.5,
@@ -2602,8 +2602,8 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 10,
-                                "Max": 25
+                                "Min": 15,
+                                "Max": 50
                             }
                         ],
                         "Start_Year": 2014.5,
@@ -2626,8 +2626,8 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 10,
-                                "Max": 25
+                                "Min": 15,
+                                "Max": 50
                             }
                         ],
                         "Start_Year": 2015.5,
@@ -2650,8 +2650,8 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 10,
-                                "Max": 25
+                                "Min": 15,
+                                "Max": 50
                             }
                         ],
                         "Start_Year": 2016.5,
@@ -2674,8 +2674,8 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 10,
-                                "Max": 25
+                                "Min": 15,
+                                "Max": 50
                             }
                         ],
                         "Start_Year": 2017.5,
@@ -2698,8 +2698,8 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 10,
-                                "Max": 25
+                                "Min": 15,
+                                "Max": 50
                             }
                         ],
                         "Start_Year": 2018.5,
@@ -2722,8 +2722,8 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 10,
-                                "Max": 25
+                                "Min": 15,
+                                "Max": 50
                             }
                         ],
                         "Start_Year": 2019.5,
@@ -2746,8 +2746,8 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 10,
-                                "Max": 25
+                                "Min": 15,
+                                "Max": 50
                             }
                         ],
                         "Start_Year": 2020.5,
@@ -2770,17 +2770,41 @@
                     {
                         "Age_Ranges_Years": [
                             {
-                                "Min": 10,
-                                "Max": 25
+                                "Min": 15,
+                                "Max": 50
                             }
                         ],
                         "Start_Year": 2021.5,
-                        "End_Year": 2073.5,
+                        "End_Year": 2022.5,
                         "Num_Targeted_Females": [
                         0
                         ],
                         "Num_Targeted_Males": [
-                            11148800
+                            151037
+                        ],
+                        "Property_Restrictions_Within_Node": [],
+                        "Target_Disease_State": [
+                        [
+                            "HIV_Negative",
+                            "Not_Have_Intervention"
+                        ]
+                        ],
+                        "Target_Disease_State_Has_Intervention_Name": "Any_MC"
+                    },
+                    {
+                        "Age_Ranges_Years": [
+                            {
+                                "Min": 15,
+                                "Max": 50
+                            }
+                        ],
+                        "Start_Year": 2022.5,
+                        "End_Year": 2023.5,
+                        "Num_Targeted_Females": [
+                        0
+                        ],
+                        "Num_Targeted_Males": [
+                            171033
                         ],
                         "Property_Restrictions_Within_Node": [],
                         "Target_Disease_State": [
@@ -2793,6 +2817,86 @@
                     }
                 ],
                 "class": "NChooserEventCoordinatorHIV"
+            }
+        },
+        {
+            "BEGIN": "PREP INTERVENTION",
+            "END": "PREP INTERVENTION",
+            "Event_Name": "Standard Event Coordinator for distributing PrEP each year",
+            "Nodeset_Config": {
+                "Node_List": [
+                   1
+                ],
+                "class": "NodeSetNodeList"
+            },
+            "class": "CampaignEventByYear",
+            "Start_Year": 2023,
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Timesteps_Between_Repetitions": 12,
+                "Number_Repetitions":-1,
+                "Individual_Selection_Type":"TARGET_NUM_INDIVIDUALS",
+                "Target_Num_Individuals":102,
+                "Target_Demographic": "ExplicitAgeRanges",
+                "Target_Age_Min": 15,
+                "Target_Age_Max": 99,
+                "Targeting_Config": {
+                    "class": "TargetingLogic",
+                    "Logic": [
+                        [
+                            {
+                                "class": "HasIntervention",
+                                "Is_Equal_To": 0,
+                                "Intervention_Name": "PrEP"
+                            },
+                            {
+                                "class": "IsHivPositive",
+                                "Is_Equal_To": 0,
+                                "And_Has_Ever_Been_Tested": "YES",
+                                "And_Has_Ever_Tested_Positive": "NO",
+                                "And_Has_Received_Positive_Results": "NA"
+                            },
+                            {                    
+                                "class" : "HasRelationship",
+                                "Is_Equal_To": 1,
+                                "Of_Relationship_Type":  "NA",
+                                "That_Recently":  "NA",
+                                "That_Recently_Ended_Due_To": "NA",
+                                "With_Partner_Who": {
+                                    "class": "IsHivPositive",
+                                    "Is_Equal_To": 1,
+                                    "And_Has_Ever_Been_Tested": "YES",
+                                    "And_Has_Ever_Tested_Positive": "YES",
+                                    "And_Has_Received_Positive_Results": "NA"
+                                }
+                            }
+                        ]
+                    ]
+
+                },
+                "Intervention_Config": {
+                    "class": "ControlledVaccine",
+                    "Distributed_Event_Trigger": "ReceivePrEP_HIGH",
+                    "Intervention_Name": "PrEP",
+                    "Cost_To_Consumer": 1.0,
+                    "Vaccine_Take": 1,
+                    "Vaccine_Type": "AcquisitionBlocking",
+                    "Disqualifying_Properties": [
+                        "CascadeState:LostForever",
+                        "CascadeState:LinkingToPreART",
+                        "CascadeState:LinkingToART",
+                        "CascadeState:OnPreART",
+                        "CascadeState:ARTStaging",
+                        "CascadeState:OnART"
+                    ],
+                    "Waning_Config": {
+                        "class": "WaningEffectRandomBox",
+                        "Initial_Effect": 0.92,
+                        "Expected_Discard_Time": 290, 
+                        "Initial_Effect_Source": "HPTN083_Study",
+                        "Expected_Discard_Time_Source": "No data - Discard time expected to double oral PrEP discard time"
+                    }
+                }
             }
         }
     ]
