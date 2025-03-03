@@ -507,14 +507,12 @@
             },
             "END": "STI CO-INFECTION"
         },
-
-
         {
             "BEGIN": "HCT UPTAKE AT DEBUT",
             "END": "HCT UPTAKE AT DEBUT",
             "class": "CampaignEventByYear",
             "Event_Name": "HCTUptakeAtDebut: state 0 (decision, sigmoid by year and sex)",
-            "Start_Year": 1990,
+            "Start_Year": 2200,
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
@@ -559,7 +557,7 @@
             "Nodeset_Config": {
                "class": "NodeSetAll"
             },
-            "Start_Year": 1990,
+            "Start_Year": 2200,
             "class": "CampaignEventByYear",
             "Event_Coordinator_Config": {
                 "Demographic_Coverage": 1,
@@ -585,7 +583,7 @@
             "Nodeset_Config": {
                "class": "NodeSetAll"
             },
-            "Start_Year": 1990,
+            "Start_Year": 2200,
             "class": "CampaignEventByYear",
             "Event_Coordinator_Config": {
                 "Demographic_Coverage": 1,
@@ -608,7 +606,7 @@
             "Nodeset_Config": {
                "class": "NodeSetAll"
             },
-            "Start_Year": 1990,
+            "Start_Year": 2200,
             "class": "CampaignEventByYear",
             "Event_Coordinator_Config": {
                 "Demographic_Coverage": 1,
@@ -649,7 +647,7 @@
             "Nodeset_Config": {
                "class": "NodeSetAll"
             },
-            "Start_Year": 1990,
+            "Start_Year": 2200,
             "class": "CampaignEventByYear",
             "Event_Coordinator_Config": {
                "Demographic_Coverage": 1,
@@ -693,7 +691,7 @@
         {
             "class": "CampaignEventByYear",
             "Event_Name": "Consider increased testing uptake (after 2016?)",
-            "Start_Year": 1990,
+            "Start_Year": 2200,
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
@@ -741,7 +739,7 @@
             "Nodeset_Config": {
                "class": "NodeSetAll"
             },
-            "Start_Year": 1990,
+            "Start_Year": 2200,
             "class": "CampaignEventByYear",
             "Event_Coordinator_Config": {
                 "Demographic_Coverage": 1,
@@ -767,7 +765,7 @@
         {
             "class": "CampaignEventByYear",
             "Event_Name": "Consider not dropping (after 2016?)",
-            "Start_Year": 1990,
+            "Start_Year": 2200,
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
@@ -806,7 +804,7 @@
         {
             "class": "CampaignEventByYear",
             "Event_Name": "Consider not lost forever (after 2016?)",
-            "Start_Year": 1990,
+            "Start_Year": 2200,
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
@@ -847,7 +845,7 @@
             "BEGIN": "HCT TESTING LOOP",
             "Event_Name": "HCTTestingLoop: state 0 (delay to next HCT)",
             "class": "CampaignEventByYear",
-            "Start_Year": 1990,
+            "Start_Year": 2200,
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
@@ -883,7 +881,7 @@
         {
             "Event_Name": "HCTTestingLoop: state 0 (delay to next HCT)",
             "class": "CampaignEventByYear",
-            "Start_Year": 2004,
+            "Start_Year": 2200,
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
@@ -1036,7 +1034,7 @@
         {
             "Event_Name": "HCTTestingLoop: state 1 (HIV rapid diagnostic)",
             "class": "CampaignEventByYear",
-            "Start_Year": 1990,
+            "Start_Year": 2200,
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
@@ -1067,7 +1065,7 @@
         {
             "Event_Name": "Consider immediate ART (after 2016?), same day treatment",
             "class": "CampaignEventByYear",
-            "Start_Year": 1990,
+            "Start_Year": 2200,
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
@@ -1112,7 +1110,7 @@
             "END": "HCT TESTING LOOP",
             "Event_Name": "HCTTestingLoop: state 2 (HCT Testing Dropout)",
             "class": "CampaignEventByYear",
-            "Start_Year": 1990,
+            "Start_Year": 2200,
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
