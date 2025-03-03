@@ -10,12 +10,16 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Introduction
 
-The purpose of this notebook will be for generating the Phase 2 results for MIHPSA Zimbabwe
+The purpose of this notebook will be for generating the Phase 2 results for MIHPSA Zimbabwe.
+
+The reports take up a lot of memory, so I recommend loading them into memory one at a time (or in small batches).
+
+After loading in the report, there will be a series of code blocks to execute in sequence which will extract the metrics we need.
 
 ## Scenarios list
 
 * Minimal
-* Status quo = minimal + VMMC and Oral TDF in AGYW going up through 2072
+* Status quo = minimal + Routine Testing + VMMC and Oral TDF in AGYW going up through 2072
 * Minimal + VMMC in 15-49 years old
 * Minimal + Oral TDF/FTC PrEP
   * AGYW
@@ -58,84 +62,23 @@ upper_ci <- function(mean, se, n, conf_level = 0.95){
 
 # Import data
 
-## Test scenario
+First, set the path to the simulation results and the scenario name
 
 ```{r}
-path = "/gpfs/data/bershteynlab/EMOD/citrod01/ZWE_calib_20220627/ZWE_phase2_test/Baseline-campaign_ZWE_MIHPSA_phase2_minimal-minimal/ReportHIVByAgeAndGender/"
+experiment.path = ""
 
-sim.test = EMODAnalyzeR::read.simulation.results(
-  results_path = path,
-  scenario_name = "test",
-  summarize_columns = c("Population","Infected", "On_ART",
-                        "Died", "Died_from_HIV",
-                        "Newly.Infected","Diagnosed", 
-                        "Newly.Tested.Positive", "Newly.Tested.Negative",
-                        "HIVPositiveHIVTest","HIVNegativeHIVTest",
-                        "Needs_PMTCT_Diagnostic_Test","NewlySymptomatic",
-                        "Infected.CD4.Under.200..Not.On.ART.", "Infected.CD4.200.To.349..Not.On.ART.",
-                        "Infected.CD4.350.To.499..Not.On.ART.", "Infected.CD4.500.Plus..Not.On.ART.",
-                        "ReceivePrEP_HIGH", "Program_VMMC", "GaveBirth"),
-  stratify_columns = c("Year", "Gender", "Age", "IP_Key.Risk", "IsCircumcised"),
-  min_age_inclusive = 0,
-  max_age_inclusive = 99
-)
+scenario.name = "" 
+
+# Scenario names
+c("minimal", "")
 ```
 
-
-## Minimal scenario
+Then, load the data as needed
 
 ```{r}
-experiment.path = "/gpfs/scratch/citrod01/experiments/Zimbabwe/ZWE_Phase2/Baseline-campaign_ZWE_MIHPSA_phase2_minimal-minimal___2024_10_17_15_39_44_848218"
-# "/gpfs/data/bershteynlab/EMOD/citrod01/ZWE_calib_20220627/ZWE_phase2/Baseline-campaign_ZWE_MIHPSA_phase2_minimal-minimal/ReportHIVByAgeAndGender
-
-sim.minimal <- EMODAnalyzeR::read.simulation.results.bigpurple(
+sim.results.all <- EMODAnalyzeR::read.simulation.results.bigpurple(
   experiment_path = experiment.path,
-  scenario_name = 'minimal',
-  summarize_columns = c("Population","Infected", "On_ART",
-                        "Died", "Died_from_HIV",
-                        "Newly.Infected","Diagnosed", 
-                        "Newly.Tested.Positive", "Newly.Tested.Negative",
-                        "HIVPositiveHIVTest","HIVNegativeHIVTest",
-                        "Needs_PMTCT_Diagnostic_Test","NewlySymptomatic",
-                        "Infected.CD4.Under.200..Not.On.ART.", "Infected.CD4.200.To.349..Not.On.ART.",
-                        "Infected.CD4.350.To.499..Not.On.ART.", "Infected.CD4.500.Plus..Not.On.ART.",
-                        "ReceivePrEP_HIGH", "Program_VMMC", "GaveBirth"),
-  stratify_columns = c("Year", "Gender", "Age", "IP_Key.Risk", "IsCircumcised"),
-  min_age_inclusive = 0,
-  max_age_inclusive = 99
-)
-
-```
-
-## Status quo scenario
-```{r}
-experiment.path = "/gpfs/scratch/citrod01/experiments/Zimbabwe/ZWE_Phase2/Baseline-campaign_ZWE_MIHPSA_phase2_statusquo-sq___2024_10_31_16_43_13_559400/"
-
-sim.sq <- EMODAnalyzeR::read.simulation.results.bigpurple(
-  experiment_path = experiment.path,
-  scenario_name = 'status_quo',
-  summarize_columns = c("Population","Infected", "On_ART",
-                        "Died", "Died_from_HIV",
-                        "Newly.Infected","Diagnosed", 
-                        "Newly.Tested.Positive", "Newly.Tested.Negative",
-                        "HIVPositiveHIVTest","HIVNegativeHIVTest",
-                        "Needs_PMTCT_Diagnostic_Test","NewlySymptomatic",
-                        "Infected.CD4.Under.200..Not.On.ART.", "Infected.CD4.200.To.349..Not.On.ART.",
-                        "Infected.CD4.350.To.499..Not.On.ART.", "Infected.CD4.500.Plus..Not.On.ART.",
-                        "ReceivePrEP_HIGH", "Program_VMMC", "GaveBirth"),
-  stratify_columns = c("Year", "Gender", "Age", "IP_Key.Risk", "IsCircumcised"),
-  min_age_inclusive = 0,
-  max_age_inclusive = 99
-)
-```
-## VMMC
-```{r}
-experiment.path = "/gpfs/scratch/citrod01/experiments/Zimbabwe/ZWE_Phase2/Baseline-campaign_ZWE_MIHPSA_phase2_vmmc-vmmc___2024_10_17_15_41_32_954880"
-# "/gpfs/data/bershteynlab/EMOD/citrod01/ZWE_calib_20220627/ZWE_phase2/Baseline-campaign_ZWE_MIHPSA_phase2_vmmc-vmmc/ReportHIVByAgeAndGender"
-
-sim.vmmc <- EMODAnalyzeR::read.simulation.results.bigpurple(
-  experiment_path = experiment.path,
-  scenario_name = 'vmmc',
+  scenario_name = scenario.name,
   summarize_columns = c("Population","Infected", "On_ART",
                         "Died", "Died_from_HIV",
                         "Newly.Infected","Diagnosed", 
@@ -151,317 +94,8 @@ sim.vmmc <- EMODAnalyzeR::read.simulation.results.bigpurple(
 )
 ```
 
-
-## Oral TDF - AGYW
+Apply population scale factor:
 ```{r}
-experiment.path = "/gpfs/scratch/citrod01/experiments/Zimbabwe/ZWE_Phase2/Baseline-campaign_ZWE_MIHPSA_phase2_tdf_agyw-tdf_agyw___2024_10_24_16_03_26_389869/"
-
-sim.tdf.agyw <- EMODAnalyzeR::read.simulation.results.bigpurple(
-  experiment_path = experiment.path,
-  scenario_name = 'tdf.agyw',
-  summarize_columns = c("Population","Infected", "On_ART",
-                        "Died", "Died_from_HIV",
-                        "Newly.Infected","Diagnosed", 
-                        "Newly.Tested.Positive", "Newly.Tested.Negative",
-                        "HIVPositiveHIVTest","HIVNegativeHIVTest",
-                        "Needs_PMTCT_Diagnostic_Test","NewlySymptomatic",
-                        "Infected.CD4.Under.200..Not.On.ART.", "Infected.CD4.200.To.349..Not.On.ART.",
-                        "Infected.CD4.350.To.499..Not.On.ART.", "Infected.CD4.500.Plus..Not.On.ART.",
-                        "ReceivePrEP_HIGH", "Program_VMMC", "GaveBirth"),
-  stratify_columns = c("Year", "Gender", "Age", "IP_Key.Risk", "IsCircumcised"),
-  min_age_inclusive = 0,
-  max_age_inclusive = 99
-)
-```
-
-
-## Oral TDF - FSW
-
-```{r}
-experiment.path = "/gpfs/scratch/citrod01/experiments/Zimbabwe/ZWE_Phase2/Baseline-campaign_ZWE_MIHPSA_phase2_tdf_fsw-tdf_fsw___2024_10_29_09_18_54_662897/"
-
-sim.tdf.fsw <- EMODAnalyzeR::read.simulation.results.bigpurple(
-  experiment_path = experiment.path,
-  scenario_name = 'tdf.fsw',
-  summarize_columns = c("Population","Infected", "On_ART",
-                        "Died", "Died_from_HIV",
-                        "Newly.Infected","Diagnosed", 
-                        "Newly.Tested.Positive", "Newly.Tested.Negative",
-                        "HIVPositiveHIVTest","HIVNegativeHIVTest",
-                        "Needs_PMTCT_Diagnostic_Test","NewlySymptomatic",
-                        "Infected.CD4.Under.200..Not.On.ART.", "Infected.CD4.200.To.349..Not.On.ART.",
-                        "Infected.CD4.350.To.499..Not.On.ART.", "Infected.CD4.500.Plus..Not.On.ART.",
-                        "ReceivePrEP_HIGH", "Program_VMMC", "GaveBirth"),
-  stratify_columns = c("Year", "Gender", "Age", "IP_Key.Risk", "IsCircumcised"),
-  min_age_inclusive = 0,
-  max_age_inclusive = 99
-)
-```
-
-## Oral TDF - Serodiscordant Couples
-
-```{r}
-experiment.path = "/gpfs/scratch/citrod01/experiments/Zimbabwe/ZWE_Phase2/Baseline-campaign_ZWE_MIHPSA_phase2_tdf_sd-tdf_sd___2024_10_22_12_58_28_599576/"
-# "/gpfs/data/bershteynlab/EMOD/citrod01/ZWE_calib_20220627/ZWE_phase2/Baseline-campaign_ZWE_MIHPSA_phase2_tdf_sd-sd"
-
-sim.tdf.sd <- EMODAnalyzeR::read.simulation.results.bigpurple(
-  experiment_path = experiment.path,
-  scenario_name = 'tdf.sd',
-  summarize_columns = c("Population","Infected", "On_ART",
-                        "Died", "Died_from_HIV",
-                        "Newly.Infected","Diagnosed", 
-                        "Newly.Tested.Positive", "Newly.Tested.Negative",
-                        "HIVPositiveHIVTest","HIVNegativeHIVTest",
-                        "Needs_PMTCT_Diagnostic_Test","NewlySymptomatic",
-                        "Infected.CD4.Under.200..Not.On.ART.", "Infected.CD4.200.To.349..Not.On.ART.",
-                        "Infected.CD4.350.To.499..Not.On.ART.", "Infected.CD4.500.Plus..Not.On.ART.",
-                        "ReceivePrEP_HIGH", "Program_VMMC", "GaveBirth"),
-  stratify_columns = c("Year", "Gender", "Age", "IP_Key.Risk", "IsCircumcised"),
-  min_age_inclusive = 0,
-  max_age_inclusive = 99
-)
-```
-
-
-## Oral TDF - Pregnant women
-
-```{r}
-experiment.path = "/gpfs/scratch/citrod01/experiments/Zimbabwe/ZWE_Phase2/Baseline-campaign_ZWE_MIHPSA_phase2_tdf_plw-tdf_plw___2024_10_24_16_06_15_957562/"
-# "/gpfs/data/bershteynlab/EMOD/citrod01/ZWE_calib_20220627/ZWE_phase2/Baseline-campaign_ZWE_MIHPSA_phase2_tdf_plw-plw"
-
-sim.tdf.plw <- EMODAnalyzeR::read.simulation.results.bigpurple(
-  experiment_path = experiment.path,
-  scenario_name = 'tdf.plw',
-  summarize_columns = c("Population","Infected", "On_ART",
-                        "Died", "Died_from_HIV",
-                        "Newly.Infected","Diagnosed", 
-                        "Newly.Tested.Positive", "Newly.Tested.Negative",
-                        "HIVPositiveHIVTest","HIVNegativeHIVTest",
-                        "Needs_PMTCT_Diagnostic_Test","NewlySymptomatic",
-                        "Infected.CD4.Under.200..Not.On.ART.", "Infected.CD4.200.To.349..Not.On.ART.",
-                        "Infected.CD4.350.To.499..Not.On.ART.", "Infected.CD4.500.Plus..Not.On.ART.",
-                        "ReceivePrEP_HIGH", "Program_VMMC", "GaveBirth"),
-  stratify_columns = c("Year", "Gender", "Age", "IP_Key.Risk", "IsCircumcised"),
-  min_age_inclusive = 0,
-  max_age_inclusive = 99
-)
-```
-
-
-## CAB-LA - AGYW
-
-```{r}
-experiment.path = "/gpfs/scratch/citrod01/experiments/Zimbabwe/ZWE_Phase2/Baseline-campaign_ZWE_MIHPSA_phase2_cabla_agyw-cabla_agyw___2024_10_24_15_57_18_987988"
-
-sim.cabla.agyw <- EMODAnalyzeR::read.simulation.results.bigpurple(
-  experiment_path = experiment.path,
-  scenario_name = 'cabla.agyw',
-  summarize_columns = c("Population","Infected", "On_ART",
-                        "Died", "Died_from_HIV",
-                        "Newly.Infected","Diagnosed", 
-                        "Newly.Tested.Positive", "Newly.Tested.Negative",
-                        "HIVPositiveHIVTest","HIVNegativeHIVTest",
-                        "Needs_PMTCT_Diagnostic_Test","NewlySymptomatic",
-                        "Infected.CD4.Under.200..Not.On.ART.", "Infected.CD4.200.To.349..Not.On.ART.",
-                        "Infected.CD4.350.To.499..Not.On.ART.", "Infected.CD4.500.Plus..Not.On.ART.",
-                        "ReceivePrEP_HIGH", "Program_VMMC", "GaveBirth"),
-  stratify_columns = c("Year", "Gender", "Age", "IP_Key.Risk", "IsCircumcised"),
-  min_age_inclusive = 0,
-  max_age_inclusive = 99
-)
-```
-
-
-## CAB-LA - FSW
-
-```{r}
-experiment.path = "/gpfs/scratch/citrod01/experiments/Zimbabwe/ZWE_Phase2/Baseline-campaign_ZWE_MIHPSA_phase2_cabla_fsw-cabla_fsw___2024_10_24_15_59_09_359764/"
-
-sim.cabla.fsw <- EMODAnalyzeR::read.simulation.results.bigpurple(
-  experiment_path = experiment.path,
-  scenario_name = 'cabla.fsw',
-  summarize_columns = c("Population","Infected", "On_ART",
-                        "Died", "Died_from_HIV",
-                        "Newly.Infected","Diagnosed", 
-                        "Newly.Tested.Positive", "Newly.Tested.Negative",
-                        "HIVPositiveHIVTest","HIVNegativeHIVTest",
-                        "Needs_PMTCT_Diagnostic_Test","NewlySymptomatic",
-                        "Infected.CD4.Under.200..Not.On.ART.", "Infected.CD4.200.To.349..Not.On.ART.",
-                        "Infected.CD4.350.To.499..Not.On.ART.", "Infected.CD4.500.Plus..Not.On.ART.",
-                        "ReceivePrEP_HIGH", "Program_VMMC", "GaveBirth"),
-  stratify_columns = c("Year", "Gender", "Age", "IP_Key.Risk", "IsCircumcised"),
-  min_age_inclusive = 0,
-  max_age_inclusive = 99
-)
-```
-
-## CAB-LA - Serodiscordant Couples
-
-```{r}
-experiment.path = "/gpfs/scratch/citrod01/experiments/Zimbabwe/ZWE_Phase2/Baseline-campaign_ZWE_MIHPSA_phase2_cabla_sd-cabla_sd___2024_10_24_16_00_37_705200/"
-
-sim.cabla.sd <- EMODAnalyzeR::read.simulation.results.bigpurple(
-  experiment_path = experiment.path,
-  scenario_name = 'cabla.sd',
-  summarize_columns = c("Population","Infected", "On_ART",
-                        "Died", "Died_from_HIV",
-                        "Newly.Infected","Diagnosed", 
-                        "Newly.Tested.Positive", "Newly.Tested.Negative",
-                        "HIVPositiveHIVTest","HIVNegativeHIVTest",
-                        "Needs_PMTCT_Diagnostic_Test","NewlySymptomatic",
-                        "Infected.CD4.Under.200..Not.On.ART.", "Infected.CD4.200.To.349..Not.On.ART.",
-                        "Infected.CD4.350.To.499..Not.On.ART.", "Infected.CD4.500.Plus..Not.On.ART.",
-                        "ReceivePrEP_HIGH", "Program_VMMC", "GaveBirth"),
-  stratify_columns = c("Year", "Gender", "Age", "IP_Key.Risk", "IsCircumcised"),
-  min_age_inclusive = 0,
-  max_age_inclusive = 99
-)
-```
-
-## CAB-LA - Pregnant women
-
-```{r}
-experiment.path = "/gpfs/scratch/citrod01/experiments/Zimbabwe/ZWE_Phase2/Baseline-campaign_ZWE_MIHPSA_phase2_cabla_plw-cabla_plw___2024_10_24_16_02_00_951710/"
-
-sim.cabla.plw <- EMODAnalyzeR::read.simulation.results.bigpurple(
-  experiment_path = experiment.path,
-  scenario_name = 'cabla.plw',
-  summarize_columns = c("Population","Infected", "On_ART",
-                        "Died", "Died_from_HIV",
-                        "Newly.Infected","Diagnosed", 
-                        "Newly.Tested.Positive", "Newly.Tested.Negative",
-                        "HIVPositiveHIVTest","HIVNegativeHIVTest",
-                        "Needs_PMTCT_Diagnostic_Test","NewlySymptomatic",
-                        "Infected.CD4.Under.200..Not.On.ART.", "Infected.CD4.200.To.349..Not.On.ART.",
-                        "Infected.CD4.350.To.499..Not.On.ART.", "Infected.CD4.500.Plus..Not.On.ART.",
-                        "ReceivePrEP_HIGH", "Program_VMMC", "GaveBirth"),
-  stratify_columns = c("Year", "Gender", "Age", "IP_Key.Risk", "IsCircumcised"),
-  min_age_inclusive = 0,
-  max_age_inclusive = 99
-)
-```
-
-## Dapirivine - AGYW
-
-```{r}
-experiment.path = "/gpfs/scratch/citrod01/experiments/Zimbabwe/ZWE_Phase2/Baseline-campaign_ZWE_MIHPSA_phase2_dpvr_agyw-dpvr_agyw___2024_10_29_09_20_50_285174/"
-# "/gpfs/data/bershteynlab/EMOD/citrod01/ZWE_calib_20220627/ZWE_phase2/Baseline-campaign_ZWE_MIHPSA_phase2_tdf_plw-plw"
-
-sim.dpvr.agyw <- EMODAnalyzeR::read.simulation.results.bigpurple(
-  experiment_path = experiment.path,
-  scenario_name = 'dpvr.agyw',
-  summarize_columns = c("Population","Infected", "On_ART",
-                        "Died", "Died_from_HIV",
-                        "Newly.Infected","Diagnosed", 
-                        "Newly.Tested.Positive", "Newly.Tested.Negative",
-                        "HIVPositiveHIVTest","HIVNegativeHIVTest",
-                        "Needs_PMTCT_Diagnostic_Test","NewlySymptomatic",
-                        "Infected.CD4.Under.200..Not.On.ART.", "Infected.CD4.200.To.349..Not.On.ART.",
-                        "Infected.CD4.350.To.499..Not.On.ART.", "Infected.CD4.500.Plus..Not.On.ART.",
-                        "ReceivePrEP_HIGH", "Program_VMMC", "GaveBirth"),
-  stratify_columns = c("Year", "Gender", "Age", "IP_Key.Risk", "IsCircumcised"),
-  min_age_inclusive = 0,
-  max_age_inclusive = 99
-)
-```
-
-
-## Dapirivine - FSW
-
-```{r}
-experiment.path = "/gpfs/scratch/citrod01/experiments/Zimbabwe/ZWE_Phase2/Baseline-campaign_ZWE_MIHPSA_phase2_dpvr_fsw-dpvr_fsw___2024_10_29_09_22_30_619701/"
-# "/gpfs/data/bershteynlab/EMOD/citrod01/ZWE_calib_20220627/ZWE_phase2/Baseline-campaign_ZWE_MIHPSA_phase2_tdf_plw-plw"
-
-sim.dpvr.fsw <- EMODAnalyzeR::read.simulation.results.bigpurple(
-  experiment_path = experiment.path,
-  scenario_name = 'dpvr.fsw',
-  summarize_columns = c("Population","Infected", "On_ART",
-                        "Died", "Died_from_HIV",
-                        "Newly.Infected","Diagnosed", 
-                        "Newly.Tested.Positive", "Newly.Tested.Negative",
-                        "HIVPositiveHIVTest","HIVNegativeHIVTest",
-                        "Needs_PMTCT_Diagnostic_Test","NewlySymptomatic",
-                        "Infected.CD4.Under.200..Not.On.ART.", "Infected.CD4.200.To.349..Not.On.ART.",
-                        "Infected.CD4.350.To.499..Not.On.ART.", "Infected.CD4.500.Plus..Not.On.ART.",
-                        "ReceivePrEP_HIGH", "Program_VMMC", "GaveBirth"),
-  stratify_columns = c("Year", "Gender", "Age", "IP_Key.Risk", "IsCircumcised"),
-  min_age_inclusive = 0,
-  max_age_inclusive = 99
-)
-```
-
-## Dapirivine - Serodiscordant Couples
-
-```{r}
-experiment.path = "/gpfs/scratch/citrod01/experiments/Zimbabwe/ZWE_Phase2/Baseline-campaign_ZWE_MIHPSA_phase2_dpvr_sd-dpvr_sd___2024_10_29_09_24_15_515226/"
-# "/gpfs/data/bershteynlab/EMOD/citrod01/ZWE_calib_20220627/ZWE_phase2/Baseline-campaign_ZWE_MIHPSA_phase2_tdf_plw-plw"
-
-sim.dpvr.sd <- EMODAnalyzeR::read.simulation.results.bigpurple(
-  experiment_path = experiment.path,
-  scenario_name = 'dpvr.sd',
-  summarize_columns = c("Population","Infected", "On_ART",
-                        "Died", "Died_from_HIV",
-                        "Newly.Infected","Diagnosed", 
-                        "Newly.Tested.Positive", "Newly.Tested.Negative",
-                        "HIVPositiveHIVTest","HIVNegativeHIVTest",
-                        "Needs_PMTCT_Diagnostic_Test","NewlySymptomatic",
-                        "Infected.CD4.Under.200..Not.On.ART.", "Infected.CD4.200.To.349..Not.On.ART.",
-                        "Infected.CD4.350.To.499..Not.On.ART.", "Infected.CD4.500.Plus..Not.On.ART.",
-                        "ReceivePrEP_HIGH", "Program_VMMC", "GaveBirth"),
-  stratify_columns = c("Year", "Gender", "Age", "IP_Key.Risk", "IsCircumcised"),
-  min_age_inclusive = 0,
-  max_age_inclusive = 99
-)
-```
-
-## Dapirivine - Pregnant women
-
-```{r}
-experiment.path = "/gpfs/scratch/citrod01/experiments/Zimbabwe/ZWE_Phase2/Baseline-campaign_ZWE_MIHPSA_phase2_dpvr_plw-dpvr_plw___2024_10_29_09_25_58_232841/"
-# "/gpfs/data/bershteynlab/EMOD/citrod01/ZWE_calib_20220627/ZWE_phase2/Baseline-campaign_ZWE_MIHPSA_phase2_tdf_plw-plw"
-
-sim.dpvr.plw <- EMODAnalyzeR::read.simulation.results.bigpurple(
-  experiment_path = experiment.path,
-  scenario_name = 'dpvr.plw',
-  summarize_columns = c("Population","Infected", "On_ART",
-                        "Died", "Died_from_HIV",
-                        "Newly.Infected","Diagnosed", 
-                        "Newly.Tested.Positive", "Newly.Tested.Negative",
-                        "HIVPositiveHIVTest","HIVNegativeHIVTest",
-                        "Needs_PMTCT_Diagnostic_Test","NewlySymptomatic",
-                        "Infected.CD4.Under.200..Not.On.ART.", "Infected.CD4.200.To.349..Not.On.ART.",
-                        "Infected.CD4.350.To.499..Not.On.ART.", "Infected.CD4.500.Plus..Not.On.ART.",
-                        "ReceivePrEP_HIGH", "Program_VMMC", "GaveBirth"),
-  stratify_columns = c("Year", "Gender", "Age", "IP_Key.Risk", "IsCircumcised"),
-  min_age_inclusive = 0,
-  max_age_inclusive = 99
-)
-```
-
-## Join together and rescale
-```{r}
-sim.results.all <- rbind(
-  sim.minimal,
-  sim.vmmc,
-  sim.cabla.agyw,
-  sim.cabla.fsw,
-  sim.cabla.plw,
-  sim.cabla.sd
-  )
-
-sim.results.all <- rbind(
-  sim.sq,
-  sim.tdf.agyw,
-  sim.tdf.fsw,
-  sim.tdf.sd,
-  sim.tdf.plw)
-
-sim.results.all <- rbind(
-  sim.dpvr.agyw,
-  sim.dpvr.fsw,
-  sim.dpvr.sd,
-  sim.dpvr.plw)
-
 nruns <- 250
 
 CENSUS_YEAR = 2011
@@ -1251,6 +885,7 @@ p4.prep.plw %>%
     geom_point(mapping = aes(x = Year, y = PrEP_pregbfF1549_M, color = scenario_name))
 ```
 
+
 ## Output Flow Variables
 For each of the separate scenarios, need to 
 1. select the right set of columns
@@ -1267,222 +902,90 @@ flow.variables.sheet <- merge(
   merge(VMMC.summary, by = c('Year', 'scenario_name'))
 ```
 
-### Minimal and VMMC scenario output
+### Functions for writing out different scenarios
+
+Different scenarios will have different columns in them, because not every scenario receives every kind of intervention.
+
+Make sure that the name of the output file is set correctly, otherwise you might overwrite your work
+
+#### Minimal and VMMC scenario output
 ```{r}
-# Minimal scenario output
+output.file.name = "" # MIHPSA_ZWE_Phase2_minimal_[group name]_flow.csv
+
 write_csv(
   flow.variables.sheet %>% 
-    filter(scenario_name == "minimal") %>% 
     filter(Year >= 2022), 
-  "MIHPSA_ZWE_Phase2_minimal_flow.csv"
+  file = output.file.name
   )
-
-# VMMC scenario output
-write_csv(
-  flow.variables.sheet %>% 
-    filter(scenario_name == "vmmc") %>% 
-    filter(Year >= 2022), 
-  "MIHPSA_ZWE_Phase2_VMMC_flow.csv"
-  )
-
 
 ```
 
-### Save TDF Variable template sheets and Status Quo
+### Save TDF Variable template sheets, also status quo
+
+These include extra columns for TDF distribution.
+
+This can also be used for Status Quo scenario, since that includes TDF
 ```{r}
-# Oral TDF - AGYW scenario output
-agyw.output <- merge(
+output.file.name = "" # MIHPSA_ZWE_Phase2_TDF_[group name]_flow.csv
+
+tdf.output.table <- merge(
   flow.variables.sheet %>% 
-    filter(scenario_name == "tdf.agyw") %>% 
     filter(Year >= 2022),
   p1.prep.agyw %>% 
-  filter(scenario_name == "tdf.agyw",
-         Year >= 2022),
+    filter(Year >= 2022),
   by = c('Year', 'scenario_name')
 ) %>% 
   mutate(NTDFPrEP_F1524_M = PrEP_F1524_M) %>% 
   select(-PrEP_F1524_M) 
 
-agyw.output %>% 
-  write_csv("MIHPSA_ZWE_Phase2_TDF_AGYW_flow.csv")
-
-# Oral TDF - FSW scenario output
-fsw.output <- merge(
-  flow.variables.sheet %>% 
-    filter(scenario_name == "tdf.fsw") %>% 
-    filter(Year >= 2022),
-  p2.prep.fsw %>% 
-  filter(scenario_name == "tdf.fsw",
-         Year >= 2022),
-  by = c('Year', 'scenario_name')
-) %>% 
-  mutate(NTDFPrEP_FSW1599_M = PrEP_FSW1599_M) %>% 
-  select(-PrEP_FSW1599_M) 
-
-fsw.output %>% 
-  write_csv("MIHPSA_ZWE_Phase2_TDF_FSW_flow.csv")
-
-# Oral TDF - Serodiscordant couple scenario output
-sd.output <- merge(
-  flow.variables.sheet %>% 
-    filter(scenario_name == "tdf.sd") %>% 
-    filter(Year >= 2022),
-  p3.prep.sd %>% 
-  filter(scenario_name == "tdf.sd",
-         Year >= 2022),
-  by = c('Year', 'scenario_name')
-) %>% 
-  mutate(NTDFPrEP_SDCA1599_M = PrEP_SDCA1599_M) %>% 
-  select(-PrEP_SDCA1599_M) 
-
-sd.output %>% 
-  write_csv("MIHPSA_ZWE_Phase2_TDF_SDC_flow.csv")
-
-# Oral TDF - Pregnant and lactating women scenario output
-plw.output <- merge(
-  flow.variables.sheet %>% 
-    filter(scenario_name == "tdf.plw") %>% 
-    filter(Year >= 2022),
-  p4.prep.plw %>% 
-  filter(scenario_name == "tdf.plw",
-         Year >= 2022),
-  by = c('Year', 'scenario_name')
-) %>% 
-  mutate(NTDFPrEP_pregbfF1549_M = PrEP_pregbfF1549_M) %>% 
-  select(-PrEP_pregbfF1549_M)
-
-plw.output %>% 
-  write_csv("MIHPSA_ZWE_Phase2_TDF_PREGBF_flow.csv")
-
+tdf.output.table %>% 
+  write_csv(file = output.file.name)
 ```
 
 
 ### Save DPVR Variable template sheets 
 
+These include extra columns for DPVR distribution
 ```{r}
-# Dapirivine - AGYW scenario output
-agyw.output <- merge(
+output.file.name = "" # MIHPSA_ZWE_Phase2_DPVR_[group name]_flow.csv
+
+dpvr.output.table <- merge(
   flow.variables.sheet %>% 
-    filter(scenario_name == "dpvr.agyw") %>% 
     filter(Year >= 2022),
   p1.prep.agyw %>% 
-  filter(scenario_name == "dpvr.agyw",
-         Year >= 2022),
+    filter(Year >= 2022),
   by = c('Year', 'scenario_name')
 ) %>% 
   mutate(NDPVPrEP_F1524_M = PrEP_F1524_M) %>% 
   select(-PrEP_F1524_M) 
 
-agyw.output %>% 
-  write_csv("MIHPSA_ZWE_Phase2_DPV_AGYW_flow.csv")
 
-# Dapirivine - FSW scenario output
-fsw.output <- merge(
-  flow.variables.sheet %>% 
-    filter(scenario_name == "dpvr.fsw") %>% 
-    filter(Year >= 2022),
-  p2.prep.fsw %>% 
-  filter(scenario_name == "dpvr.fsw",
-         Year >= 2022),
-  by = c('Year', 'scenario_name')
-) %>% 
-  mutate(NDPVPrEP_FSW1599_M = PrEP_FSW1599_M) %>% 
-  select(-PrEP_FSW1599_M) 
-
-fsw.output %>% 
-  write_csv("MIHPSA_ZWE_Phase2_DPV_FSW_flow.csv")
-
-# Dapirivine - Serodiscordant couple scenario output
-sd.output <- merge(
-  flow.variables.sheet %>% 
-    filter(scenario_name == "dpvr.sd") %>% 
-    filter(Year >= 2022),
-  p3.prep.sd %>% 
-  filter(scenario_name == "dpvr.sd",
-         Year >= 2022),
-  by = c('Year', 'scenario_name')
-) %>% 
-  mutate(NDPVPrEP_SDCA1599_M = PrEP_SDCA1599_M) %>% 
-  select(-PrEP_SDCA1599_M) 
-
-sd.output %>% 
-  write_csv("MIHPSA_ZWE_Phase2_DPV_SDC_flow.csv")
-
-# Dapirivine - Pregnant and lactating women scenario output
-plw.output <- merge(
-  flow.variables.sheet %>% 
-    filter(scenario_name == "dpvr.plw") %>% 
-    filter(Year >= 2022),
-  p4.prep.plw %>% 
-  filter(scenario_name == "dpvr.plw",
-         Year >= 2022),
-  by = c('Year', 'scenario_name')
-) %>% 
-  mutate(NDPVPrEP_pregbfF1549_M = PrEP_pregbfF1549_M) %>% 
-  select(-PrEP_pregbfF1549_M)
-
-plw.output %>% 
-  write_csv("MIHPSA_ZWE_Phase2_DPV_PREGBF_flow.csv")
+dpvr.output.table %>% 
+  write_csv(file = output.file.name)
 ```
 
-### Save CABLA Variable template sheets
+### Save CAB-LA Variable template sheets
+
+These include extra columns for CAB-LA distribution
 
 ```{r}
-# CAB-LA - AGYW scenario output
-merge(
+
+output.file.name = "" # MIHPSA_ZWE_Phase2_CABLA_[group name]_flow.csv
+
+cabla.output.table <-  merge(
   flow.variables.sheet %>% 
-    filter(scenario_name == "cabla.agyw") %>% 
     filter(Year >= 2022),
   p1.prep.agyw %>% 
-  filter(scenario_name == "cabla.agyw",
-         Year >= 2022),
+    filter(Year >= 2022),
   by = c('Year', 'scenario_name')
 ) %>% 
   mutate(NCABPrEP_F1524_M = PrEP_F1524_M) %>% 
-  select(-PrEP_F1524_M) %>% 
-  write_csv("MIHPSA_ZWE_Phase2_CABLA_AGYW_flow.csv")
+  select(-PrEP_F1524_M) 
 
-# CAB-LA - FSW scenario output
-merge(
-  flow.variables.sheet %>% 
-    filter(scenario_name == "cabla.fsw") %>% 
-    filter(Year >= 2022),
-  p2.prep.fsw %>% 
-  filter(scenario_name == "cabla.fsw",
-         Year >= 2022),
-  by = c('Year', 'scenario_name')
-) %>% 
-  mutate(NCABPrEP_FSW1599_M = PrEP_FSW1599_M) %>% 
-  select(-PrEP_FSW1599_M) %>% 
-  write_csv("MIHPSA_ZWE_Phase2_CABLA_FSW_flow.csv")
+cabla.output.table %>% 
+  write_csv(file = output.file.name)
 
-# CAB-LA - Serodiscordant couple scenario output
-merge(
-  flow.variables.sheet %>% 
-    filter(scenario_name == "cabla.sd") %>% 
-    filter(Year >= 2022),
-  p3.prep.sd %>% 
-  filter(scenario_name == "cabla.sd",
-         Year >= 2022),
-  by = c('Year', 'scenario_name')
-) %>% 
-  mutate(NCABPrEP_SDCA1599_M = PrEP_SDCA1599_M) %>% 
-  select(-PrEP_SDCA1599_M) %>% 
-  write_csv("MIHPSA_ZWE_Phase2_CABLA_SDC_flow.csv")
 
-# CAB-LA - Pregnant and lactating women scenario output
-merge(
-  flow.variables.sheet %>% 
-    filter(scenario_name == "cabla.plw") %>% 
-    filter(Year >= 2022),
-  p4.prep.plw %>% 
-  filter(scenario_name == "cabla.plw",
-         Year >= 2022),
-  by = c('Year', 'scenario_name')
-) %>% 
-  mutate(NCABPrEP_pregbfF1549_M = PrEP_pregbfF1549_M) %>% 
-  select(-PrEP_pregbfF1549_M) %>% 
-  write_csv("MIHPSA_ZWE_Phase2_CABLA_PREGBF_flow.csv")
 ```
 
 
@@ -2523,21 +2026,12 @@ stock.variables.sheet <- merge(
 
 ### Minimal and VMMC
 ```{r}
-# Minimal scenario output
+output.file.name = "MIHPSA_ZWE_Phase2_minimal_stock.csv"
+
 write_csv(
   stock.variables.sheet %>% 
-    filter(scenario_name == "minimal") %>% 
     filter(Year >= 2023), 
-  "MIHPSA_ZWE_Phase2_minimal_stock.csv"
-  )
-
-
-# VMMC scenario output
-write_csv(
-  stock.variables.sheet %>% 
-    filter(scenario_name == "vmmc") %>% 
-    filter(Year >= 2023), 
-  "MIHPSA_ZWE_Phase2_VMMC_stock.csv"
+  file = output.file.name
   )
 ```
 
@@ -2545,7 +2039,8 @@ write_csv(
 ### TDF Variable template 
 
 ```{r}
-# TDF - AGYW scenario output
+output.file.name = "MIHPSA_ZWE_Phase2_TDF_[target]_stock.csv"
+
 agyw.output <- stock.variables.sheet %>% 
   filter(Year >= 2022, scenario_name == "tdf.agyw") %>% 
   merge(PonPrEP.summary,  by = c('Year', 'scenario_name')) %>% 
@@ -2553,43 +2048,15 @@ agyw.output <- stock.variables.sheet %>%
   select(-P_PrEP_ElevRiskF1524_M) 
 
 agyw.output %>% 
-  write_csv("MIHPSA_ZWE_Phase2_TDF_AGYW_stock.csv")
+  write_csv(output.file.name)
 
-# TDF - FSW scenario output
-fsw.output.stock <- stock.variables.sheet %>% 
-  filter(Year >= 2022, scenario_name == "tdf.fsw") %>% 
-  merge(PonPrEP.summary,  by = c('Year', 'scenario_name')) %>% 
-  mutate(P_TDFPrEP_ElevRiskF1524_M = P_PrEP_ElevRiskF1524_M) %>%
-  select(-P_PrEP_ElevRiskF1524_M)
-
-fsw.output.stock %>% 
-  write_csv("MIHPSA_ZWE_Phase2_TDF_FSW_stock.csv")
-
-# TDF- Serodiscordant couple scenario output
-sd.output.stock <- stock.variables.sheet %>% 
-  filter(Year >= 2022, scenario_name == "tdf.sd") %>% 
-  merge(PonPrEP.summary,  by = c('Year', 'scenario_name')) %>% 
-  mutate(P_TDFPrEP_ElevRiskF1524_M = P_PrEP_ElevRiskF1524_M) %>%
-  select(-P_PrEP_ElevRiskF1524_M) 
-
-sd.output.stock %>% 
-  write_csv("MIHPSA_ZWE_Phase2_TDF_SDC_stock.csv")
-
-# TDF - Pregnant and lactating women scenario output
-plw.output.stock <- stock.variables.sheet %>% 
-  filter(Year >= 2022, scenario_name == "tdf.plw") %>% 
-  merge(PonPrEP.summary,  by = c('Year', 'scenario_name')) %>% 
-  mutate(P_TDFPrEP_ElevRiskF1524_M = P_PrEP_ElevRiskF1524_M) %>%
-  select(-P_PrEP_ElevRiskF1524_M) 
-
-plw.output.stock %>% 
-  write_csv("MIHPSA_ZWE_Phase2_TDF_PREGBF_stock.csv")
 ```
 
 ### Save DPVR templates
 
 ```{r}
-# DPV - AGYW scenario output
+output.file.name = "MIHPSA_ZWE_Phase2_DPV_[target]_stock.csv"
+
 agyw.output <- stock.variables.sheet %>% 
   filter(Year >= 2022, scenario_name == "dpvr.agyw") %>% 
   merge(PonPrEP.summary,  by = c('Year', 'scenario_name')) %>% 
@@ -2597,73 +2064,22 @@ agyw.output <- stock.variables.sheet %>%
   select(-P_PrEP_ElevRiskF1524_M) 
 
 agyw.output %>% 
-  write_csv("MIHPSA_ZWE_Phase2_DPV_AGYW_stock.csv")
+  write_csv(output.file.name)
 
-# DPV - FSW scenario output
-fsw.output.stock <- stock.variables.sheet %>% 
-  filter(Year >= 2022, scenario_name == "dpvr.fsw") %>% 
-  merge(PonPrEP.summary,  by = c('Year', 'scenario_name')) %>% 
-  mutate(P_DPVPrEP_ElevRiskF1524_M = P_PrEP_ElevRiskF1524_M) %>%
-  select(-P_PrEP_ElevRiskF1524_M)
-
-fsw.output.stock %>% 
-  write_csv("MIHPSA_ZWE_Phase2_DPV_FSW_stock.csv")
-
-# DPV- Serodiscordant couple scenario output
-sd.output.stock <- stock.variables.sheet %>% 
-  filter(Year >= 2022, scenario_name == "dpvr.sd") %>% 
-  merge(PonPrEP.summary,  by = c('Year', 'scenario_name')) %>% 
-  mutate(P_DPVPrEP_ElevRiskF1524_M = P_PrEP_ElevRiskF1524_M) %>%
-  select(-P_PrEP_ElevRiskF1524_M) 
-
-sd.output.stock %>% 
-  write_csv("MIHPSA_ZWE_Phase2_DPV_SDC_stock.csv")
-
-# DPV - Pregnant and lactating women scenario output
-plw.output.stock <- stock.variables.sheet %>% 
-  filter(Year >= 2022, scenario_name == "dpvr.plw") %>% 
-  merge(PonPrEP.summary,  by = c('Year', 'scenario_name')) %>% 
-  mutate(P_DPVPrEP_ElevRiskF1524_M = P_PrEP_ElevRiskF1524_M) %>%
-  select(-P_PrEP_ElevRiskF1524_M) 
-
-plw.output.stock %>% 
-  write_csv("MIHPSA_ZWE_Phase2_DPV_PREGBF_stock.csv")
 ```
 
 
 ### CABLA Variable Template
 
 ```{r}
-# CAB-LA - AGYW scenario output
+output.file.name = "MIHPSA_ZWE_Phase2_CABLA_[target]_stock.csv"
+
 stock.variables.sheet %>% 
   filter(Year >= 2022, scenario_name == "cabla.agyw") %>% 
   merge(PonPrEP.summary,  by = c('Year', 'scenario_name')) %>% 
   mutate(P_CABPrEP_ElevRiskF1524_M = P_PrEP_ElevRiskF1524_M) %>%
   select(-P_PrEP_ElevRiskF1524_M) %>% 
-  write_csv("MIHPSA_ZWE_Phase2_CABLA_AGYW_stock.csv")
+  write_csv(output.file.name)
 
-# CAB-LA - FSW scenario output
-stock.variables.sheet %>% 
-  filter(Year >= 2022, scenario_name == "cabla.fsw") %>% 
-  merge(PonPrEP.summary,  by = c('Year', 'scenario_name')) %>% 
-  mutate(P_CABPrEP_ElevRiskF1524_M = P_PrEP_ElevRiskF1524_M) %>%
-  select(-P_PrEP_ElevRiskF1524_M) %>% 
-  write_csv("MIHPSA_ZWE_Phase2_CABLA_FSW_stock.csv")
-
-# CAB-LA - Serodiscordant couple scenario output
-stock.variables.sheet %>% 
-  filter(Year >= 2022, scenario_name == "cabla.sd") %>% 
-  merge(PonPrEP.summary,  by = c('Year', 'scenario_name')) %>% 
-  mutate(P_CABPrEP_ElevRiskF1524_M = P_PrEP_ElevRiskF1524_M) %>%
-  select(-P_PrEP_ElevRiskF1524_M) %>% 
-  write_csv("MIHPSA_ZWE_Phase2_CABLA_SDC_stock.csv")
-
-# CAB-LA - Pregnant and lactating women scenario output
-stock.variables.sheet %>% 
-  filter(Year >= 2022, scenario_name == "cabla.plw") %>% 
-  merge(PonPrEP.summary,  by = c('Year', 'scenario_name')) %>% 
-  mutate(P_CABPrEP_ElevRiskF1524_M = P_PrEP_ElevRiskF1524_M) %>%
-  select(-P_PrEP_ElevRiskF1524_M) %>% 
-  write_csv("MIHPSA_ZWE_Phase2_CABLA_PREGBF_stock.csv")
 ```
 
