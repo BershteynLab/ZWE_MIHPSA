@@ -20,4 +20,4 @@
 
 # python optim_script_20220627.py
 
-python run_scenarios.py -c optim_script_20220627.py --resample-method provided --samples resampled_parameter_sets.csv --output-dir ZWE_phase2 --suite-name ZWE_phase2 --table scenarios_phase_2.csv
+python run_scenarios.py -c optim_script_20220627.py --resample-method provided --samples resampled_parameter_sets.csv --output-dir pepfar_zwe --suite-name pepfar_zwe --table scenarios.csv
