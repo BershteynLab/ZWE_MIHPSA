@@ -856,6 +856,7 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "class": "NodeLevelHealthTriggeredIV",
+                    "Duration": 5110,
                     "Trigger_Condition_List": [
                         "HCTTestingLoop0",
                         "HCTTestingLoop9"

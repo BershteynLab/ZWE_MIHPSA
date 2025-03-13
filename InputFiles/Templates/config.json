@@ -260,7 +260,9 @@
                 "Receive_DMPA_Intervention",
                 "End_of_Control_Label",
                 "End_of_Intervention_Label",
-                "HCTTestingLoopRapidTest"
+                "HCTTestingLoopRapidTest",
+                "PEPFAR_ART_Dropout",
+                "PEPFAR_ART_Continue"
             ],
             "Custom_Node_Events": [
                 "ARTStaging3",

@@ -48,12 +48,14 @@
                         "TestingOnChild6w",
                         "TestingOnSymptomatic",
                         "LostForever",
+                        "LostForever_PEPFAR_cancelled",
                         "CommercialSex",
                         "VMMC",
                         "ReceivingVMMC"
                     ],
                     "Initial_Distribution": [
                         1,
+                        0,
                         0,
                         0,
                         0,

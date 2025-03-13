@@ -1,6 +1,6 @@
 {
     "Campaign_Name": "Campaign for Zimbabwe: MIHPSA",
-    "COMMENT":"2023-04-07 - Initial scenario for ZWE MIHPSA, adding PrEP (truvada) for AGYW",
+    "COMMENT":"2025-03-13 - Emergency forecast of PEPFAR's impact - 56% reductions in ART, testing, VMMC, PrEP",
     "Default_Campaign_Path": "campaign.json",
     "Use_Defaults": 1,
     "Events": [
@@ -541,6 +541,7 @@
                         "Negative_Diagnosis_Event": "HCTUptakePostDebut1",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -566,6 +567,7 @@
                 "Intervention_Config": {
                     "Disqualifying_Properties": [
                         "CascadeState:LostForever",
+                        "CascadeState:LostForever_PEPFAR_cancelled",
                         "CascadeState:OnART",
                         "CascadeState:LinkingToART",
                         "CascadeState:OnPreART",
@@ -619,6 +621,7 @@
                         "Delay_Period_Exponential": 365,
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -659,6 +662,7 @@
                         "Default_Value": 0,
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -723,6 +727,7 @@
                         "Negative_Diagnosis_Event": "HCTUptakePostDebut1",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -796,7 +801,8 @@
                         "Positive_Diagnosis_Event": "OnART1",
                         "Negative_Diagnosis_Event": "HCTUptakePostDebut3",
                         "Disqualifying_Properties": [
-                            "CascadeState:LostForever"
+                            "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled"
                         ],
                         "New_Property_Value": "CascadeState:OnART"
                     }
@@ -835,7 +841,8 @@
                         "Positive_Diagnosis_Event": "OnART1",
                         "Negative_Diagnosis_Event": "LostForever0",
                         "Disqualifying_Properties": [
-                            "CascadeState:LostForever"
+                            "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled"
                         ],
                         "New_Property_Value": "CascadeState:OnART"
                     }
@@ -856,6 +863,7 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "class": "NodeLevelHealthTriggeredIV",
+                    "Duration":5110,
                     "Trigger_Condition_List": [
                         "HCTTestingLoop0",
                         "HCTTestingLoop9"
@@ -866,9 +874,10 @@
                         "Max_Entries": 1,
                         "Delay_Period_Distribution": "EXPONENTIAL_DISTRIBUTION",
                         "Delay_Period_Exponential": 730,
-                        "Broadcast_Event": "HCTTestingLoop1",
+                        "Broadcast_Event": "HCTTestingLoopRapidTest",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -881,9 +890,48 @@
             }
         },
         {
-            "Event_Name": "HCTTestingLoop: state 0 (delay to next HCT)",
+            "Event_Name": "HCTTestingLoop: state 0 (delay to next HCT), Increased Testing Uptake Post-2004",
             "class": "CampaignEventByYear",
             "Start_Year": 2004,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Duration":7665,
+                    "Trigger_Condition_List": [
+                        "HCTTestingLoop0",
+                        "HCTTestingLoop9"
+                    ],
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVMuxer",
+                        "Muxer_Name": "HCTTestingLoop",
+                        "Max_Entries": 1,
+                        "Delay_Period_Distribution": "EXPONENTIAL_DISTRIBUTION",
+                        "Delay_Period_Exponential": 365,
+                        "Broadcast_Event": "HCTTestingLoopRapidTest",
+                        "Disqualifying_Properties": [
+                            "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
+                            "CascadeState:OnART",
+                            "CascadeState:LinkingToART",
+                            "CascadeState:OnPreART",
+                            "CascadeState:LinkingToPreART",
+                            "CascadeState:ARTStaging"
+                        ],
+                        "New_Property_Value": "CascadeState:HCTTestingLoop"
+                    }
+                }
+            }
+        },
+        {
+            "Event_Name": "HCTTestingLoop: state 0 (delay to next HCT), Decreased Testing Uptake Post-2004",
+            "COMMENT": "Post PEPFAR cancellation",
+            "class": "CampaignEventByYear",
+            "Start_Year": 2025,
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
@@ -905,6 +953,7 @@
                         "Broadcast_Event": "HCTTestingLoop1",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -914,6 +963,39 @@
                         "New_Property_Value": "CascadeState:HCTTestingLoop"
                     }
                 }
+            }
+        },
+        {
+            "Event_Name": "Delay Routine Testing Post PEPFAR Cancellation 2025",
+            "COMMENT": "Post PEPFAR cancellation, 44% chance of receiving Rapid Test",
+            "class": "CampaignEventByYear",
+            "Start_Year": 2025,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition_List": [
+                        "HCTTestingLoop1"
+                    ],
+                    "Actual_IndividualIntervention_Config": {
+                            "class": "HIVRandomChoice",
+                            "Choice_Names": ["HCTTestingLoop0","HCTTestingLoopRapidTest"],
+                            "Choice_Probabilities": [0.56,0.44],
+                            "Disqualifying_Properties": [
+                                "CascadeState:LostForever",
+                                "CascadeState:LostForever_PEPFAR_cancelled",
+                                "CascadeState:OnART",
+                                "CascadeState:LinkingToART",
+                                "CascadeState:OnPreART",
+                                "CascadeState:LinkingToPreART",
+                                "CascadeState:ARTStaging"
+                            ],
+                            "New_Property_Value": "CascadeState:HCTTestingLoop"
+                        }
+                    }  
             }
         },
         {
@@ -928,7 +1010,7 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": ["HCTTestingLoop1"],
+                    "Trigger_Condition_List": ["HCTTestingLoopRapidTest"],
                     "Actual_IndividualIntervention_Config": {
                         "class": "HIVRapidHIVDiagnostic",
                         "Event_Or_Config": "Event",
@@ -936,6 +1018,7 @@
                         "Negative_Diagnosis_Event": "HCTTestingLoop2",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -980,6 +1063,7 @@
                         "Negative_Diagnosis_Event": "ARTStaging1",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -1010,9 +1094,10 @@
                         "class": "HIVRandomChoice",
                         "Choices__KP_TestingDropout": "<-- MARKER",
                         "Choice_Names": ["HCTTestingLoop9","HCTUptakePostDebut1"],
-                        "Choice_Probabilities": [0.95,0.05],
+                        "Choice_Probabilities": [0.80,0.20],
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -1051,6 +1136,7 @@
                         "Negative_Diagnosis_Event": "ARTStaging8",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -1093,6 +1179,7 @@
                         "Positive_Diagnosis_Event": "ARTStaging2",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -1133,6 +1220,7 @@
                         "Positive_Diagnosis_Event": "Needs_PMTCT_Diagnostic_Test",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -1163,6 +1251,7 @@
                         "Positive_Diagnosis_Event": "HIV_Positive_at_ANC",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -1194,6 +1283,7 @@
                         "Positive_Diagnosis_Event": "ARTStaging1",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -1269,6 +1359,7 @@
                         "Negative_Diagnosis_Event": "Needs_Combination_PMTCT",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -1426,6 +1517,7 @@
                         "Positive_Diagnosis_Event": "ARTStaging0",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -1467,6 +1559,7 @@
                         "Negative_Diagnosis_Event": "HCTUptakePostDebut9",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART"
@@ -1500,6 +1593,7 @@
                         "Broadcast_Event": "OnPreART1",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART"
                         ],
@@ -1528,6 +1622,7 @@
                         "Choice_Probabilities": [0.25,0.75],
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART"
                         ],
@@ -1619,6 +1714,7 @@
                         "Negative_Diagnosis_Event": "OnPreART3",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART"
                         ],
@@ -1646,6 +1742,7 @@
                         "Positive_Diagnosis_Event": "OnPreART4",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART"
                         ],
@@ -1708,6 +1805,7 @@
                         "Negative_Diagnosis_Event": "OnPreART0",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART"
                         ],
@@ -1745,6 +1843,7 @@
                         "Negative_Diagnosis_Event": "HCTUptakePostDebut3",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART"
                         ],
                         "New_Property_Value": "CascadeState:LinkingToART"
@@ -1773,6 +1872,7 @@
                         "Positive_Diagnosis_Event": "ARTStaging1",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -1802,6 +1902,7 @@
                         "Choice_Probabilities": [0.9,0.1],
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -1834,6 +1935,7 @@
                         "Broadcast_Event": "ARTStaging3",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -1863,6 +1965,7 @@
                         "Positive_Diagnosis_Event": "ARTStaging4",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -1956,6 +2059,7 @@
                         "Negative_Diagnosis_Event": "ARTStaging5",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -1985,6 +2089,7 @@
                         "Choice_Probabilities": [1,0],
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -2049,6 +2154,7 @@
                         "Negative_Diagnosis_Event": "LinkingToPreART0",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -2075,7 +2181,8 @@
                         "Choice_Names": ["ARTInitiationDelayed","OnART1"],
                         "Choice_Probabilities": [0.9,0.1],
                         "Disqualifying_Properties": [
-                            "CascadeState:LostForever"
+                            "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled"
                         ],
                         "New_Property_Value": "CascadeState:OnART",
                         "class": "HIVRandomChoice"
@@ -2110,7 +2217,8 @@
                         "Delay_Period_Min": 1,
                         "Broadcast_Event": "OnART1",
                         "Disqualifying_Properties": [
-                            "CascadeState:LostForever"
+                            "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled"
                         ],
                         "New_Property_Value": "CascadeState:OnART"
                     }
@@ -2161,7 +2269,8 @@
                         "Delay_Period_Exponential": 7300,
                         "Max_Entries": 1,
                         "Disqualifying_Properties": [
-                            "CascadeState:LostForever"
+                            "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled"
                         ]
                     }
                 }
@@ -2187,6 +2296,63 @@
             }
         },
         {
+            "Event_Name": "PEPFAR Cancellation - remove 56% of people on ART",
+            "class": "CampaignEventByYear",
+            "Start_Year": 2025,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "HIVRandomChoice",
+                    "Choice_Probabilities": [0.56, 0.44],
+                    "Choice_Names": ["PEPFAR_ART_Dropout", "PEPFAR_ART_Continue"]
+                }
+            }
+        },
+        {
+            "Event_Name": "PEPFAR Cancellation - run ART dropout",
+            "class": "CampaignEventByYear",
+            "Start_Year": 2025,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition_List": ["PEPFAR_ART_Dropout"],
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "ARTDropout"
+                    }
+                }
+            }
+        },
+        {
+            "Event_Name": "PEPFAR Cancellation - prevent ART re-enrollment",
+            "class": "CampaignEventByYear",
+            "Start_Year": 2025,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition_List": ["PEPFAR_ART_Dropout"],
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "PropertyValueChanger",
+                        "Target_Property_Key": "CascadeState",
+                        "Target_Property_Value": "LostForever_PEPFAR_cancelled"
+                    }
+                }
+            }
+        },
+        {
             "END": "ART",
             "Event_Name": "OnART: state 4 (Willing to re-enroll in ART?)",
             "class": "CampaignEventByYear",
@@ -2205,7 +2371,8 @@
                         "Choice_Names": ["HCTUptakePostDebut8","LostForever9"],
                         "Choice_Probabilities": [0.75,0.25],
                         "Disqualifying_Properties": [
-                            "CascadeState:LostForever"
+                            "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled"
                         ],
                         "New_Property_Value": "CascadeState:OnART"
                     }
@@ -2321,6 +2488,7 @@
             "END": "VMMC PROGRAM",
             "ALSO END": "ALL MALE CIRCUMCISION",
             "Event_Name": "NChooser to produce specified number of program VMMCs",
+            "COMMENT": "Post PEPFAR cancellation 2025, only 44% of VMMC remains",
             "Nodeset_Config": {
                 "Node_List": [
                    1
@@ -2658,12 +2826,36 @@
                             }
                         ],
                         "Start_Year": 2021.5,
+                        "End_Year": 2025.5,
+                        "Num_Targeted_Females": [
+                        0
+                        ],
+                        "Num_Targeted_Males": [
+                            857600
+                        ],
+                        "Property_Restrictions_Within_Node": [],
+                        "Target_Disease_State": [
+                        [
+                            "HIV_Negative",
+                            "Not_Have_Intervention"
+                        ]
+                        ],
+                        "Target_Disease_State_Has_Intervention_Name": "Any_MC"
+                    },
+                    {
+                        "Age_Ranges_Years": [
+                            {
+                                "Min": 10,
+                                "Max": 25
+                            }
+                        ],
+                        "Start_Year": 2025.5,
                         "End_Year": 2073.5,
                         "Num_Targeted_Females": [
                         0
                         ],
                         "Num_Targeted_Males": [
-                            11148800
+                            4528128
                         ],
                         "Property_Restrictions_Within_Node": [],
                         "Target_Disease_State": [
@@ -2683,6 +2875,7 @@
             "BEGIN": "PREP INTERVENTION",
             "END": "PREP INTERVENTION",
             "Event_Name": "NChooser to implement specified number of PrEP uptake",
+            "COMMENT":"Post PEPFAR cancellation 2025, only 44% of PREP remains",
             "Nodeset_Config": {
                 "Node_List": [
                    1
@@ -2939,7 +3132,7 @@
                         "Start_Year": 2025,
                         "End_Year": 2026,
                         "Num_Targeted_Females": [
-                            45084
+                            19837
                         ],
                         "Num_Targeted_Males": [
                             0
@@ -2963,7 +3156,7 @@
                         "Start_Year": 2026,
                         "End_Year": 2073.5,
                         "Num_Targeted_Females": [
-                            2137500
+                            940500
                         ],
                         "Num_Targeted_Males": [
                             0
