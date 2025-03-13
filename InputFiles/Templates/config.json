@@ -262,7 +262,8 @@
                 "End_of_Intervention_Label",
                 "HCTTestingLoopRapidTest",
                 "PEPFAR_ART_Dropout",
-                "PEPFAR_ART_Continue"
+                "PEPFAR_ART_Continue",
+                "HCTTestingPEPFAR_Delayed"
             ],
             "Custom_Node_Events": [
                 "ARTStaging3",
@@ -513,7 +514,10 @@
                 "NewlySymptomatic",
                 "Program_VMMC",
                 "ReceivePrEP_HIGH",
-                "GaveBirth"
+                "HCTTestingLoopRapidTest",
+                "PEPFAR_ART_Dropout",
+                "PEPFAR_ART_Continue",
+                "HCTTestingPEPFAR_Delayed"
             ],
             "Report_HIV_Event_Channels_List": [ ],
 

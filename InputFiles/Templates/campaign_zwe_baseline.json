@@ -1,6 +1,6 @@
 {
     "Campaign_Name": "Campaign for Zimbabwe: MIHPSA",
-    "COMMENT":"2023-04-07 - Initial scenario for ZWE MIHPSA, adding PrEP (truvada) for AGYW",
+    "COMMENT":"2025-03-13 - Baseline reference for emergency forecast of PEPFAR's impact ",
     "Default_Campaign_Path": "campaign.json",
     "Use_Defaults": 1,
     "Events": [

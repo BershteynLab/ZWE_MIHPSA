@@ -866,6 +866,7 @@
                     "Duration":5110,
                     "Trigger_Condition_List": [
                         "HCTTestingLoop0",
+                        "HCTTestingPEPFAR_Delayed",
                         "HCTTestingLoop9"
                     ],
                     "Actual_IndividualIntervention_Config": {
@@ -904,6 +905,7 @@
                     "Duration":7665,
                     "Trigger_Condition_List": [
                         "HCTTestingLoop0",
+                        "HCTTestingPEPFAR_Delayed",
                         "HCTTestingLoop9"
                     ],
                     "Actual_IndividualIntervention_Config": {
@@ -942,6 +944,7 @@
                     "class": "NodeLevelHealthTriggeredIV",
                     "Trigger_Condition_List": [
                         "HCTTestingLoop0",
+                        "HCTTestingPEPFAR_Delayed",
                         "HCTTestingLoop9"
                     ],
                     "Actual_IndividualIntervention_Config": {
@@ -982,7 +985,7 @@
                     ],
                     "Actual_IndividualIntervention_Config": {
                             "class": "HIVRandomChoice",
-                            "Choice_Names": ["HCTTestingLoop0","HCTTestingLoopRapidTest"],
+                            "Choice_Names": ["HCTTestingPEPFAR_Delayed","HCTTestingLoopRapidTest"],
                             "Choice_Probabilities": [0.56,0.44],
                             "Disqualifying_Properties": [
                                 "CascadeState:LostForever",
