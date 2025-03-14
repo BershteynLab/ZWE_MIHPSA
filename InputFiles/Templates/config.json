@@ -504,7 +504,7 @@
 
             "Report_HIV_ByAgeAndGender_Collect_Intervention_Data": [ ],
             "Report_HIV_ByAgeAndGender_Add_Transmitters": 0,
-            "Report_HIV_ByAgeAndGender_Stratify_Infected_By_CD4": 1,
+            "Report_HIV_ByAgeAndGender_Stratify_Infected_By_CD4": 0,
 
             "Report_HIV_ByAgeAndGender_Has_Intervention_With_Name": "",
             "Report_HIV_ByAgeAndGender_Event_Counter_List": [
