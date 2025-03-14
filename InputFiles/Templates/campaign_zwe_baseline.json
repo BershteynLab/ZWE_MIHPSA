@@ -541,6 +541,7 @@
                         "Negative_Diagnosis_Event": "HCTUptakePostDebut1",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -566,6 +567,7 @@
                 "Intervention_Config": {
                     "Disqualifying_Properties": [
                         "CascadeState:LostForever",
+                        "CascadeState:LostForever_PEPFAR_cancelled",
                         "CascadeState:OnART",
                         "CascadeState:LinkingToART",
                         "CascadeState:OnPreART",
@@ -619,6 +621,7 @@
                         "Delay_Period_Exponential": 365,
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -659,6 +662,7 @@
                         "Default_Value": 0,
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -723,6 +727,7 @@
                         "Negative_Diagnosis_Event": "HCTUptakePostDebut1",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -796,7 +801,8 @@
                         "Positive_Diagnosis_Event": "OnART1",
                         "Negative_Diagnosis_Event": "HCTUptakePostDebut3",
                         "Disqualifying_Properties": [
-                            "CascadeState:LostForever"
+                            "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled"
                         ],
                         "New_Property_Value": "CascadeState:OnART"
                     }
@@ -835,7 +841,8 @@
                         "Positive_Diagnosis_Event": "OnART1",
                         "Negative_Diagnosis_Event": "LostForever0",
                         "Disqualifying_Properties": [
-                            "CascadeState:LostForever"
+                            "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled"
                         ],
                         "New_Property_Value": "CascadeState:OnART"
                     }
@@ -870,6 +877,7 @@
                         "Broadcast_Event": "HCTTestingLoop1",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -906,6 +914,7 @@
                         "Broadcast_Event": "HCTTestingLoop1",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -937,6 +946,7 @@
                         "Negative_Diagnosis_Event": "HCTTestingLoop2",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -981,6 +991,7 @@
                         "Negative_Diagnosis_Event": "ARTStaging1",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -996,31 +1007,33 @@
             "END": "HCT TESTING LOOP",
             "Event_Name": "HCTTestingLoop: state 2 (HCT Testing Dropout)",
             "class": "CampaignEventByYear",
+            "Nodeset_Config": { "class": "NodeSetAll" },
             "Start_Year": 1990,
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
             "Event_Coordinator_Config": {
                 "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [
-                        "HCTTestingLoop2"
-                    ],
+                    "Trigger_Condition_List": [ "HCTTestingLoop2" ],
                     "Actual_IndividualIntervention_Config": {
                         "class": "HIVRandomChoice",
-                        "Choices__KP_TestingDropout": "<-- MARKER",
-                        "Choice_Names": ["HCTTestingLoop9","HCTUptakePostDebut1"],
-                        "Choice_Probabilities": [0.95,0.05],
+                        "Choice_Names": [
+                            "HCTTestingLoop0",
+                            "HCTUptakePostDebut1"
+                        ],
+                        "Choice_Probabilities": [
+                            0.95,
+                            0.05
+                        ],
+                        "New_Property_Value": "InterventionStatus:HCTTestingLoop",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
                             "CascadeState:LinkingToPreART",
                             "CascadeState:ARTStaging"
-                        ],
-                        "New_Property_Value": "CascadeState:HCTTestingLoop"
+                        ]
                     }
                 }
             }
@@ -1052,6 +1065,7 @@
                         "Negative_Diagnosis_Event": "ARTStaging8",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -1094,6 +1108,7 @@
                         "Positive_Diagnosis_Event": "ARTStaging2",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -1134,6 +1149,7 @@
                         "Positive_Diagnosis_Event": "Needs_PMTCT_Diagnostic_Test",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -1164,6 +1180,7 @@
                         "Positive_Diagnosis_Event": "HIV_Positive_at_ANC",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -1195,6 +1212,7 @@
                         "Positive_Diagnosis_Event": "ARTStaging1",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -1270,6 +1288,7 @@
                         "Negative_Diagnosis_Event": "Needs_Combination_PMTCT",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -1427,6 +1446,7 @@
                         "Positive_Diagnosis_Event": "ARTStaging0",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -1468,6 +1488,7 @@
                         "Negative_Diagnosis_Event": "HCTUptakePostDebut9",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART"
@@ -1501,6 +1522,7 @@
                         "Broadcast_Event": "OnPreART1",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART"
                         ],
@@ -1529,6 +1551,7 @@
                         "Choice_Probabilities": [0.25,0.75],
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART"
                         ],
@@ -1620,6 +1643,7 @@
                         "Negative_Diagnosis_Event": "OnPreART3",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART"
                         ],
@@ -1647,6 +1671,7 @@
                         "Positive_Diagnosis_Event": "OnPreART4",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART"
                         ],
@@ -1709,6 +1734,7 @@
                         "Negative_Diagnosis_Event": "OnPreART0",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART"
                         ],
@@ -1746,6 +1772,7 @@
                         "Negative_Diagnosis_Event": "HCTUptakePostDebut3",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART"
                         ],
                         "New_Property_Value": "CascadeState:LinkingToART"
@@ -1774,6 +1801,7 @@
                         "Positive_Diagnosis_Event": "ARTStaging1",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -1803,6 +1831,7 @@
                         "Choice_Probabilities": [0.9,0.1],
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -1835,6 +1864,7 @@
                         "Broadcast_Event": "ARTStaging3",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -1864,6 +1894,7 @@
                         "Positive_Diagnosis_Event": "ARTStaging4",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -1957,6 +1988,7 @@
                         "Negative_Diagnosis_Event": "ARTStaging5",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -1986,6 +2018,7 @@
                         "Choice_Probabilities": [1,0],
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -2050,6 +2083,7 @@
                         "Negative_Diagnosis_Event": "LinkingToPreART0",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
                             "CascadeState:OnART",
                             "CascadeState:LinkingToART",
                             "CascadeState:OnPreART",
@@ -2076,7 +2110,8 @@
                         "Choice_Names": ["ARTInitiationDelayed","OnART1"],
                         "Choice_Probabilities": [0.9,0.1],
                         "Disqualifying_Properties": [
-                            "CascadeState:LostForever"
+                            "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled"
                         ],
                         "New_Property_Value": "CascadeState:OnART",
                         "class": "HIVRandomChoice"
@@ -2111,7 +2146,8 @@
                         "Delay_Period_Min": 1,
                         "Broadcast_Event": "OnART1",
                         "Disqualifying_Properties": [
-                            "CascadeState:LostForever"
+                            "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled"
                         ],
                         "New_Property_Value": "CascadeState:OnART"
                     }
@@ -2162,7 +2198,8 @@
                         "Delay_Period_Exponential": 7300,
                         "Max_Entries": 1,
                         "Disqualifying_Properties": [
-                            "CascadeState:LostForever"
+                            "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled"
                         ]
                     }
                 }
@@ -2206,7 +2243,8 @@
                         "Choice_Names": ["HCTUptakePostDebut8","LostForever9"],
                         "Choice_Probabilities": [0.75,0.25],
                         "Disqualifying_Properties": [
-                            "CascadeState:LostForever"
+                            "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled"
                         ],
                         "New_Property_Value": "CascadeState:OnART"
                     }
