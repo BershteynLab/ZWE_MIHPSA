@@ -1079,10 +1079,45 @@
             }
         },
         {
+            "Event_Name": "HCTTestingLoop: state 2 (HCT Testing Dropout)",
+            "class": "CampaignEventByYear",
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Start_Year": 1990,
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Duration":12775,
+                    "Trigger_Condition_List": [ "HCTTestingLoop2" ],
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVRandomChoice",
+                        "Choice_Names": [
+                            "HCTTestingLoop0",
+                            "HCTUptakePostDebut1"
+                        ],
+                        "Choice_Probabilities": [
+                            0.95,
+                            0.05
+                        ],
+                        "New_Property_Value": "CascadeState:HCTTestingLoop",
+                        "Disqualifying_Properties": [
+                            "CascadeState:LostForever",
+                            "CascadeState:LostForever_PEPFAR_cancelled",
+                            "CascadeState:OnART",
+                            "CascadeState:LinkingToART",
+                            "CascadeState:OnPreART",
+                            "CascadeState:LinkingToPreART",
+                            "CascadeState:ARTStaging"
+                        ]
+                    }
+                }
+            }
+        },
+        {
             "END": "HCT TESTING LOOP",
             "Event_Name": "HCTTestingLoop: state 2 (HCT Testing Dropout)",
             "class": "CampaignEventByYear",
-            "Start_Year": 1990,
+            "Start_Year": 2025,
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
@@ -1095,7 +1130,6 @@
                     ],
                     "Actual_IndividualIntervention_Config": {
                         "class": "HIVRandomChoice",
-                        "Choices__KP_TestingDropout": "<-- MARKER",
                         "Choice_Names": ["HCTTestingLoop9","HCTUptakePostDebut1"],
                         "Choice_Probabilities": [0.80,0.20],
                         "Disqualifying_Properties": [
