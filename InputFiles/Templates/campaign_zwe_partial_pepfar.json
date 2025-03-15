@@ -866,7 +866,6 @@
                     "Duration":5110,
                     "Trigger_Condition_List": [
                         "HCTTestingLoop0",
-                        "HCTTestingPEPFAR_Delayed",
                         "HCTTestingLoop9"
                     ],
                     "Actual_IndividualIntervention_Config": {
@@ -905,7 +904,6 @@
                     "Duration":7665,
                     "Trigger_Condition_List": [
                         "HCTTestingLoop0",
-                        "HCTTestingPEPFAR_Delayed",
                         "HCTTestingLoop9"
                     ],
                     "Actual_IndividualIntervention_Config": {

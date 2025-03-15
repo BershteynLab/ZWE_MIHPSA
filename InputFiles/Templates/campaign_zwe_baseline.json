@@ -863,7 +863,7 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Duration": 5110,
+                    "Duration":5110,
                     "Trigger_Condition_List": [
                         "HCTTestingLoop0",
                         "HCTTestingLoop9"
@@ -874,7 +874,7 @@
                         "Max_Entries": 1,
                         "Delay_Period_Distribution": "EXPONENTIAL_DISTRIBUTION",
                         "Delay_Period_Exponential": 730,
-                        "Broadcast_Event": "HCTTestingLoop1",
+                        "Broadcast_Event": "HCTTestingLoopRapidTest",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
                             "CascadeState:LostForever_PEPFAR_cancelled",
@@ -911,7 +911,7 @@
                         "Max_Entries": 1,
                         "Delay_Period_Distribution": "EXPONENTIAL_DISTRIBUTION",
                         "Delay_Period_Exponential": 365,
-                        "Broadcast_Event": "HCTTestingLoop1",
+                        "Broadcast_Event": "HCTTestingLoopRapidTest",
                         "Disqualifying_Properties": [
                             "CascadeState:LostForever",
                             "CascadeState:LostForever_PEPFAR_cancelled",
@@ -938,7 +938,7 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": ["HCTTestingLoop1"],
+                    "Trigger_Condition_List": ["HCTTestingLoopRapidTest"],
                     "Actual_IndividualIntervention_Config": {
                         "class": "HIVRapidHIVDiagnostic",
                         "Event_Or_Config": "Event",
